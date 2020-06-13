@@ -43,7 +43,8 @@ class WebAppPackagerParams : public AppPackagerParams
 			const char * productId,
 			const char * appPackage,
 			bool isDistributionBuild,
-			bool useStandartResources,
+			bool useStandardResources,
+			bool runAfterBuild,
 			const char * webtemplate,
 			bool createFBInstant
 			)
@@ -51,14 +52,16 @@ class WebAppPackagerParams : public AppPackagerParams
 			appName, version, identity, provisionFile, srcDir, dstDir, sdkRoot,
 			targetPlatform, (char*)"web", targetVersion, targetDevice, customBuildId, productId,
 			appPackage, isDistributionBuild )
-		, useStandartResources(useStandartResources)
+		, useStandardResources(useStandardResources)
+		, runAfterBuild(runAfterBuild)
 		, webtemplate(webtemplate)
 		, createFBInstantArchive(createFBInstant)
 		{
 		}
 
 	public:
-		const bool useStandartResources;
+		const bool useStandardResources;
+		const bool runAfterBuild;
 		const String webtemplate;
 		const bool createFBInstantArchive;
 };

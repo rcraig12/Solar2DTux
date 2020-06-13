@@ -44,20 +44,23 @@ class LinuxAppPackagerParams : public AppPackagerParams
 			const char * appPackage,
 			bool isDistributionBuild,
 			const char * debtemplate,
-			bool useStandartResources
+			bool useStandardResources,
+			bool runAfterBuild
 			)
 		: AppPackagerParams( 
 			appName, version, identity, provisionFile, srcDir, dstDir, sdkRoot,
 			targetPlatform, (char*)"linux", targetVersion, targetDevice, customBuildId, productId,
 			appPackage, isDistributionBuild )
 		, fDebTemplate(debtemplate)
-		, fUseStandartResources(useStandartResources)
+		, fUseStandardResources(useStandardResources)
+		, fRunAfterBuild(runAfterBuild)
 		{
 		}
 
 	public:
 		const String fDebTemplate;
-		const bool fUseStandartResources;
+		const bool fUseStandardResources;
+		const bool fRunAfterBuild;
 };
 
 class LinuxAppPackager : public PlatformAppPackager

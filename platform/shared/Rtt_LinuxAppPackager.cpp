@@ -142,7 +142,8 @@ int LinuxAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
 
 	time_t startTime = time(NULL);
 
-	bool useStandartResources = params->fUseStandartResources;
+	bool useStandardResources = params->fUseStandardResources;
+	bool runAfterBuild = params->fRunAfterBuild;
 
 	const char tmpTemplate[] = "CLtmpXXXXXX";
 	char tmpDir[kDefaultNumBytes]; Rtt_ASSERT(kDefaultNumBytes > (strlen(tmpDirBase) + strlen(tmpTemplate)));
@@ -210,8 +211,11 @@ int LinuxAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
 		lua_pushstring(L, params->GetIdentity());
 		lua_setfield(L, -2, "user");
 
-		lua_pushboolean(L, useStandartResources);
-		lua_setfield(L, -2, "useStandartResources");
+		lua_pushboolean(L, useStandardResources);
+		lua_setfield(L, -2, "useStandardResources");
+
+		lua_pushboolean(L, runAfterBuild);
+		lua_setfield(L, -2, "runAfterBuild");
 
 		lua_pushinteger(L, Rtt_BUILD_YEAR);
 		lua_setfield(L, -2, "buildYear");
@@ -233,12 +237,11 @@ int LinuxAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
 		String templateLocation(linuxParams->fDebTemplate.GetString());
 		if(templateLocation.IsEmpty())
 		{
-			fServices.Platform().PathForFile( "linuxtemplate.tar.gz", MPlatform::kSystemResourceDir, 0, templateLocation );
+			fServices.Platform().PathForFile( "linuxTemplate.tgz", MPlatform::kSystemResourceDir, 0, templateLocation );
 		}
 		lua_pushstring( L, templateLocation.GetString() );
 		lua_setfield( L, -2, "templateLocation" );
-
-	}
+	} 
 
 #ifndef Rtt_NO_GUI
 	lua_pushcfunction(L, Rtt::processExecute);
