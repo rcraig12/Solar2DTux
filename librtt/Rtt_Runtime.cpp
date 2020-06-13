@@ -1209,7 +1209,9 @@ Runtime::LoadApplication( const LoadParameters& parameters )
 	// Use kSystemResourceDir b/c resource.car should always live inside the .app bundle
 	String filePath( GetAllocator() );
 	
+	#ifndef Rtt_SIMULATOR
     fPlatform.PathForFile( basename, MPlatform::kSystemResourceDir, MPlatform::kDefaultPathFlags, filePath );
+	#endif
 
 	{
 		// Init VM
