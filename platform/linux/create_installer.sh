@@ -1,0 +1,44 @@
+INSTALLER_FOLDER=installer
+BUILD_FOLDER=deb_simulator
+DEBIAN_CONTENTS_INSTALL_FOLDER=$INSTALLER_FOLDER/opt/Solar2D
+SAMPLE_CODE_DIR=../../samples
+SAMPLE_CODE_REMOTE=https://github.com/coronalabs/samples-coronasdk.git
+mkdir -p $DEBIAN_CONTENTS_INSTALL_FOLDER
+# remove old build
+find $BUILD_FOLDER/ -name "*.deb" -type f -delete
+
+# clone sample code (or just fetch latest if it exists)
+if [ ! -d $SAMPLE_CODE_DIR ]
+then
+    git clone $SAMPLE_CODE_REMOTE $SAMPLE_CODE_DIR
+else
+    cd $SAMPLE_CODE_DIR/
+    git pull $SAMPLE_CODE_REMOTE
+    cd ../platform/linux/
+fi
+
+# copy debian folder
+rsync -r $BUILD_FOLDER/DEBIAN/ $INSTALLER_FOLDER/DEBIAN/
+# copy plugin dependencies
+sh copy_plugin_deps.sh
+# copy corona simulator binary
+rsync -avz -q --exclude "android*" Solar2DSimulator/ $DEBIAN_CONTENTS_INSTALL_FOLDER/
+# rename simulator binary
+mv $DEBIAN_CONTENTS_INSTALL_FOLDER/Solar2DSimulator_release $DEBIAN_CONTENTS_INSTALL_FOLDER/Solar2DSimulator
+# remove the debug binary
+rm -rf Solar2DSimulator/Solar2DSimulator_debug
+# copy corona resources
+rsync -r Solar2DSimulator/Resources/ $DEBIAN_CONTENTS_INSTALL_FOLDER/Resources/
+# copy extensions
+rsync -r ../../simulator-extensions/ $DEBIAN_CONTENTS_INSTALL_FOLDER/Extensions/
+# copy desktop file
+cp -u $BUILD_FOLDER/Solar2D.desktop $DEBIAN_CONTENTS_INSTALL_FOLDER/Resources/
+# copy logo
+cp -u $BUILD_FOLDER/logo.png $DEBIAN_CONTENTS_INSTALL_FOLDER/Resources/
+# copy sample code
+rsync -r $SAMPLE_CODE_DIR/ $DEBIAN_CONTENTS_INSTALL_FOLDER/SampleCode/
+# make deb installer
+dpkg-deb --build $INSTALLER_FOLDER
+mv $INSTALLER_FOLDER.deb $BUILD_FOLDER/solar2d.deb
+# remove installer directory
+rm -rf $INSTALLER_FOLDER

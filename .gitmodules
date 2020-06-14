@@ -25,9 +25,6 @@
 [submodule "platform/emscripten"]
 	path = platform/emscripten
 	url = https://github.com/coronalabs/submodule-platform-emscripten.git
-[submodule "platform/linux"]
-	path = platform/linux
-	url = git@github.com:DannyGlover/submodule-platform-linux.git
 [submodule "plugins/build"]
 	path = plugins/build
 	url = https://github.com/coronalabs/submodule-plugins-build.git
