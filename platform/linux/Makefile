@@ -1,40 +1,34 @@
 .PHONY: clean All
 
 debug: 
-	@echo "----------Building project:[ linux_rtt - Simulator (Debug) ]----------"
-	@"$(MAKE)" -f  "linux_rtt_simulator.mk" PreBuild && "$(MAKE)" -f  "linux_rtt_simulator.mk" && "$(MAKE)" -f  "linux_rtt_simulator.mk" PostBuild
+	@echo "----------Building project:[ Simulator (Debug) ]----------"
+	@"$(MAKE)" -j4 -f "linux_rtt_simulator_debug.mk"
 
 debug-run: 
-	@echo "----------Building project:[ linux_rtt - Simulator (Debug) ]----------"
-	@"$(MAKE)" -f  "linux_rtt_simulator.mk" PreBuild && "$(MAKE)" -f  "linux_rtt_simulator.mk" && "$(MAKE)" -f  "linux_rtt_simulator.mk" PostBuild
+	@echo "----------Building project:[ Simulator (Debug) ]----------"
+	@"$(MAKE)" -j4 -f "linux_rtt_simulator_debug.mk"
 	@"./Solar2DSimulator/Solar2DSimulator_debug"
 
 release: 
-	@echo "----------Building project:[ linux_rtt - Simulator (Release) ]----------"
-	@"$(MAKE)" -f  "linux_rtt_simulator_release.mk" PreBuild && "$(MAKE)" -f  "linux_rtt_simulator_release.mk" && "$(MAKE)" -f  "linux_rtt_simulator_release.mk" PostBuild
+	@echo "----------Building project:[ Simulator (Release) ]----------"
+	@"$(MAKE)" -j4 -f "linux_rtt_simulator_release.mk"
 
 release-run:
-	@echo "----------Building project:[ linux_rtt - Simulator (Release) ]----------"
-	@"$(MAKE)" -f  "linux_rtt_simulator_release.mk" PreBuild && "$(MAKE)" -f  "linux_rtt_simulator_release.mk" && "$(MAKE)" -f  "linux_rtt_simulator_release.mk" PostBuild
+	@echo "----------Building project:[ Simulator (Release) ]----------"
+	@"$(MAKE)" -j4 -f "linux_rtt_simulator_release.mk"
 	@"./Solar2DSimulator/Solar2DSimulator_release"
 
 distribution:
-	@"$(MAKE)" -f  "linux_rtt_simulator_release.mk" clean
-	@echo "----------Building project:[ linux_rtt - Simulator (Release) ]----------"
-	@"$(MAKE)" -f  "linux_rtt_simulator_release.mk" PreBuild && "$(MAKE)" -f  "linux_rtt_simulator_release.mk" && "$(MAKE)" -f  "linux_rtt_simulator_release.mk"
-	@echo "----------Building project:[ linux_rtt - Simulator (Template) ]----------"
-	@"$(MAKE)" -f  "linux_rtt_simulator_template.mk" clean
-	@"$(MAKE)" -f  "linux_rtt_simulator_template.mk" PreBuild && "$(MAKE)" -f  "linux_rtt_simulator_template.mk" && "$(MAKE)" -f  "linux_rtt_simulator_template.mk" PostBuild
-	tar -czf ./Solar2DSimulator/linuxTemplate.tgz ./Solar2DSimulator/linuxTemplate
-
-pre-build:
-	make -f lua2cpp.mk
+	@echo "----------Building project:[ Simulator, Templates (Distribution) ]----------"
+	@"$(MAKE)" -f "linux_rtt_simulator_debug.mk" clean
+	@"$(MAKE)" -f "linux_rtt_simulator_release.mk" clean
+	@"$(MAKE)" -j4 -f "linux_rtt_simulator_release.mk"
+	@"$(MAKE)" -j4 -f "linux_rtt_template_x64.mk"
+	##@"$(MAKE)" -j4 -f "linux_rtt_template_x86.mk"
+	##@"$(MAKE)" -j4 -f "linux_rtt_template_arm.mk"
+	mv Solar2DSimulator/Solar2DSimulator_release Solar2DSimulator/Solar2DSimulator 
 
 clean:
-	rm -f ./Solar2DSimulator/Solar2DSimulator_debug
-	rm -f ./Solar2DSimulator/Solar2DSimulator_release
-	rm -f ./Solar2DSimulator/Solar2DSimulator_template
 	@echo "----------Cleaning project:[ linux_rtt - Simulator ]----------"
-	@"$(MAKE)" -f  "linux_rtt_simulator.mk" clean
-	@"$(MAKE)" -f  "linux_rtt_simulator_release.mk" clean
-	@"$(MAKE)" -f  "linux_rtt_simulator_template.mk" clean
+	@"$(MAKE)" -f "linux_rtt_simulator_debug.mk" clean
+	@"$(MAKE)" -f "linux_rtt_simulator_release.mk" clean

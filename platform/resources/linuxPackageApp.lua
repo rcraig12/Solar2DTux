@@ -30,7 +30,7 @@ end
 -- check if /usr/bin/tar exists, it is in Mac but not in Linux
 local tar = "/usr/bin/tar"
 
-if fileExists(tar) == false then
+if (fileExists(tar) == false) then
 	tar = "tar"   -- for linux
 end
 
@@ -104,7 +104,7 @@ local function globToPattern(g)
 				if (c == '') then
 					p = '[^]'
 					return false
-				elseif c == '-' then
+				elseif (c == '-') then
 					i = i + 1; c = g:sub(i,i)
 					
 					if (c == '') then
@@ -114,7 +114,7 @@ local function globToPattern(g)
 						p = p .. escape(c1) .. '%-]'
 						break
 					else
-						if not unescape() then 
+						if (not unescape()) then 
 							break 
 						end
 					
@@ -217,15 +217,15 @@ local function pathJoin(p1, p2, ... )
 	end
 end
 
-local function unpackPlugin( archive, dst, plugin)
+local function extractTar(archive, dst)
 	lfs.mkdir(dst)
 	local cmd = tar .. ' -xzf ' .. quoteString(archive) .. ' -C ' ..  quoteString(dst .. "/") 
-	log('unpackPlugin: ' .. cmd)
+	log('extractTar: ' .. cmd)
 	
 	return os.execute(cmd)
 end
 
-local function gzip( path, appname, ext, destFile )
+local function gzip(path, appname, ext, destFile)
 	local dst = pathJoin(path, destFile)
 	local src = ''
 	
@@ -243,14 +243,14 @@ local function gzip( path, appname, ext, destFile )
 	end
 end
 
-local function zip( folder, zipfile )
+local function zip(folder, zipfile)
 	local cmd = 'cd '.. folder .. ' && /usr/bin/zip -r -X ' .. zipfile .. ' ' .. '*'
 	log3('zip:', cmd)
 	
 	return os.execute(cmd)
 end
 
-local function unzip( archive, dst )
+local function unzip(archive, dst)
 	local cmd = '/usr/bin/unzip -o -q ' .. quoteString(archive) .. ' -d ' ..  quoteString(dst)
 	log3('inzip:', cmd)
 	
@@ -581,7 +581,7 @@ local function makeApp(arch, linuxappFolder, template, args, templateName)
 		return sFormat('failed to open template: %s', template)
 	end
 
-	local ret = unpackPlugin(template, linuxappFolder, templateName)
+	local ret = extractTar(template, linuxappFolder)
 
 	if (ret ~= 0) then
 		return sFormat('failed to unpack template %s to %s - error: %s', template, linuxappFolder, ret)
