@@ -1028,7 +1028,7 @@ namespace Rtt
 		hbox->Add(txt, 0, wxALL, 15);
 		hbox->Add(gs, 1, wxALIGN_CENTER_HORIZONTAL | wxALL, 7);
 		panel->SetSizer(hbox);
-		Center();
+		Centre(wxBOTH);
 	}
 
 	msgBox::~msgBox()
