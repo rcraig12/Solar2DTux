@@ -18,7 +18,7 @@
 #include "Rtt_Freetype.h"
 #include "Rtt_LuaLibSimulator.h"
 #include "Rtt_LinuxSimulatorView.h"
-#include "Rtt_LinuxContextNewProject.h"
+#include "Rtt_LinuxNewProjectDialog.h"
 
 // Eport for LUA
 Rtt_EXPORT int luaopen_lfs(lua_State *L);

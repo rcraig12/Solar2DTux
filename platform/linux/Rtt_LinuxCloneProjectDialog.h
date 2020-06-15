@@ -1,5 +1,5 @@
-#ifndef RTT_LINUX_CONTEXT_CLONE_PROJECT_H
-#define RTT_LINUX_CONTEXT_CLONE_PROJECT_H
+#ifndef RTT_LINUX_CLONE_PROJECT_DIALOG_H
+#define RTT_LINUX_CLONE_PROJECT_DIALOG_H
 
 #include <wx/wx.h>
 #include <wx/image.h>
@@ -39,4 +39,4 @@ namespace Rtt
 
 } // namespace Rtt
 
-#endif // RTT_LINUX_CONTEXT_CLONE_PROJECT_H
+#endif // RTT_LINUX_CLONE_PROJECT_DIALOG_H

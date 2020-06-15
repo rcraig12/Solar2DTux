@@ -19,7 +19,6 @@
 #include "Core/Rtt_Array.h"
 #include "Rtt_LinuxInputDeviceManager.h"
 #include "Rtt_LinuxSimulatorServices.h"
-#include "Rtt_LinuxContextNewProject.h"
 
 #include "wx/app.h"
 #include "wx/frame.h"

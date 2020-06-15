@@ -1,12 +1,10 @@
-#ifndef RTT_LINUX_CONTEXT_NEW_PROJECT_H
-#define RTT_LINUX_CONTEXT_NEW_PROJECT_H
+#ifndef RTT_LINUX_NEW_PROJECT_DIALOG_H
+#define RTT_LINUX_NEW_PROJECT_DIALOG_H
 
 #include <wx/wx.h>
 #include <wx/image.h>
 #include <wx/statline.h>
-
 #include<string>
-
 #pragma once
 
 namespace Rtt
@@ -60,4 +58,4 @@ namespace Rtt
 	
 } // namespace Rtt
 
-#endif // RTT_LINUX_CONTEXT_NEW_PROJECT_H
+#endif // RTT_LINUX_NEW_PROJECT_DIALOG_H

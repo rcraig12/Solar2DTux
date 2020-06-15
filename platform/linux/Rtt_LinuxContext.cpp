@@ -20,7 +20,6 @@
 #include "Rtt_LuaContext.h"
 #include "Core/Rtt_Types.h"
 #include "Rtt_LinuxContext.h"
-#include "Rtt_LinuxContextCloneProject.h"
 #include "Rtt_LinuxPlatform.h"
 #include "Rtt_LinuxRuntimeDelegate.h"
 #include "Rtt_LuaFile.h"
@@ -33,6 +32,8 @@
 #include "Rtt_LuaLibSimulator.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_MPlatformServices.h"
+#include "Rtt_LinuxCloneProjectDialog.h"
+#include "Rtt_LinuxNewProjectDialog.h"
 
 //#define Rtt_DEBUG_TOUCH 1
 

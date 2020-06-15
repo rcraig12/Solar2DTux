@@ -18,7 +18,7 @@
 #include <pwd.h>
 #include <libgen.h>
 #include <string.h>
-#include "Rtt_LinuxContextCloneProject.h"
+#include "Rtt_LinuxCloneProjectDialog.h"
 #include <fstream>
 #include <streambuf>
 
