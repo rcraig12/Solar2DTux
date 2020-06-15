@@ -1003,32 +1003,30 @@ namespace Rtt
 	//
 
 	msgBox::msgBox(const char *title, const char *msg, const char **buttonLabels, U32 numButtons, LuaResource *resource)
-		: wxFrame(wxGetApp().getFrame(), wxID_ANY, title, wxDefaultPosition, wxSize(420, 180), wxCAPTION | wxCLOSE_BOX), fCallback(resource)
+		: wxFrame(wxGetApp().getFrame(), wxID_ANY, title, wxDefaultPosition, wxSize(520, 180), wxCAPTION | wxCLOSE_BOX), fCallback(resource)
 	{
 		wxSize sz = GetSize();
 		wxPanel *panel = new wxPanel(this, wxID_ANY);
 		wxBoxSizer *hbox = new wxBoxSizer(wxVERTICAL);
-
 		wxStaticText *txt = new wxStaticText(panel, wxID_ANY, msg, wxPoint(0, 10), wxSize(sz.x - 20, 60), wxALIGN_CENTRE_HORIZONTAL);
 		wxFont font = txt->GetFont();
-		//		font.SetPointSize(font.GetPointSize() + 2);
+		//	font.SetPointSize(font.GetPointSize() + 2);
 		font.SetWeight(wxFONTWEIGHT_BOLD);
 		txt->SetFont(font);
 
 		// add buttons
-		wxGridSizer *gs = new wxGridSizer(1, numButtons, 1, numButtons);
+		wxBoxSizer *gs = new wxBoxSizer(wxHORIZONTAL);
 		for (int i = 0; i < numButtons; i++)
 		{
 			const char *caption = buttonLabels[i];
 			wxButton *b = new wxButton(panel, i, caption);
 			Connect(i, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(msgBox::ShowMessage));
-			gs->Add(b, 1);
+			gs->Add(b, 0, 0, 7);
 		}
 
 		Connect(wxID_ANY, wxEVT_CLOSE_WINDOW, wxCloseEventHandler(msgBox::OnClose));
-
 		hbox->Add(txt, 0, wxALL, 15);
-		hbox->Add(gs, 0, wxALL, 15);
+		hbox->Add(gs, 1, wxALIGN_CENTER_HORIZONTAL | wxALL, 7);
 		panel->SetSizer(hbox);
 		Center();
 	}
