@@ -1001,7 +1001,15 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 
 	SetWindowStyle(wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX);
 
-	fProjectPath = string("~/Documents/Solar2D Projects");
+	const char *homeDir = NULL;
+
+	if ((homeDir = getenv("HOME")) == NULL)
+	{
+		homeDir = getpwuid(getuid())->pw_dir;
+	}
+
+	fProjectPath = string(homeDir);
+	fProjectPath.append("/Documents/Solar2D Projects");
 }
 
 MyFrame::~MyFrame()

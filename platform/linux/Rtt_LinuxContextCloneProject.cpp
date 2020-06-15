@@ -53,10 +53,10 @@ namespace Rtt
 	void NewCloneDialog::SetLayout()
 	{
 		wxBoxSizer *dialogLayout = new wxBoxSizer(wxVERTICAL);
+		wxBoxSizer *dialogTop = new wxBoxSizer(wxHORIZONTAL);
+		wxBoxSizer *dialogMiddle = new wxBoxSizer(wxHORIZONTAL);
 		wxBoxSizer *dialogBottom = new wxBoxSizer(wxVERTICAL);
 		wxBoxSizer *dialogButtons = new wxBoxSizer(wxHORIZONTAL);
-		wxBoxSizer *dialogMiddle = new wxBoxSizer(wxHORIZONTAL);
-		wxBoxSizer *dialogTop = new wxBoxSizer(wxHORIZONTAL);
 		wxBoxSizer *boxSizerTopColumn1 = new wxBoxSizer(wxVERTICAL);
 		wxBoxSizer *boxSizerTopColumn2 = new wxBoxSizer(wxVERTICAL);
 		wxBoxSizer *boxSizerTopColumn3 = new wxBoxSizer(wxVERTICAL);
@@ -84,10 +84,10 @@ namespace Rtt
 		dialogTop->Add(boxSizerTopColumn1, 0, wxLEFT | wxRIGHT, 7);
 		dialogTop->Add(boxSizerTopColumn2, 1, wxEXPAND, 0);
 		dialogTop->Add(boxSizerTopColumn3, 0, wxEXPAND | wxLEFT | wxRIGHT, 7);
-		dialogLayout->Add(dialogTop, 0, wxBOTTOM | wxEXPAND | wxTOP, 8);
 		dialogBottom->Add(staticLineSeparator, 0, wxEXPAND | wxLEFT | wxRIGHT, 7);
 		dialogBottom->Add(activityIndicator, 0, wxEXPAND | wxCenter, 7);
 		dialogBottom->Add(dialogButtons, 1, wxALIGN_CENTER_HORIZONTAL | wxALL, 7);
+		dialogLayout->Add(dialogTop, 0, wxBOTTOM | wxEXPAND | wxTOP, 8);
 		dialogLayout->Add(dialogBottom, 0, wxEXPAND, 0);
 
 		SetSizer(dialogLayout);
