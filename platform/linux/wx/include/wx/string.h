@@ -90,8 +90,9 @@ namespace wxPrivate
 // macros
 // ---------------------------------------------------------------------------
 
-// casts [unfortunately!] needed to call some broken functions which require
-// "char *" instead of "const char *"
+// These macros are not used by wxWidgets itself any longer and are only
+// preserved for compatibility with the user code that might be still using
+// them. Do _not_ use them in the new code, just use const_cast<> instead.
 #define   WXSTRINGCAST (wxChar *)(const wxChar *)
 #define   wxCSTRINGCAST (wxChar *)(const wxChar *)
 #define   wxMBSTRINGCAST (char *)(const char *)
@@ -910,8 +911,6 @@ public:
 
   public:
       iterator() {}
-      iterator(const iterator& i) : m_cur(i.m_cur) {}
-
       reference operator*()
         { return wxUniCharRef::CreateForString(m_cur); }
 
@@ -945,7 +944,6 @@ public:
 
   public:
       const_iterator() {}
-      const_iterator(const const_iterator& i) : m_cur(i.m_cur) {}
       const_iterator(const iterator& i) : m_cur(i.m_cur) {}
 
       const_reference operator*() const
@@ -993,7 +991,7 @@ public:
       // This is logically equivalent to strlen(str.mb_str()) but avoids
       // actually converting the string to multibyte and just computes the
       // length that it would have after conversion.
-      size_t ofs = wxConvLibc.FromWChar(NULL, 0, str.wc_str(), str.length());
+      const size_t ofs = wxConvLibc.FromWChar(NULL, 0, str.wc_str(), str.length());
       return ofs == wxCONV_FAILED ? 0 : static_cast<ptrdiff_t>(ofs);
   }
 
@@ -1014,8 +1012,6 @@ public:
 
       reverse_iterator_impl() {}
       reverse_iterator_impl(iterator_type i) : m_cur(i) {}
-      reverse_iterator_impl(const reverse_iterator_impl& ri)
-          : m_cur(ri.m_cur) {}
 
       iterator_type base() const { return m_cur; }
 
@@ -1349,6 +1345,8 @@ public:
   size_type capacity() const { return m_impl.capacity(); }
   void reserve(size_t sz) { m_impl.reserve(sz); }
 
+  void shrink_to_fit() { Shrink(); }
+
   void resize(size_t nSize, wxUniChar ch = wxT('\0'))
   {
     const size_t len = length();
@@ -1617,7 +1615,7 @@ public:
     static wxString FromUTF8(const char *utf8)
     {
         if ( !utf8 || !wxStringOperations::IsValidUtf8String(utf8) )
-            return "";
+            return wxString();
 
         return FromImpl(wxStringImpl(utf8));
     }
@@ -1627,7 +1625,7 @@ public:
             return FromUTF8(utf8);
 
         if ( !utf8 || !wxStringOperations::IsValidUtf8String(utf8, len) )
-            return "";
+            return wxString();
 
         return FromImpl(wxStringImpl(utf8, len));
     }
@@ -1706,7 +1704,11 @@ public:
       { return FromUTF8Unchecked(utf8.c_str(), utf8.length()); }
 #endif
     const wxScopedCharBuffer utf8_str() const
-      { return wxMBConvUTF8().cWC2MB(wc_str()); }
+    {
+        if (empty())
+            return wxScopedCharBuffer::CreateNonOwned("", 0);
+        return wxMBConvUTF8().cWC2MB(wc_str());
+    }
 #endif
 
     const wxScopedCharBuffer ToUTF8() const { return utf8_str(); }
@@ -2160,17 +2162,17 @@ public:
       // searching (return starting index, or -1 if not found)
   int Find(const wxString& sub) const               // like strstr
   {
-    size_type idx = find(sub);
+    const size_type idx = find(sub);
     return (idx == npos) ? wxNOT_FOUND : (int)idx;
   }
   int Find(const char *sub) const               // like strstr
   {
-    size_type idx = find(sub);
+    const size_type idx = find(sub);
     return (idx == npos) ? wxNOT_FOUND : (int)idx;
   }
   int Find(const wchar_t *sub) const               // like strstr
   {
-    size_type idx = find(sub);
+    const size_type idx = find(sub);
     return (idx == npos) ? wxNOT_FOUND : (int)idx;
   }
 
@@ -3254,6 +3256,20 @@ public:
   size_t find_last_not_of(const wxScopedWCharBuffer& sz, size_t nStart, size_t n) const
     { return find_last_not_of(sz.data(), nStart, n); }
 
+  bool starts_with(const wxString &str) const
+    { return StartsWith(str); }
+  bool starts_with(const char *sz) const
+    { return StartsWith(sz); }
+  bool starts_with(const wchar_t *sz) const
+    { return StartsWith(sz); }
+
+  bool ends_with(const wxString &str) const
+    { return EndsWith(str); }
+  bool ends_with(const char *sz) const
+    { return EndsWith(sz); }
+  bool ends_with(const wchar_t *sz) const
+    { return EndsWith(sz); }
+
       // string += string
   wxString& operator+=(const wxString& s)
   {
@@ -3358,7 +3374,7 @@ private:
   {
       // notice that there is no need to initialize m_len here as it's unused
       // as long as m_str is NULL
-      ConvertedBuffer() : m_str(NULL) {}
+      ConvertedBuffer() : m_str(NULL), m_len(0) {}
       ~ConvertedBuffer()
           { free(m_str); }
 
@@ -3838,9 +3854,11 @@ public:
 // wxString comparison functions: operator versions are always case sensitive
 // ---------------------------------------------------------------------------
 
+// comparison with C-style narrow and wide strings.
 #define wxCMP_WXCHAR_STRING(p, s, op) 0 op s.Cmp(p)
 
-wxDEFINE_ALL_COMPARISONS(const wxChar *, const wxString&, wxCMP_WXCHAR_STRING)
+wxDEFINE_ALL_COMPARISONS(const wchar_t *, const wxString&, wxCMP_WXCHAR_STRING)
+wxDEFINE_ALL_COMPARISONS(const char *, const wxString&, wxCMP_WXCHAR_STRING)
 
 #undef wxCMP_WXCHAR_STRING
 
@@ -3929,17 +3947,6 @@ inline bool wxString::iterator::operator<=(const const_iterator& i) const
 inline bool wxString::iterator::operator>=(const const_iterator& i) const
     { return i <= *this; }
 
-// comparison with C string in Unicode build
-#if wxUSE_UNICODE
-
-#define wxCMP_CHAR_STRING(p, s, op) wxString(p) op s
-
-wxDEFINE_ALL_COMPARISONS(const char *, const wxString&, wxCMP_CHAR_STRING)
-
-#undef wxCMP_CHAR_STRING
-
-#endif // wxUSE_UNICODE
-
 // we also need to provide the operators for comparison with wxCStrData to
 // resolve ambiguity between operator(const wxChar *,const wxString &) and
 // operator(const wxChar *, const wxChar *) for "p == s.c_str()"
@@ -3985,32 +3992,6 @@ namespace std
 } // namespace std
 
 #endif // wxUSE_STD_STRING
-
-#endif // C++11
-
-// Specialize std::iter_swap in C++11 to make std::reverse() work with wxString
-// iterators: unlike in C++98, where iter_swap() is required to deal with the
-// iterator::reference being different from "iterator::value_type&", in C++11
-// iter_swap() just calls swap() by default and this doesn't work for us as
-// wxUniCharRef is not the same as "wxUniChar&".
-//
-// Unfortunately currently iter_swap() can't be specialized when using libc++,
-// see https://llvm.org/bugs/show_bug.cgi?id=28559
-#if (__cplusplus >= 201103L) && !defined(_LIBCPP_VERSION)
-
-namespace std
-{
-    template <>
-    inline void
-    iter_swap<wxString::iterator>(wxString::iterator i1, wxString::iterator i2)
-    {
-        // We don't check for i1 == i2, this won't happen in normal use, so
-        // don't pessimize the common code to account for it.
-        wxUniChar tmp = *i1;
-        *i1 = *i2;
-        *i2 = tmp;
-    }
-} // namespace std
 
 #endif // C++11
 

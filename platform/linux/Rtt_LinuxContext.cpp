@@ -700,7 +700,7 @@ namespace Rtt
 		bool fullScreen = (fMode == "maximized");
 		if (fullScreen)
 		{
-			wxDisplay screen(0);
+			wxDisplay screen;
 			wxRect rect = screen.GetGeometry();
 			//fWidth = rect.GetWidth();
 			//fHeight = rect.GetHeight() - 1;
@@ -1503,11 +1503,6 @@ void MyGLCanvas::OnPaint(wxPaintEvent &WXUNUSED(event))
 {
 	if (m_winHeight > 0)
 	{
-		if (fContext)
-		{
-			fContext->GetRuntime()->GetDisplay().Invalidate();
-		}
-
 		SwapBuffers();
 	}
 }
@@ -1552,6 +1547,11 @@ void MyGLCanvas::OnSize(wxSizeEvent &event)
 	// It's up to the application code to update the OpenGL viewport settings.
 	m_winHeight = event.GetSize().y;
 	// m_oglManager->SetViewport(0, 0, event.GetSize().x, m_winHeight);
+
+	if (fContext && fContext->GetRuntime())
+	{
+		fContext->GetRuntime()->GetDisplay().Invalidate();
+	}
 
 	// Generate paint event
 	Refresh(false);

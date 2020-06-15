@@ -223,9 +223,6 @@
 
 #define wxUSE_STD_STRING_CONV_IN_WXSTRING wxUSE_STL
 
-#define wxUSE_IOSTREAMH     0
-
-
 
 #define wxUSE_LONGLONG 1
 
@@ -287,6 +284,8 @@
 #define wxUSE_TARSTREAM 1
 
 #define wxUSE_ZLIB 1
+
+#define wxUSE_LIBLZMA       0
 
 #define wxUSE_APPLE_IEEE 1
 
@@ -713,6 +712,8 @@
 
 #define wxUSE_INICONF 0
 
+#define wxUSE_WINSOCK2 0
+
 
 #define wxUSE_DATEPICKCTRL_GENERIC 0
 
@@ -867,7 +868,7 @@
 /*
  * Define if compiler has __thread keyword.
  */
-#define HAVE___THREAD_KEYWORD 1
+/* #undef HAVE___THREAD_KEYWORD */
 /*
  * Define if large (64 bit file offsets) files are supported.
  */
@@ -954,7 +955,7 @@
 #define HAVE_FSYNC 1
 
 /* Define if round() is available */
-/* #undef HAVE_ROUND */
+#define HAVE_ROUND 1
 
 /* Define if you have ftime() */
 /* #undef HAVE_FTIME */

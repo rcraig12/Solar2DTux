@@ -1721,6 +1721,11 @@
 #   endif
 #endif
 
+#if wxUSE_ACTIVITYINDICATOR && !wxUSE_GRAPHICS_CONTEXT
+#   undef wxUSE_ACTIVITYINDICATOR
+#   define wxUSE_ACTIVITYINDICATOR 0
+#endif /* wxUSE_ACTIVITYINDICATOR */
+
 #if wxUSE_GRAPHICS_CONTEXT && !wxUSE_GEOMETRY
 #   ifdef wxABORT_ON_CONFIG_ERROR
 #       error "wxUSE_GRAPHICS_CONTEXT requires wxUSE_GEOMETRY"
@@ -1737,7 +1742,7 @@
 #       undef wxUSE_DC_TRANSFORM_MATRIX
 #       define wxUSE_DC_TRANSFORM_MATRIX 0
 #   endif
-#endif /* wxUSE_GRAPHICS_CONTEXT */
+#endif /* wxUSE_DC_TRANSFORM_MATRIX */
 
 /* generic controls dependencies */
 #if !defined(__WXMSW__) || defined(__WXUNIVERSAL__)
@@ -2340,6 +2345,15 @@
 #           define wxUSE_STC 0
 #       endif
 #   endif
+
+#   if !wxUSE_SCROLLBAR
+#       ifdef wxABORT_ON_CONFIG_ERROR
+#           error "wxStyledTextCtrl requires wxUSE_SCROLLBAR"
+#       else
+#           undef wxUSE_STC
+#           define wxUSE_STC 0
+#       endif
+#   endif
 #endif /* wxUSE_STC */
 
 #if wxUSE_RICHTEXT
@@ -2359,7 +2373,26 @@
 #           define wxUSE_LONLONG 1
 #       endif
 #   endif
+#   if !wxUSE_VARIANT
+#       ifdef wxABORT_ON_CONFIG_ERROR
+#           error "wxRichTextCtrl requires wxUSE_VARIANT"
+#       else
+#           undef wxUSE_VARIANT
+#           define wxUSE_VARIANT 1
+#       endif
+#   endif
 #endif /* wxUSE_RICHTEXT */
+
+#if wxUSE_PROPGRID
+#   if !wxUSE_VARIANT
+#       ifdef wxABORT_ON_CONFIG_ERROR
+#           error "wxPropertyGrid requires wxUSE_VARIANT"
+#       else
+#           undef wxUSE_VARIANT
+#           define wxUSE_VARIANT 1
+#       endif
+#   endif
+#endif /* wxUSE_PROPGRID */
 
 #endif /* wxUSE_GUI */
 

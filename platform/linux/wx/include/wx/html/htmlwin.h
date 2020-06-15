@@ -146,7 +146,7 @@ protected:
     /**
         Virtual dtor.
 
-        It is not really needed in this case but at leats it prevents gcc from
+        It is not really needed in this case, but at least it prevents gcc from
         complaining about its absence.
      */
     virtual ~wxHtmlWindowMouseHelper() { }
@@ -408,6 +408,7 @@ protected:
     void OnMouseMove(wxMouseEvent& event);
     void OnMouseDown(wxMouseEvent& event);
     void OnMouseUp(wxMouseEvent& event);
+    void OnFocusEvent(wxFocusEvent& event);
 #if wxUSE_CLIPBOARD
     void OnKeyUp(wxKeyEvent& event);
     void OnDoubleClick(wxMouseEvent& event);
@@ -578,10 +579,10 @@ public:
                     wxHtmlCell *cell, const wxPoint &pt,
                     const wxMouseEvent &ev)
         : wxCommandEvent(commandType, id)
+        , m_mouseEvent(ev)
+        , m_pt(pt)
     {
         m_cell = cell;
-        m_pt = pt;
-        m_mouseEvent = ev;
         m_bLinkWasClicked = false;
     }
 

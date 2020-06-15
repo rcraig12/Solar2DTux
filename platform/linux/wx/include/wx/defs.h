@@ -460,21 +460,10 @@ typedef short int WXTYPE;
     /*
         Mingw <= 3.4 and all versions of Cygwin don't have std::wostream
      */
-    #if (defined(__MINGW32__) && !wxCHECK_GCC_VERSION(4, 0)) || \
-        defined(__CYGWIN__)
-        #define wxNO_WOSTREAM
-    #endif
-
-    /* VC++ doesn't have it in the old iostream library */
-    #if defined(__VISUALC__) && wxUSE_IOSTREAMH
-        #define wxNO_WOSTREAM
-    #endif
-
-    #ifndef wxNO_WOSTREAM
+    #if (!defined(__MINGW32__) || wxCHECK_GCC_VERSION(4, 0)) && \
+        !defined(__CYGWIN__)
         #define HAVE_WOSTREAM
     #endif
-
-    #undef wxNO_WOSTREAM
 #endif /* HAVE_WOSTREAM */
 
 /*  ---------------------------------------------------------------------------- */
@@ -667,6 +656,17 @@ typedef short int WXTYPE;
 #   define wxGCC_WARNING_RESTORE(x)
 #endif
 
+/* Specific macros for -Wcast-function-type warning new in gcc 8. */
+#if wxCHECK_GCC_VERSION(8, 0)
+    #define wxGCC_WARNING_SUPPRESS_CAST_FUNCTION_TYPE() \
+        wxGCC_WARNING_SUPPRESS(cast-function-type)
+    #define wxGCC_WARNING_RESTORE_CAST_FUNCTION_TYPE() \
+        wxGCC_WARNING_RESTORE(cast-function-type)
+#else
+    #define wxGCC_WARNING_SUPPRESS_CAST_FUNCTION_TYPE()
+    #define wxGCC_WARNING_RESTORE_CAST_FUNCTION_TYPE()
+#endif
+
 /*
    Macros to suppress and restore clang warning only when it is valid.
 
@@ -838,7 +838,7 @@ typedef short int WXTYPE;
 
 /*  where should i put this? we need to make sure of this as it breaks */
 /*  the <iostream> code. */
-#if !wxUSE_IOSTREAMH && defined(__WXDEBUG__)
+#if defined(__WXDEBUG__)
 #    undef wxUSE_DEBUG_NEW_ALWAYS
 #    define wxUSE_DEBUG_NEW_ALWAYS 0
 #endif
@@ -1557,9 +1557,8 @@ enum wxBorder
 
 /*
  * wxRadioBox style flags
+ * These styles are not used in any port.
  */
-/*  should we number the items from left to right or from top to bottom in a 2d */
-/*  radiobox? */
 #define wxRA_LEFTTORIGHT    0x0001
 #define wxRA_TOPTOBOTTOM    0x0002
 
@@ -2573,7 +2572,6 @@ typedef int (* LINKAGEMODE wxListIterateFunction)(void *current);
 
 #define WX_OPAQUE_TYPE( name ) struct wxOpaque##name
 
-typedef void*       WXHBITMAP;
 typedef void*       WXHCURSOR;
 typedef void*       WXRECTPTR;
 typedef void*       WXPOINTPTR;
@@ -2597,11 +2595,13 @@ typedef void*       WXDisplay;
 
 typedef const void * CFTypeRef;
 
-/* typedef const struct __CFString * CFStringRef; */
-
+DECLARE_WXOSX_OPAQUE_CONST_CFREF( CFData )
 DECLARE_WXOSX_OPAQUE_CONST_CFREF( CFString )
 typedef struct __CFString * CFMutableStringRef;
 DECLARE_WXOSX_OPAQUE_CONST_CFREF( CFDictionary )
+
+DECLARE_WXOSX_OPAQUE_CONST_CFREF( CFArray )
+typedef struct __CFArray * CFMutableArrayRef;
 
 DECLARE_WXOSX_OPAQUE_CFREF( CFRunLoopSource )
 DECLARE_WXOSX_OPAQUE_CONST_CFREF( CTFont )
@@ -2617,6 +2617,7 @@ DECLARE_WXOSX_OPAQUE_CGREF( CGFont )
 typedef CGColorRef    WXCOLORREF;
 typedef CGImageRef    WXCGIMAGEREF;
 typedef CGContextRef  WXHDC;
+typedef CGContextRef  WXHBITMAP;
 
 /*
  * carbon
@@ -2634,7 +2635,7 @@ DECLARE_WXMAC_OPAQUE_REF( MenuRef )
 typedef IconRef WXHICON ;
 typedef HIShapeRef WXHRGN;
 
-#endif
+#endif // __WXMAC__
 
 #if defined(__WXMAC__)
 
@@ -2701,6 +2702,14 @@ typedef struct objc_object *WX_##klass
 
 #endif /*  (defined(__GNUC__) && defined(__APPLE__)) */
 
+DECLARE_WXCOCOA_OBJC_CLASS(NSArray);
+DECLARE_WXCOCOA_OBJC_CLASS(NSData);
+DECLARE_WXCOCOA_OBJC_CLASS(NSMutableArray);
+DECLARE_WXCOCOA_OBJC_CLASS(NSString);
+DECLARE_WXCOCOA_OBJC_CLASS(NSObject);
+
+#if wxOSX_USE_COCOA
+
 DECLARE_WXCOCOA_OBJC_CLASS(NSApplication);
 DECLARE_WXCOCOA_OBJC_CLASS(NSBitmapImageRep);
 DECLARE_WXCOCOA_OBJC_CLASS(NSBox);
@@ -2718,9 +2727,7 @@ DECLARE_WXCOCOA_OBJC_CLASS(NSLayoutManager);
 DECLARE_WXCOCOA_OBJC_CLASS(NSMenu);
 DECLARE_WXCOCOA_OBJC_CLASS(NSMenuExtra);
 DECLARE_WXCOCOA_OBJC_CLASS(NSMenuItem);
-DECLARE_WXCOCOA_OBJC_CLASS(NSMutableArray);
 DECLARE_WXCOCOA_OBJC_CLASS(NSNotification);
-DECLARE_WXCOCOA_OBJC_CLASS(NSObject);
 DECLARE_WXCOCOA_OBJC_CLASS(NSPanel);
 DECLARE_WXCOCOA_OBJC_CLASS(NSResponder);
 DECLARE_WXCOCOA_OBJC_CLASS(NSScrollView);
@@ -2736,30 +2743,27 @@ DECLARE_WXCOCOA_OBJC_CLASS(NSWindow);
 DECLARE_WXCOCOA_OBJC_CLASS(NSView);
 DECLARE_WXCOCOA_OBJC_CLASS(NSOpenGLContext);
 DECLARE_WXCOCOA_OBJC_CLASS(NSOpenGLPixelFormat);
-DECLARE_WXCOCOA_OBJC_CLASS( NSPrintInfo );
+DECLARE_WXCOCOA_OBJC_CLASS(NSPrintInfo);
 DECLARE_WXCOCOA_OBJC_CLASS(NSGestureRecognizer);
 DECLARE_WXCOCOA_OBJC_CLASS(NSPanGestureRecognizer);
 DECLARE_WXCOCOA_OBJC_CLASS(NSMagnificationGestureRecognizer);
 DECLARE_WXCOCOA_OBJC_CLASS(NSRotationGestureRecognizer);
 DECLARE_WXCOCOA_OBJC_CLASS(NSPressGestureRecognizer);
 DECLARE_WXCOCOA_OBJC_CLASS(NSTouch);
-#endif /* __WXMAC__ &__DARWIN__ */
-
-#ifdef __WXMAC__
-
-DECLARE_WXCOCOA_OBJC_CLASS(NSString);
-
-#if wxOSX_USE_COCOA
+DECLARE_WXCOCOA_OBJC_CLASS(NSPasteboard);
 
 typedef WX_NSWindow WXWindow;
 typedef WX_NSView WXWidget;
+typedef WX_NSImage WXImage;
 typedef WX_NSMenu WXHMENU;
 typedef WX_NSOpenGLPixelFormat WXGLPixelFormat;
 typedef WX_NSOpenGLContext WXGLContext;
+typedef WX_NSPasteboard OSXPasteboard;
 
 #elif wxOSX_USE_IPHONE
 
 DECLARE_WXCOCOA_OBJC_CLASS(UIWindow);
+DECLARE_WXCOCOA_OBJC_CLASS(UImage);
 DECLARE_WXCOCOA_OBJC_CLASS(UIView);
 DECLARE_WXCOCOA_OBJC_CLASS(UIFont);
 DECLARE_WXCOCOA_OBJC_CLASS(UIImage);
@@ -2767,12 +2771,15 @@ DECLARE_WXCOCOA_OBJC_CLASS(UIEvent);
 DECLARE_WXCOCOA_OBJC_CLASS(NSSet);
 DECLARE_WXCOCOA_OBJC_CLASS(EAGLContext);
 DECLARE_WXCOCOA_OBJC_CLASS(UIWebView);
+DECLARE_WXCOCOA_OBJC_CLASS(UIPasteboard);
 
 typedef WX_UIWindow WXWindow;
 typedef WX_UIView WXWidget;
+typedef WX_UIImage WXImage;
 typedef WX_EAGLContext WXGLContext;
 typedef WX_NSString WXGLPixelFormat;
 typedef WX_UIWebView OSXWebViewPtr;
+typedef WX_UIPasteboard WXOSXPasteboard;
 
 #endif
 
@@ -2812,6 +2819,7 @@ WX_MSW_DECLARE_HANDLE(HBITMAP);
 WX_MSW_DECLARE_HANDLE(HIMAGELIST);
 WX_MSW_DECLARE_HANDLE(HGLOBAL);
 WX_MSW_DECLARE_HANDLE(HDC);
+WX_MSW_DECLARE_HANDLE(DPI_AWARENESS_CONTEXT);
 typedef WXHINSTANCE WXHMODULE;
 
 #undef WX_MSW_DECLARE_HANDLE
@@ -2845,11 +2853,18 @@ typedef wxW64 long         WXLPARAM;
 typedef wxW64 long         WXLRESULT;
 #endif
 
+/*
+   This is defined for compatibility only, it's not really the same thing as
+   FARPROC.
+ */
 #if defined(__GNUWIN32__)
 typedef int             (*WXFARPROC)();
 #else
 typedef int             (__stdcall *WXFARPROC)();
 #endif
+
+typedef WXLRESULT (wxSTDCALL *WXWNDPROC)(WXHWND, WXUINT, WXWPARAM, WXLPARAM);
+
 #endif /*  __WIN32__ */
 
 
@@ -2968,24 +2983,30 @@ typedef const void* WXWidget;
 /*  macros to define a class without copy ctor nor assignment operator */
 /*  --------------------------------------------------------------------------- */
 
+#if defined(__cplusplus) && __cplusplus >= 201103L
+    #define wxMEMBER_DELETE = delete
+#else
+    #define wxMEMBER_DELETE
+#endif
+
 #define wxDECLARE_NO_COPY_CLASS(classname)      \
     private:                                    \
-        classname(const classname&);            \
-        classname& operator=(const classname&)
+        classname(const classname&) wxMEMBER_DELETE; \
+        classname& operator=(const classname&) wxMEMBER_DELETE
 
 #define wxDECLARE_NO_COPY_TEMPLATE_CLASS(classname, arg)  \
     private:                                              \
-        classname(const classname<arg>&);                 \
-        classname& operator=(const classname<arg>&)
+        classname(const classname<arg>&) wxMEMBER_DELETE; \
+        classname& operator=(const classname<arg>&) wxMEMBER_DELETE
 
 #define wxDECLARE_NO_COPY_TEMPLATE_CLASS_2(classname, arg1, arg2) \
     private:                                                      \
-        classname(const classname<arg1, arg2>&);                  \
-        classname& operator=(const classname<arg1, arg2>&)
+        classname(const classname<arg1, arg2>&) wxMEMBER_DELETE; \
+        classname& operator=(const classname<arg1, arg2>&) wxMEMBER_DELETE
 
 #define wxDECLARE_NO_ASSIGN_CLASS(classname)    \
     private:                                    \
-        classname& operator=(const classname&)
+        classname& operator=(const classname&) wxMEMBER_DELETE
 
 /* deprecated variants _not_ requiring a semicolon after them */
 #define DECLARE_NO_COPY_CLASS(classname) \
@@ -3015,6 +3036,8 @@ typedef const void* WXWidget;
     #pragma comment(linker, WX_CC_MANIFEST("x86"))
 #elif defined _M_X64
     #pragma comment(linker, WX_CC_MANIFEST("amd64"))
+#elif defined _M_ARM64
+    #pragma comment(linker, WX_CC_MANIFEST("arm64"))
 #elif defined _M_IA64
     #pragma comment(linker, WX_CC_MANIFEST("ia64"))
 #else
