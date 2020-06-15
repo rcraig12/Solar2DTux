@@ -284,3 +284,4 @@ external/JNLua/target/
 external/JNLua/.classpath
 external/JNLua/.project
 platform/linux/Solar2DSimulator/Resources/template_x64.tgz
+platform/linux/deb_simulator/solar2dtux.deb

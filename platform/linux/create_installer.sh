@@ -39,6 +39,6 @@ cp -u $BUILD_FOLDER/logo.png $DEBIAN_CONTENTS_INSTALL_FOLDER/Resources/
 rsync -r $SAMPLE_CODE_DIR/ $DEBIAN_CONTENTS_INSTALL_FOLDER/SampleCode/
 # make deb installer
 dpkg-deb --build $INSTALLER_FOLDER
-mv $INSTALLER_FOLDER.deb $BUILD_FOLDER/solar2d.deb
+mv $INSTALLER_FOLDER.deb $BUILD_FOLDER/solar2dtux.deb
 # remove installer directory
 rm -rf $INSTALLER_FOLDER
