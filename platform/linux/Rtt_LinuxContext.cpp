@@ -1510,6 +1510,11 @@ void MyGLCanvas::OnPaint(wxPaintEvent &WXUNUSED(event))
 {
 	if (m_winHeight > 0)
 	{
+		if (fContext && fContext->GetRuntime())
+		{
+			m_parent->getContext()->GetRuntime()->GetDisplay().Invalidate();
+		}
+
 		SwapBuffers();
 	}
 }
@@ -1531,9 +1536,9 @@ void MyGLCanvas::OnSize(wxSizeEvent &event)
 		return;
 	}
 
-	//Now we have a context, retrieve pointers to OGL functions
 	static bool isInited = false;
 
+	//Now we have a context, retrieve pointers to OGL functions
 	if (isInited == false)
 	{
 		isInited = true;
