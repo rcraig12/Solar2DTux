@@ -929,6 +929,7 @@ bool MyApp::OnInit()
 			else
 			{
 				fFrame->Show(true);
+				fFrame->CentreOnScreen(wxBOTH);
 			}
 			return true;
 		}
