@@ -3,15 +3,15 @@ SOURCE_LUA_DIR=../../external/lua-5.1.3/src/
 TARGET_LUA_DIR=$INSTALLER_ROOT/shared/include/lua/
 SOURCE_CORONALUA_DIR=../../librtt/Corona/
 TARGET_CORONALUA_DIR=$INSTALLER_ROOT/shared/include/corona/
-mkdir -p $TARGET_LUA_DIR
+#mkdir -p $TARGET_LUA_DIR
 mkdir -p $TARGET_CORONALUA_DIR
 
 # copy lua header files
-cp $SOURCE_LUA_DIR/lauxlib.h $TARGET_LUA_DIR
-cp $SOURCE_LUA_DIR/lauxlib.h $TARGET_LUA_DIR
-cp $SOURCE_LUA_DIR/lua.h  $TARGET_LUA_DIR
-cp $SOURCE_LUA_DIR/luaconf.h $TARGET_LUA_DIR
-cp $SOURCE_LUA_DIR/lualib.h $TARGET_LUA_DIR
+cp $SOURCE_LUA_DIR/lauxlib.h $TARGET_CORONALUA_DIR
+cp $SOURCE_LUA_DIR/lauxlib.h $TARGET_CORONALUA_DIR
+cp $SOURCE_LUA_DIR/lua.h  $TARGET_CORONALUA_DIR
+cp $SOURCE_LUA_DIR/luaconf.h $TARGET_CORONALUA_DIR
+cp $SOURCE_LUA_DIR/lualib.h $TARGET_CORONALUA_DIR
 
 # copy coronalua header files
 cp $SOURCE_CORONALUA_DIR/CoronaAssert.h $TARGET_CORONALUA_DIR

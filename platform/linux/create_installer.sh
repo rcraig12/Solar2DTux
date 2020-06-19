@@ -26,7 +26,7 @@ rsync -avz -q --exclude "android*" Solar2DSimulator/ $DEBIAN_CONTENTS_INSTALL_FO
 # rename simulator binary
 mv $DEBIAN_CONTENTS_INSTALL_FOLDER/Solar2DSimulator_release $DEBIAN_CONTENTS_INSTALL_FOLDER/Solar2DSimulator
 # remove the debug binary
-rm -rf Solar2DSimulator/Solar2DSimulator_debug
+rm -rf $DEBIAN_CONTENTS_INSTALL_FOLDER/Solar2DSimulator_debug
 # copy corona resources
 rsync -r Solar2DSimulator/Resources/ $DEBIAN_CONTENTS_INSTALL_FOLDER/Resources/
 # copy extensions
