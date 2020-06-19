@@ -36,6 +36,7 @@
 
 #include <wx/wx.h>
 #include "wx/activityindicator.h"
+#include <pwd.h>
 
 namespace Rtt
 {
@@ -285,8 +286,20 @@ namespace Rtt
 				break;
 
 			case MPlatform::kPluginsDir:
-				break;
+			{
+				const char *homeDir = NULL;
 
+				if ((homeDir = getenv("HOME")) == NULL)
+				{
+					homeDir = getpwuid(getuid())->pw_dir;
+				}
+
+				std::string pluginPath(homeDir);
+				pluginPath.append("/.Solar2D/Plugins");
+
+				PathForFile(filename, pluginPath.c_str(), result);
+				break;
+			}
 			case MPlatform::kDocumentsDir:
 			default:
 				PathForFile(filename, fDocumentsDir.GetString(), result);
