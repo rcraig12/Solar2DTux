@@ -353,12 +353,15 @@ if (#recentProjects > 0) then
 		if (lfs.attributes(projectIcon) ~= nil) then
 			simulator.setProjectResourceDirectory(projectDir .. "/")
 			icon = display.newImageRect(projectIconFile, system.ResourceDirectory, 40, 40)
-			icon.anchorX = 0
-			icon.anchorY = 0
-			icon.x = getStartedText.x + getStartedText.contentWidth + 180
-			icon.y = i == 1 and recentProjectsText.y + 50 or recentProjectsText.y + (50 * i)
+		else
+			icon = display.newImageRect("images/Icon.png", system.ResourceDirectory, 40, 40)
 		end
 
+		icon.anchorX = 0
+		icon.anchorY = 0
+		icon.x = getStartedText.x + getStartedText.contentWidth + 180
+		icon.y = i == 1 and recentProjectsText.y + 50 or recentProjectsText.y + (50 * i)
+		
 		local projectNameText = display.newText(
 		{
 			text = projectName,
