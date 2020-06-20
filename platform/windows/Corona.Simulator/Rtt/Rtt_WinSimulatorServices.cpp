@@ -55,6 +55,11 @@ bool WinSimulatorServices::OpenProject( const char *name ) const
 	return true;
 }
 
+bool WinSimulatorServices::CloneProject() const
+{
+	return false;
+}
+
 bool WinSimulatorServices::BuildProject( const char *platformName ) const
 {
 	TargetDevice::Platform platformType = TargetDevice::PlatformForString(platformName);
