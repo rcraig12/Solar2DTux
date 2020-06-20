@@ -21,8 +21,8 @@
 #define Rtt_LOCAL_BUILD_REVISION 0
 
 #define Rtt_BUILD_YEAR 2020
-#define Rtt_BUILD_MONTH 1
-#define Rtt_BUILD_DAY 1
+#define Rtt_BUILD_MONTH 6
+#define Rtt_BUILD_DAY 20
 #define Rtt_BUILD_REVISION Rtt_LOCAL_BUILD_REVISION
 
 // If this is a public release, this should be 0
@@ -45,7 +45,7 @@
 // 2010.9.26
 #define Rtt_STRING_BUILD_DATE Rtt_MACRO_TO_STRING( Rtt_BUILD_YEAR ) "." Rtt_MACRO_TO_STRING( Rtt_BUILD_MONTH ) "." Rtt_MACRO_TO_STRING( Rtt_BUILD_DAY ) 
 
-#define Rtt_STRING_COPYRIGHT	"Copyright (C) 2020 Solar2DTux."
+#define Rtt_STRING_COPYRIGHT	"Copyright (C) 2020 Solar2DTux, Solar2D."
 
 #define Rtt_STRING_CREDITS		"Walter Luh | Perry Clarke, Alex Frangeti, Sean Head, Ajay McCaleb, Tom Newman, Josh Quick, Vlad Shcherban, Michael Wallar"
 
