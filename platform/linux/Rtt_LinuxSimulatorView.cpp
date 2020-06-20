@@ -182,7 +182,7 @@ namespace Rtt
 		linuxtemplate += LUA_DIRSEP;
 		linuxtemplate += "Resources";
 		linuxtemplate += LUA_DIRSEP;
-		linuxtemplate += "linuxTemplate.tgz";
+		linuxtemplate += "template_x64.tgz";
 
 		// Package build settings parameters.
 		LinuxAppPackagerParams linuxBuilderParams(

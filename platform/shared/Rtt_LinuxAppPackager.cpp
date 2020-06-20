@@ -89,7 +89,6 @@ LinuxAppPackager::LinuxAppPackager( const MPlatformServices& services )
 {
 	lua_State *L = fVM;
 
-#ifdef Rtt_LINUX_ENV
 	Lua::RegisterModuleLoader( L, "lpeg", luaopen_lpeg );
 	Lua::RegisterModuleLoader( L, "dkjson", Lua::Open< luaload_dkjson > );
 	Lua::RegisterModuleLoader( L, "json", Lua::Open< luaload_json > );
@@ -103,21 +102,6 @@ LinuxAppPackager::LinuxAppPackager( const MPlatformServices& services )
 	Lua::RegisterModuleLoader( L, "mime.core", luaopen_mime_core );
 	Lua::RegisterModuleLoader( L, "mime", Lua::Open< CoronaPluginLuaLoad_mime > );
 	Lua::RegisterModuleLoader( L, "ltn12", Lua::Open< CoronaPluginLuaLoad_ltn12 > );
-#else
-	Lua::RegisterModuleLoader( L, "lpeg", luaopen_lpeg );
-	Lua::RegisterModuleLoader( L, "dkjson", Lua::Open< luaload_dkjson > );
-	Lua::RegisterModuleLoader( L, "json", Lua::Open< luaload_json > );
-	Lua::RegisterModuleLoader( L, "lfs", luaopen_lfs );
-	Lua::RegisterModuleLoader( L, "socket.core", luaopen_socket_core );
-	Lua::RegisterModuleLoader( L, "socket", Lua::Open< luaload_luasocket_socket > );
-	Lua::RegisterModuleLoader( L, "socket.ftp", Lua::Open< luaload_luasocket_ftp > );
-	Lua::RegisterModuleLoader( L, "socket.headers", Lua::Open< luaload_luasocket_headers > );
-	Lua::RegisterModuleLoader( L, "socket.http", Lua::Open< luaload_luasocket_http > );
-	Lua::RegisterModuleLoader( L, "socket.url", Lua::Open< luaload_luasocket_url > );
-	Lua::RegisterModuleLoader( L, "mime.core", luaopen_mime_core );
-	Lua::RegisterModuleLoader( L, "mime", Lua::Open< luaload_luasocket_mime > );
-	Lua::RegisterModuleLoader( L, "ltn12", Lua::Open< luaload_luasocket_ltn12 > );
-#endif
 
 	HTTPClient::registerFetcherModuleLoaders(L);
 	Lua::DoBuffer( fVM, & luaload_linuxPackageApp, NULL );
@@ -237,7 +221,7 @@ int LinuxAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
 		String templateLocation(linuxParams->fDebTemplate.GetString());
 		if(templateLocation.IsEmpty())
 		{
-			fServices.Platform().PathForFile( "linuxTemplate.tgz", MPlatform::kSystemResourceDir, 0, templateLocation );
+			fServices.Platform().PathForFile( "template_x64.tgz", MPlatform::kSystemResourceDir, 0, templateLocation );
 		}
 		lua_pushstring( L, templateLocation.GetString() );
 		lua_setfield( L, -2, "templateLocation" );

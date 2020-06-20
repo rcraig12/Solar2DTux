@@ -16,5 +16,4 @@ all:
 
 clean:
 	rm -f $(OutDir)/Resources/$(ProjectName).tgz
-	rm -f $(OutDir)/Resources/
 	@"$(MAKE)" -f "linux_rtt.mk" clean
