@@ -257,11 +257,11 @@ CBuildResult appWebBuild(
 
 	// Package build settings parameters.
 	Rtt::WebAppPackagerParams params(
-		applicationName, versionName, NULL, NULL,	
-		srcDir,	dstDir,	NULL,  
+		applicationName, versionName, NULL, NULL,
+		srcDir, dstDir, NULL,
 		targetPlatform, targetVersion,
 		Rtt::TargetDevice::kWebGenericBrowser, customBuildId,
-		NULL, bundleId, isDistribution, useStandartResources, NULL, createFBInstantArchive);
+		NULL, bundleId, isDistribution, useStandartResources, false, NULL, false);
 
 	// Select build template
 	Rtt::Runtime* runtimePointer = pSim->GetRuntime();
@@ -358,7 +358,7 @@ CBuildResult appLinuxBuild(
 		srcDir,	dstDir,	NULL,  
 		targetPlatform, targetVersion,
 		Rtt::TargetDevice::kLinux, customBuildId,
-		NULL, bundleId, isDistribution, NULL, useStandartResources);
+		NULL, bundleId, isDistribution, NULL, useStandartResources, false);
 
 	// Select build template
 	Rtt::Runtime* runtimePointer = pSim->GetRuntime();
