@@ -40,7 +40,7 @@ namespace Rtt
 	{
 	}
 
-	void LinuxSimulatorView::onAndroidBuild(wxCommandEvent &e)
+	void LinuxSimulatorView::OnAndroidBuild(wxCommandEvent &e)
 	{
 		int rc;
 
@@ -139,7 +139,7 @@ namespace Rtt
 		dial->ShowModal();
 	}
 
-	void LinuxSimulatorView::onLinuxBuild(wxCommandEvent &e)
+	void LinuxSimulatorView::OnLinuxBuild(wxCommandEvent &e)
 	{
 		linuxBuildParams *params = (linuxBuildParams *)e.GetEventUserData();
 		CoronaAppContext *ctx = params->fCtx;
@@ -178,11 +178,8 @@ namespace Rtt
 		const char *versionName = "1.0.0";
 		bool isDistribution = true;
 
-		std::string linuxtemplate = platform->getInstallDir();
-		linuxtemplate += LUA_DIRSEP;
-		linuxtemplate += "Resources";
-		linuxtemplate += LUA_DIRSEP;
-		linuxtemplate += "template_x64.tgz";
+		std::string linuxtemplate(platform->getInstallDir());
+		linuxtemplate.append("/Resources/template_x64.tgz");
 
 		// Package build settings parameters.
 		LinuxAppPackagerParams linuxBuilderParams(
@@ -190,7 +187,7 @@ namespace Rtt
 			srcDir, dstDir, NULL,
 			targetPlatform, targetVersion,
 			Rtt::TargetDevice::kLinux, customBuildId,
-			NULL, bundleId, isDistribution, NULL, useStandardResources, runAfterBuild);
+			NULL, bundleId, isDistribution, NULL, useStandardResources, runAfterBuild, false);
 
 		// Select build template
 		Rtt::Runtime *runtimePointer = ctx->GetRuntime();
@@ -206,7 +203,7 @@ namespace Rtt
 		tmp += LUA_DIRSEP;
 		tmp += "CoronaLabs";
 
-		// Have the server build the app. (Warning! This is a long blocking call.)
+		// build the app. (Warning! This is blocking call.)
 		platform->SetActivityIndicator(true);
 		int rc = packager.Build(&linuxBuilderParams, tmp.c_str());
 		platform->SetActivityIndicator(false);
@@ -239,7 +236,48 @@ namespace Rtt
 		}
 	}
 
-	void LinuxSimulatorView::onWebBuild(wxCommandEvent &e)
+	void LinuxSimulatorView::OnLinuxPluginGet(const char *appPath, const char *appName, LinuxPlatform *platform)
+	{
+		const char *identity = "no-identity";
+
+		// Create the app packager.
+		MPlatformServices *service = new LinuxPlatformServices(platform);
+		LinuxAppPackager packager(*service);
+
+		// Read the application's "build.settings" file.
+		bool wasSuccessful = packager.ReadBuildSettings(appPath);
+		if (!wasSuccessful)
+		{
+			return;
+		}
+
+		int targetVersion = Rtt::TargetDevice::kLinux;
+		const TargetDevice::Platform targetPlatform(TargetDevice::Platform::kLinuxPlatform);
+
+		std::string linuxtemplate(platform->getInstallDir());
+		linuxtemplate.append("/Resources/template_x64.tgz");
+
+		// Package build settings parameters.
+		LinuxAppPackagerParams linuxBuilderParams(
+			appName, NULL, identity, NULL,
+			appPath, NULL, NULL,
+			targetPlatform, targetVersion,
+			Rtt::TargetDevice::kLinux, NULL,
+			NULL, NULL, false, NULL, false, false, true);
+
+		const char kBuildSettings[] = "build.settings";
+		Rtt::String buildSettingsPath;
+		platform->PathForFile(kBuildSettings, Rtt::MPlatform::kResourceDir, Rtt::MPlatform::kTestFileExists, buildSettingsPath);
+		linuxBuilderParams.SetBuildSettingsPath(buildSettingsPath.GetString());
+
+		std::string tmp = Rtt_GetSystemTempDirectory();
+		tmp += LUA_DIRSEP;
+		tmp += "CoronaLabs";
+
+		int rc = packager.Build(&linuxBuilderParams, tmp.c_str());
+	}
+
+	void LinuxSimulatorView::OnWebBuild(wxCommandEvent &e)
 	{
 		webBuildParams *params = (webBuildParams *)e.GetEventUserData();
 		CoronaAppContext *ctx = params->fCtx;
@@ -326,7 +364,7 @@ namespace Rtt
 		dial->ShowModal();
 	}
 
-	void LinuxSimulatorView::onCancel(wxCommandEvent &e)
+	void LinuxSimulatorView::OnCancel(wxCommandEvent &e)
 	{
 		cancelBuild *eb = (cancelBuild *)e.GetEventUserData();
 		eb->fDlg->Close();
@@ -364,11 +402,11 @@ namespace Rtt
 		wxCheckBox *createFBInstance = new wxCheckBox(panel, -1, "Create FB Instant archive", wxPoint(x2, y));
 
 		wxButton *okButton = new wxButton(OpenDialog, -1, wxT("Build"), wxDefaultPosition, wxSize(70, 30));
-		okButton->Bind(wxEVT_BUTTON, &LinuxSimulatorView::onWebBuild, wxID_ANY, wxID_ANY, new webBuildParams(OpenDialog, ctx, useStandardResources, runAfterBuild, createFBInstance));
+		okButton->Bind(wxEVT_BUTTON, &LinuxSimulatorView::OnWebBuild, wxID_ANY, wxID_ANY, new webBuildParams(OpenDialog, ctx, useStandardResources, runAfterBuild, createFBInstance));
 		okButton->SetDefault();
 
 		wxButton *closeButton = new wxButton(OpenDialog, -1, wxT("Cancel"), wxDefaultPosition, wxSize(70, 30));
-		closeButton->Bind(wxEVT_BUTTON, &LinuxSimulatorView::onCancel, wxID_ANY, wxID_ANY, new cancelBuild(OpenDialog)); // cancel
+		closeButton->Bind(wxEVT_BUTTON, &LinuxSimulatorView::OnCancel, wxID_ANY, wxID_ANY, new cancelBuild(OpenDialog)); // cancel
 
 		hbox->Add(okButton, 1);
 		hbox->Add(closeButton, 1, wxLEFT, 5);
@@ -412,11 +450,11 @@ namespace Rtt
 		wxCheckBox *runAfterBuild = new wxCheckBox(panel, -1, "Run after build?", wxPoint(x2, y));
 
 		wxButton *okButton = new wxButton(OpenDialog, -1, wxT("Build"), wxDefaultPosition, wxSize(70, 30));
-		okButton->Bind(wxEVT_BUTTON, &LinuxSimulatorView::onLinuxBuild, wxID_ANY, wxID_ANY, new linuxBuildParams(OpenDialog, ctx, useStandardResources, runAfterBuild));
+		okButton->Bind(wxEVT_BUTTON, &LinuxSimulatorView::OnLinuxBuild, wxID_ANY, wxID_ANY, new linuxBuildParams(OpenDialog, ctx, useStandardResources, runAfterBuild));
 		okButton->SetDefault();
 
 		wxButton *closeButton = new wxButton(OpenDialog, -1, wxT("Cancel"), wxDefaultPosition, wxSize(70, 30));
-		closeButton->Bind(wxEVT_BUTTON, &LinuxSimulatorView::onCancel, wxID_ANY, wxID_ANY, new cancelBuild(OpenDialog)); // cancel
+		closeButton->Bind(wxEVT_BUTTON, &LinuxSimulatorView::OnCancel, wxID_ANY, wxID_ANY, new cancelBuild(OpenDialog)); // cancel
 
 		hbox->Add(okButton, 1);
 		hbox->Add(closeButton, 1, wxLEFT, 5);
@@ -485,12 +523,12 @@ namespace Rtt
 		new wxCheckBox(panel, -1, "Create Live Build", wxPoint(x2, y));
 
 		wxButton *okButton = new wxButton(OpenDialog, -1, wxT("Build"), wxDefaultPosition, wxSize(70, 30));
-		okButton->Bind(wxEVT_BUTTON, &LinuxSimulatorView::onAndroidBuild, wxID_ANY, wxID_ANY,
+		okButton->Bind(wxEVT_BUTTON, &LinuxSimulatorView::OnAndroidBuild, wxID_ANY, wxID_ANY,
 					   new androidBuildParams(OpenDialog, ctx, wxKeystore, wxPackage));
 		okButton->SetDefault();
 
 		wxButton *closeButton = new wxButton(OpenDialog, -1, wxT("Cancel"), wxDefaultPosition, wxSize(70, 30));
-		closeButton->Bind(wxEVT_BUTTON, &LinuxSimulatorView::onCancel, wxID_ANY, wxID_ANY, new cancelBuild(OpenDialog)); // cancel
+		closeButton->Bind(wxEVT_BUTTON, &LinuxSimulatorView::OnCancel, wxID_ANY, wxID_ANY, new cancelBuild(OpenDialog)); // cancel
 
 		hbox->Add(okButton, 1);
 		hbox->Add(closeButton, 1, wxLEFT, 5);

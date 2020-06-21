@@ -1365,6 +1365,12 @@ void MyFrame::OnRelaunch(wxCommandEvent &event)
 		watchFolder(fContext->getAppPath(), fContext->getAppName().c_str());
 
 		bool fullScreen = fContext->Init();
+
+		if (fContext->getAppName() != "homescreen")
+		{
+			LinuxSimulatorView::OnLinuxPluginGet(fContext->getAppPath(), fContext->getAppName().c_str(), fContext->getPlatform());
+		}
+
 		fContext->loadApp(m_mycanvas);
 		resetSize();
 		m_mycanvas->fContext = fContext;
@@ -1415,6 +1421,12 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 	}
 
 	bool fullScreen = fContext->Init();
+
+	if (fContext->getAppName() != "homescreen")
+	{
+		LinuxSimulatorView::OnLinuxPluginGet(fContext->getAppPath(), fContext->getAppName().c_str(), fContext->getPlatform());
+	}
+
 	fContext->loadApp(m_mycanvas);
 	resetSize();
 	m_mycanvas->fContext = fContext;

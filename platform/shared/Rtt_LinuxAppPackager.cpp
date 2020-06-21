@@ -128,6 +128,7 @@ int LinuxAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
 
 	bool useStandardResources = params->fUseStandardResources;
 	bool runAfterBuild = params->fRunAfterBuild;
+	bool onlyGetPlugins = params->fOnlyGetPlugins;
 
 	const char tmpTemplate[] = "CLtmpXXXXXX";
 	char tmpDir[kDefaultNumBytes]; Rtt_ASSERT(kDefaultNumBytes > (strlen(tmpDirBase) + strlen(tmpTemplate)));
@@ -200,6 +201,9 @@ int LinuxAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
 
 		lua_pushboolean(L, runAfterBuild);
 		lua_setfield(L, -2, "runAfterBuild");
+		
+		lua_pushboolean(L, onlyGetPlugins);
+		lua_setfield(L, -2, "onlyGetPlugins");
 
 		lua_pushinteger(L, Rtt_BUILD_YEAR);
 		lua_setfield(L, -2, "buildYear");

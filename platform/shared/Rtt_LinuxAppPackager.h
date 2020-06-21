@@ -45,7 +45,8 @@ class LinuxAppPackagerParams : public AppPackagerParams
 			bool isDistributionBuild,
 			const char * debtemplate,
 			bool useStandardResources,
-			bool runAfterBuild
+			bool runAfterBuild,
+			bool onlyGetPlugins
 			)
 		: AppPackagerParams( 
 			appName, version, identity, provisionFile, srcDir, dstDir, sdkRoot,
@@ -54,6 +55,7 @@ class LinuxAppPackagerParams : public AppPackagerParams
 		, fDebTemplate(debtemplate)
 		, fUseStandardResources(useStandardResources)
 		, fRunAfterBuild(runAfterBuild)
+		, fOnlyGetPlugins(onlyGetPlugins)
 		{
 		}
 
@@ -61,6 +63,7 @@ class LinuxAppPackagerParams : public AppPackagerParams
 		const String fDebTemplate;
 		const bool fUseStandardResources;
 		const bool fRunAfterBuild;
+		const bool fOnlyGetPlugins;
 };
 
 class LinuxAppPackager : public PlatformAppPackager

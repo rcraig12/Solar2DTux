@@ -78,12 +78,14 @@ namespace Rtt
 		static void OnBuildForWeb(CoronaAppContext *ctx);
 		static void OnBuildForAndroid(CoronaAppContext *ctx);
 
-		static void onWebBuild(wxCommandEvent &);
-		static void onLinuxBuild(wxCommandEvent &);
-		static void onAndroidBuild(wxCommandEvent &);
+		static void OnWebBuild(wxCommandEvent &);
+		static void OnLinuxBuild(wxCommandEvent &);
+		static void OnAndroidBuild(wxCommandEvent &);
 
-		static void onCancel(wxCommandEvent &);
-		static void appWebBuild(CoronaAppContext *ctx);
+		static void OnLinuxPluginGet(const char *appPath, const char *appName, LinuxPlatform *platform);
+
+		static void OnCancel(wxCommandEvent &);
+		static void AppWebBuild(CoronaAppContext *ctx);
 
 		struct androidBuildParams : public wxObject
 		{
