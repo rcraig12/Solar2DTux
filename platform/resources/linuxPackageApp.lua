@@ -468,15 +468,15 @@ local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
 			end
 
 			if (dirExists(downloadDir)) then
-				os.remove(downloadDir)
+				os.execute(sFormat("rm -rf %s", downloadDir))
 			end
 		end
 
 		removeOldPlugin()
-		local success = lfs.mkdir(downloadDir)
+		local success, reason = lfs.mkdir(downloadDir)
 
 		if (not success) then
-			printf("%s failed to create directory %s - Aborting", pluginMessagePrefix, downloadDir)
+			printf("%s failed to create directory %s, reason: %s - Aborting", pluginMessagePrefix, downloadDir, reason)
 			return
 		end
 
