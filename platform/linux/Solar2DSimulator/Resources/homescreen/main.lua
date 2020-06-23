@@ -354,7 +354,7 @@ if (#recentProjects > 0) then
 			simulator.setProjectResourceDirectory(projectDir .. "/")
 			icon = display.newImageRect(projectIconFile, system.ResourceDirectory, 40, 40)
 		else
-			icon = display.newImageRect("images/Icon.png", system.ResourceDirectory, 40, 40)
+			icon = display.newImageRect("Icon.png", system.ResourceDirectory, 40, 40)
 		end
 
 		icon.anchorX = 0
