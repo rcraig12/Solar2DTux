@@ -260,6 +260,40 @@ namespace Rtt
 			switch (baseDir)
 			{
 			case MPlatform::kResourceDir:
+			{
+				PathForFile(filename, fResourceDir.GetString(), result);
+				String result1;
+				String result2;
+
+				if (filename != NULL && FileExists(result.GetString()) == false)
+				{
+					result1.Set(result);
+					// look for Resources dir
+					String resDir;
+					resDir.Append(fInstallDir);
+					resDir.Append("/Resources");
+					PathForFile(filename, resDir.GetString(), result);
+					result2.Set(result);
+				}
+
+				if (filename != NULL && FileExists(result.GetString()) == false)
+				{
+					const char *homeDir = NULL;
+
+					if ((homeDir = getenv("HOME")) == NULL)
+					{
+						homeDir = getpwuid(getuid())->pw_dir;
+					}
+
+					// look in the plugins dir
+					String resDir;
+					resDir.Append(homeDir);
+					resDir.Append("/.Solar2D/Plugins/");
+					PathForFile(filename, resDir.GetString(), result);
+					Rtt_WARN_SIM(!filename || FileExists(result.GetString()), ("WARNING: Cannot create path for resource file '%s (%s || %s || %s)'. File does not exist.\n\n", filename, result1.GetString(), result2.GetString(), result.GetString()));
+				}
+				break;
+			}
 			case MPlatform::kSystemResourceDir:
 				PathForFile(filename, fResourceDir.GetString(), result);
 				if (filename != NULL && FileExists(result.GetString()) == false)
