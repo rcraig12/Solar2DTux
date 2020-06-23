@@ -79,7 +79,6 @@ namespace Rtt
 // following function which loads the bytecodes via luaL_loadbuffer.
 int luaload_linuxPackageApp(lua_State* L);
 
-
 // ----------------------------------------------------------------------------
 
 #define kDefaultNumBytes 128
@@ -104,6 +103,7 @@ LinuxAppPackager::LinuxAppPackager( const MPlatformServices& services )
 	Lua::RegisterModuleLoader( L, "mime", Lua::Open< CoronaPluginLuaLoad_mime > );
 	Lua::RegisterModuleLoader( L, "ltn12", Lua::Open< CoronaPluginLuaLoad_ltn12 > );
 #endif
+
 	HTTPClient::registerFetcherModuleLoaders(L);
 	Lua::DoBuffer( fVM, & luaload_linuxPackageApp, NULL );
 }
@@ -236,6 +236,10 @@ int LinuxAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
 	lua_pushcfunction(L, Rtt::processExecute);
 	lua_setglobal(L, "processExecute");
 #endif
+	lua_pushcfunction(L, HTTPClient::fetch);
+	lua_setglobal(L, "_fetch");
+	lua_pushcfunction(L, HTTPClient::download);
+	lua_setglobal(L, "_download");
 	lua_pushcfunction(L, Rtt::prn);
 	lua_setglobal(L, "myprint");
 	lua_pushcfunction(L, Rtt::CompileScriptsAndMakeCAR);
@@ -261,7 +265,6 @@ int LinuxAppPackager::Build(AppPackagerParams* _params, const char* tmpDirBase)
 
 	// Clean up intermediate files
 	rmdir(tmpDir);
-
 
 	return result;
 }
