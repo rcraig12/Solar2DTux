@@ -499,9 +499,6 @@ namespace Rtt
 
 	bool CoronaAppContext::Init()
 	{
-		// Initializes all available image handlers
-		wxInitAllImageHandlers();
-
 		const char *homeDir = NULL;
 
 		if ((homeDir = getenv("HOME")) == NULL)
@@ -893,6 +890,9 @@ bool MyApp::OnInit()
 				fFrame->Show(true);
 				fFrame->CentreOnScreen(wxBOTH);
 			}
+
+			wxInitAllImageHandlers();
+
 			return true;
 		}
 	}
