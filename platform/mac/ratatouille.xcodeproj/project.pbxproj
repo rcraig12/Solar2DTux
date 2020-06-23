@@ -1609,7 +1609,6 @@
 		F53594BE1B6185EA00C8CAAD /* Rtt_TextureResourceCanvasAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = F53594B61B6185EA00C8CAAD /* Rtt_TextureResourceCanvasAdapter.h */; };
 		F53C328C2404E2A300BC2BED /* CoronaBuilderPluginCollector.lua in Sources */ = {isa = PBXBuildFile; fileRef = F53C32832404E25600BC2BED /* CoronaBuilderPluginCollector.lua */; };
 		F53C328D2404E2AB00BC2BED /* CoronaBuilderPluginCollector.lua in Sources */ = {isa = PBXBuildFile; fileRef = F53C32832404E25600BC2BED /* CoronaBuilderPluginCollector.lua */; };
-		F545475321178F7400D5EDB7 /* linuxtemplate.tar.gz in Resources */ = {isa = PBXBuildFile; fileRef = F545474A21178F7400D5EDB7 /* linuxtemplate.tar.gz */; };
 		F54D1E121CA35968000B280E /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F54D1E111CA35968000B280E /* Rtt_AppleFont.mm */; };
 		F54D1E131CA35968000B280E /* Rtt_AppleFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = F54D1E111CA35968000B280E /* Rtt_AppleFont.mm */; };
 		F54D8E2A1B4B29120063F98B /* ForceFeedback.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F54D8E291B4B29120063F98B /* ForceFeedback.framework */; };
@@ -1637,7 +1636,6 @@
 		F58CA276245651B2002191EA /* Rtt_HTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = F58CA26D245651B2002191EA /* Rtt_HTTPClient.h */; };
 		F58CA27824565212002191EA /* Rtt_HTTPClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = F58CA27724565212002191EA /* Rtt_HTTPClient.mm */; };
 		F58CA27A24565579002191EA /* Rtt_HTTPClientCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F58CA27924565578002191EA /* Rtt_HTTPClientCommon.cpp */; };
-		F5A633EE216D74E10052364E /* raspbiantemplate.tar.gz in Resources */ = {isa = PBXBuildFile; fileRef = F5A633E5216D74E10052364E /* raspbiantemplate.tar.gz */; };
 		F5A752271BFA40F000CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A752251BFA40F000CCDB94 /* CoronaLuaObjCHelper.h */; };
 		F5A752281BFA40F000CCDB94 /* CoronaLuaObjCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A752251BFA40F000CCDB94 /* CoronaLuaObjCHelper.h */; };
 		F5A752291BFA40F000CCDB94 /* CoronaLuaObjCHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5A752261BFA40F000CCDB94 /* CoronaLuaObjCHelper.mm */; };
@@ -6469,7 +6467,6 @@
 				00B73D6A12B720CA0057F594 /* build.properties in Resources */,
 				C220A3B41BFBED7F00161EC8 /* xcodesim_syslog.sh in Resources */,
 				00B73D6B12B720CA0057F594 /* build.xml in Resources */,
-				F5A633EE216D74E10052364E /* raspbiantemplate.tar.gz in Resources */,
 				C2427BFC1919481B0011CE7A /* CustomDevice.xib in Resources */,
 				A40A90631BD99B0E001D2038 /* TVOSAppBuild.xib in Resources */,
 				00B73DF512B726350057F594 /* MainMenu.nib in Resources */,
@@ -6484,7 +6481,6 @@
 				00B73E2412B727240057F594 /* Password.xib in Resources */,
 				00B73E2512B727240057F594 /* Preferences.xib in Resources */,
 				00E14F6513428CBF0089C390 /* Localizable.strings in Resources */,
-				F545475321178F7400D5EDB7 /* linuxtemplate.tar.gz in Resources */,
 				C2C756D618CE49CF0018900A /* widget_theme_ios@2x.png in Resources */,
 				C2C756D718CE49CF0018900A /* widget_theme_onOff_mask.png in Resources */,
 				C21D9DBD1BF67C300042C5A9 /* android_syslog.sh in Resources */,

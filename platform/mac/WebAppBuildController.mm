@@ -260,7 +260,7 @@ using namespace Rtt;
 
 	int targetVersion = Rtt::TargetDevice::kWeb1_0;
 	const char * customBuildId = packager->GetCustomBuildId();
-	WebAppPackagerParams * params = new WebAppPackagerParams(name, versionname, NULL, NULL, srcDir, dstDir,	NULL, TargetDevice::kWebPlatform, targetVersion, TargetDevice::kWebGenericBrowser, customBuildId, NULL, "bundleId", true, useStandartResources, NULL, createFBInstantArchive );
+	WebAppPackagerParams * params = new WebAppPackagerParams(name, versionname, NULL, NULL, srcDir, dstDir,	NULL, TargetDevice::kWebPlatform, targetVersion, TargetDevice::kWebGenericBrowser, customBuildId, NULL, "bundleId", true, useStandartResources, false, NULL, createFBInstantArchive);
 	
 	NSString *kBuildSettings = @"build.settings";
 	params->SetBuildSettingsPath( [[self.projectPath stringByAppendingPathComponent:kBuildSettings] UTF8String]);

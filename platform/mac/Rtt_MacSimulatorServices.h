@@ -37,6 +37,7 @@ class MacSimulatorServices : public MSimulatorServices
 
 	// MSimulatorServices
 	public:
+		virtual bool CloneProject() const;
 		virtual bool NewProject() const;
 		virtual bool OpenProject( const char *name ) const;
 		virtual bool BuildProject( const char *platform ) const;

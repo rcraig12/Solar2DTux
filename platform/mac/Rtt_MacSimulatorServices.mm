@@ -53,6 +53,11 @@ MacSimulatorServices::~MacSimulatorServices()
 {
 }
 
+bool MacSimulatorServices::CloneProject() const
+{
+	return false;
+}
+
 bool
 MacSimulatorServices::NewProject() const
 {

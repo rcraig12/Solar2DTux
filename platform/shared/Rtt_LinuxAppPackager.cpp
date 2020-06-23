@@ -89,6 +89,7 @@ LinuxAppPackager::LinuxAppPackager( const MPlatformServices& services )
 {
 	lua_State *L = fVM;
 
+#if defined(Rtt_LINUX_ENV)
 	Lua::RegisterModuleLoader( L, "lpeg", luaopen_lpeg );
 	Lua::RegisterModuleLoader( L, "dkjson", Lua::Open< luaload_dkjson > );
 	Lua::RegisterModuleLoader( L, "json", Lua::Open< luaload_json > );
@@ -102,7 +103,7 @@ LinuxAppPackager::LinuxAppPackager( const MPlatformServices& services )
 	Lua::RegisterModuleLoader( L, "mime.core", luaopen_mime_core );
 	Lua::RegisterModuleLoader( L, "mime", Lua::Open< CoronaPluginLuaLoad_mime > );
 	Lua::RegisterModuleLoader( L, "ltn12", Lua::Open< CoronaPluginLuaLoad_ltn12 > );
-
+#endif
 	HTTPClient::registerFetcherModuleLoaders(L);
 	Lua::DoBuffer( fVM, & luaload_linuxPackageApp, NULL );
 }
