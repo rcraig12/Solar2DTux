@@ -9,24 +9,30 @@
 
 processExecute = processExecute or os.execute
 
-local lfs = require "lfs"
-local json = require "json"
-local http = require( "socket.http" )
+local lfs = require("lfs")
+local json = require("json")
+local http = require("socket.http")
+local ltn12 = require("ltn12")
 local debugBuildProcess = 0
-
-local serverBackend = 'https://backendapi.coronalabs.com'
 local dirSeparator = package.config:sub(1,1)
-local windows = (dirSeparator == '\\')
 local buildSettings = nil
+local sFormat = string.format
+local linuxBuilderPrefx = "Linux Builder:"
 
-function file_exists(name)
-   local f = io.open(name,"r")
-   if f~=nil then io.close(f) return true else return false end
+local function fileExists(name)
+	local f = io.open(name, "r")
+
+	if (f ~= nil) then
+		io.close(f) return true
+	else 
+		return false 
+	end
 end
 
 -- check if /usr/bin/tar exists, it is in Mac but not in Linux
 local tar = "/usr/bin/tar"
-if file_exists(tar) == false then
+
+if (fileExists(tar) == false) then
 	tar = "tar"   -- for linux
 end
 
@@ -35,145 +41,177 @@ local function log(...)
 end
 
 local function log3(...)
-	if debugBuildProcess >= 3 then
+	if (debugBuildProcess >= 3) then
 		myprint(...)
 	end
 end
 
-local function quoteString( str )
+local function quoteString(str)
 	str = str:gsub('\\', '\\\\')
 	str = str:gsub('"', '\\"')
-	return "\"" .. str .. "\""
+
+	return sFormat("\"%s\"", str)
 end
 
-function dir_exists(path)
+local function dirExists(path)
     local cd = lfs.currentdir()
-    local is = lfs.chdir(path) and true or false
-    lfs.chdir(cd)
+	local is = lfs.chdir(path) and true or false
+
+	lfs.chdir(cd)
+	
     return is
 end
 
-function globToPattern(g)
-  local p = "^"  -- pattern being built
-  local i = 0    -- index in g
-  local c        -- char at index i in g.
+local function globToPattern(g)
+	local p = "^"  -- pattern being built
+	local i = 0    -- index in g
+	local c        -- char at index i in g.
 
-  -- unescape glob char
-  local function unescape()
-    if c == '\\' then
-      i = i + 1; c = g:sub(i,i)
-      if c == '' then
-        p = '[^]'
-        return false
-      end
-    end
-    return true
-  end
+	-- unescape glob char
+	local function unescape()
+		if (c == '\\') then
+			i = i + 1; c = g:sub(i,i)
+			
+			if (c == '') then
+				p = '[^]'
+				return false
+			end
+		end
+		
+		return true
+	end
 
-  -- escape pattern char
-  local function escape(c)
-    return c:match("^%w$") and c or '%' .. c
-  end
+	-- escape pattern char
+	local function escape(c)
+		return c:match("^%w$") and c or '%' .. c
+	end
 
-  -- Convert tokens at end of charset.
-  local function charset_end()
-    while 1 do
-      if c == '' then
-        p = '[^]'
-        return false
-      elseif c == ']' then
-        p = p .. ']'
-        break
-      else
-        if not unescape() then break end
-        local c1 = c
-        i = i + 1; c = g:sub(i,i)
-        if c == '' then
-          p = '[^]'
-          return false
-        elseif c == '-' then
-          i = i + 1; c = g:sub(i,i)
-          if c == '' then
-            p = '[^]'
-            return false
-          elseif c == ']' then
-            p = p .. escape(c1) .. '%-]'
-            break
-          else
-            if not unescape() then break end
-            p = p .. escape(c1) .. '-' .. escape(c)
-          end
-        elseif c == ']' then
-          p = p .. escape(c1) .. ']'
-          break
-        else
-          p = p .. escape(c1)
-          i = i - 1 -- put back
-        end
-      end
-      i = i + 1; c = g:sub(i,i)
-    end
-    return true
-  end
+	-- Convert tokens at end of charset.
+	local function charsetEnd()
+		while 1 do
+			if (c == '') then
+				p = '[^]'
+				return false
+			elseif (c == ']') then
+				p = p .. ']'
+				break
+			else
+				if (not unescape()) then 
+					break 
+				end
+				
+				local c1 = c
+				i = i + 1; c = g:sub(i,i)
+				
+				if (c == '') then
+					p = '[^]'
+					return false
+				elseif (c == '-') then
+					i = i + 1; c = g:sub(i,i)
+					
+					if (c == '') then
+						p = '[^]'
+						return false
+					elseif (c == ']') then
+						p = p .. escape(c1) .. '%-]'
+						break
+					else
+						if (not unescape()) then 
+							break 
+						end
+					
+						p = p .. escape(c1) .. '-' .. escape(c)
+					end
+				elseif (c == ']') then
+					p = p .. escape(c1) .. ']'
+					break
+				else
+					p = p .. escape(c1)
+					i = i - 1 -- put back
+				end
+			end
+			
+			i = i + 1; c = g:sub(i,i)
+		end
+		
+		return true
+	end
 
-  -- Convert tokens in charset.
-  local function charset()
-    i = i + 1; c = g:sub(i,i)
-    if c == '' or c == ']' then
-      p = '[^]'
-      return false
-    elseif c == '^' or c == '!' then
-      i = i + 1; c = g:sub(i,i)
-      if c == ']' then
-        -- ignored
-      else
-        p = p .. '[^'
-        if not charset_end() then return false end
-      end
-    else
-      p = p .. '['
-      if not charset_end() then return false end
-    end
-    return true
-  end
+	-- Convert tokens in charset.
+	local function charset()
+		i = i + 1; c = g:sub(i,i)
+		
+		if (c == '' or c == ']') then
+			p = '[^]'
+			return false
+		elseif (c == '^' or c == '!') then
+			i = i + 1; c = g:sub(i,i)
+			
+			if (c == ']') then
+				-- ignored
+			else
+				p = p .. '[^'
 
-  -- Convert tokens.
-  while 1 do
-    i = i + 1; c = g:sub(i,i)
-    if c == '' then
-      p = p .. '$'
-      break
-    elseif c == '?' then
-      p = p .. '.'
-    elseif c == '*' then
-      p = p .. '.*'
-    elseif c == '[' then
-      if not charset() then break end
-    elseif c == '\\' then
-      i = i + 1; c = g:sub(i,i)
-      if c == '' then
-        p = p .. '\\$'
-        break
-      end
-      p = p .. escape(c)
-    else
-      p = p .. escape(c)
-    end
-  end
-  return p
+				if (not charsetEnd()) then 
+					return false 
+				end
+			end
+		else
+			p = p .. '['
+
+			if (not charsetEnd()) then 
+				return false 
+			end
+		end
+
+		return true
+	end
+
+	-- Convert tokens
+	while 1 do
+		i = i + 1; c = g:sub(i,i)
+		
+		if (c == '') then
+			p = p .. '$'
+			break
+		elseif (c == '?') then
+			p = p .. '.'
+		elseif (c == '*') then
+			p = p .. '.*'
+		elseif (c == '[') then
+			if (not charset()) then 
+				break 
+			end
+		elseif (c == '\\') then
+			i = i + 1; c = g:sub(i,i)
+			
+			if (c == '') then
+				p = p .. '\\$'
+				break
+			end
+		
+			p = p .. escape(c)
+		else
+			p = p .. escape(c)
+		end
+	end
+	
+	return p
 end
 
 local function pathJoin(p1, p2, ... )
 	local res
 	local p1s = p1:sub(-1) == dirSeparator
 	local p2s = p2:sub(1, 1) == dirSeparator
-	if p1s and p2s then
+	
+	if (p1s and p2s) then
 		res = p1:sub(1,-2) .. p2
-	elseif p1s or p2s then
+	elseif (p1s or p2s) then
 		res = p1 .. p2
 	else
 		res = p1 .. dirSeparator .. p2
 	end
+	
 	if ... then
 		return pathJoin(res, ...)
 	else
@@ -181,93 +219,59 @@ local function pathJoin(p1, p2, ... )
 	end
 end
 
-local function unpackPlugin( archive, dst, tmpDir, plugin)
-	if windows then
---		pipe not working	
---		local cmd = '""%CORONA_PATH%\\7za.exe" x "' .. archive .. '" -so  2> nul | "%CORONA_PATH%\\7za.exe" x -aoa -si -ttar -o"' .. dst .. '" 2> nul"'
-		local cmd = '""%CORONA_PATH%\\7za.exe" x "' .. archive .. '" -o"' .. tmpDir .. '"'
-		log3('unpackPlugin:', cmd)
-		processExecute(cmd)
-		local cmd = '""%CORONA_PATH%\\7za.exe" x "' .. pathJoin(tmpDir, plugin .. ".tar") .. '" -o"' .. dst .. '"'
-		log3('unpackPlugin:', cmd)
-		return processExecute(cmd)
-	else
-		lfs.mkdir(dst)
-		local cmd = tar .. ' -xzf ' .. quoteString(archive) .. ' -C ' ..  quoteString(dst)
-		log3('unpackPlugin:', cmd)
-		return os.execute(cmd)
-	end
+local function extractTar(archive, dst)
+	lfs.mkdir(dst)
+	local cmd = tar .. ' -xzf ' .. quoteString(archive) .. ' -C ' ..  quoteString(dst .. "/") 
+	--log('extract tar cmd: ' .. cmd)
+	
+	return os.execute(cmd)
 end
 
-local function gzip( path, appname, ext, destFile )
+local function gzip(path, appname, ext, destFile)
 	local dst = pathJoin(path, destFile)
-	if windows then
-		local src = ''
-		for i = 1, #ext do	
-			src = src .. '"' .. pathJoin(path, appname .. ext[i]) .. '"'
-			src = src .. ' '
-		end
-		local cmd = '""%CORONA_PATH%\\7za.exe" a -tzip "' .. dst .. '" ' ..  src
-		log3('gzip', cmd)
-		processExecute(cmd);
-	else
-		local src = ''
-		for i = 1, #ext do	
-			src = src .. appname .. ext[i]
-			src = src .. ' '
-		end
-		local cmd = 'cd '.. quoteString(path) .. ' && /usr/bin/zip "' .. dst .. '" ' .. src
-		log3('gzip', cmd)
-		os.execute(cmd)
+	local src = ''
+	
+	for i = 1, #ext do	
+		src = src .. appname .. ext[i]
+		src = src .. ' '
 	end
+	
+	local cmd = 'cd '.. quoteString(path) .. ' && /usr/bin/zip "' .. dst .. '" ' .. src
+	log3('gzip', cmd)
+	os.execute(cmd)
 
 	for i = 1, #ext do	
 		os.remove(pathJoin(path, appname .. ext[i]))
 	end
 end
 
-local function zip( folder, zipfile )
-	if windows then
-		local cmd = '""%CORONA_PATH%\\7za.exe" a ' .. zipfile .. ' ' ..  folder .. '/*"'
-		log3('zip:', cmd)
-		return processExecute(cmd)
-	else
-		local cmd = 'cd '.. folder .. ' && /usr/bin/zip -r -X ' .. zipfile .. ' ' .. '*'
-		log3('zip:', cmd)
-		return os.execute(cmd)
-	end
+local function zip(folder, zipfile)
+	local cmd = 'cd '.. folder .. ' && /usr/bin/zip -r -X ' .. zipfile .. ' ' .. '*'
+	log3('zip:', cmd)
+	
+	return os.execute(cmd)
 end
 
-local function unzip( archive, dst )
-	if windows then
-		local cmd = '""%CORONA_PATH%\\7za.exe" x -aoa "' .. archive .. '" -o"' ..  dst .. '"'
-		log3('zip:', cmd)
-		return processExecute(cmd)
-	else
-		local cmd = '/usr/bin/unzip -o -q ' .. quoteString(archive) .. ' -d ' ..  quoteString(dst)
-		log3('inzip:', cmd)
-		return os.execute(cmd)
-	end
+local function unzip(archive, dst)
+	local cmd = '/usr/bin/unzip -o -q ' .. quoteString(archive) .. ' -d ' ..  quoteString(dst)
+	log3('inzip:', cmd)
+	
+	return os.execute(cmd)
 end
 
 local function createTarGZ(srcDir, tarFile, tarGZFile)
-  log('crerating', tarGZFile)
-	if windows then
-		local cmd = '""%CORONA_PATH%\\7za.exe" a -ttar "' .. pathJoin(srcDir, tarFile) .. '" "' .. srcDir .. '\\*""'
-		processExecute(cmd)
-		local cmd = '""%CORONA_PATH%\\7za.exe" a "' .. pathJoin(srcDir, tarGZFile) .. '" "' .. pathJoin(srcDir, tarFile) .. '""'
-		log3('createTarGZ:', cmd)
-		return processExecute(cmd)
-	else
-		local cmd = 'cd '.. quoteString(srcDir) .. ' && ' .. tar .. ' --exclude=' .. tarGZFile .. ' -czf ' .. tarGZFile .. ' .'
-		log3('createTarGZ:', cmd)
-		return os.execute(cmd)
-	end
+	log('crerating', tarGZFile)
+
+	local cmd = 'cd '.. quoteString(srcDir) .. ' && ' .. tar .. ' --exclude=' .. tarGZFile .. ' -czf ' .. tarGZFile .. ' .'
+	log3('createTarGZ:', cmd)
+	
+	return os.execute(cmd)
 end
 
 local function setControlParams(args, localTmpDir)
 	local path = pathJoin(localTmpDir, 'DEBIAN', 'control')
 	local f = io.open(path, "rb")
+	
 	if (f) then
 		local s = f:read("*a")
 		io.close(f)
@@ -278,12 +282,12 @@ local function setControlParams(args, localTmpDir)
  		s, count = s:gsub('@size', '10000', 1)		-- fixme
  		s, count = s:gsub('@maintainer', 'Corona Labs corp. <support@coronalabs.com>', 1)
  		s, count = s:gsub('@description', 'This is my app', 1)
-
  		s = s .. '  ' .. 'description1\n'
  		s = s .. '  ' .. 'description2\n'
  		s = s .. '  ' .. 'description3\n'
 
 		f = io.open(path, "wb")
+
 		if (f) then
 			f:write(s)
 			io.close(f)
@@ -294,6 +298,7 @@ end
 -- create deb file
 local function createDebArchive(debFile, srcDir)
 	local fi = io.open(pathJoin(srcDir, debFile), "wb")
+	
 	if (fi) then
 		fi:write('!<arch>\n')
 		fi:write('debian-binary   1410122664  0     0     100644  4         `\n')
@@ -302,360 +307,541 @@ local function createDebArchive(debFile, srcDir)
 		-- add control.tar.gz
 		local path = pathJoin(srcDir, 'DEBIAN', 'control.tar.gz')
 		local f = io.open(path, "rb")
+		
 		if (f) then
 			local filesize = f:seek("end")
-			local s = string.format('%d', filesize)
+			local s = sFormat('%d', filesize)
+			
 			while s:len() < 10 do
 				s = s .. ' '
 			end
+			
 			fi:write('control.tar.gz  1410122664  0     0     100644  ' .. s .. '`\n')
-
 			f:seek("set", 0)
+
 			local buf = f:read("*a")
 			fi:write(buf)
-			if (filesize % 2) ~= 0 then
+
+			if ((filesize % 2) ~= 0) then
 				fi:write('\n')
 			end
+
 			f:close()
 		end
 
 		-- add data.tar.gz
 		local path = pathJoin(srcDir, 'CONTENTS', 'data.tar.gz')
 		local f = io.open(path, "rb")
+		
 		if (f) then
 			local filesize = f:seek("end")
-			local s = string.format('%d', filesize)
+			local s = sFormat('%d', filesize)
+			
 			while s:len() < 10 do
 				s = s .. ' '
 			end
+			
 			fi:write('data.tar.gz     1410122664  0     0     100644  ' .. s .. '`\n')
-
 			f:seek("set", 0)
+	
 			local buf = f:read("*a")
 			fi:write(buf)
+
 			if (filesize % 2) ~= 0 then
 				fi:write('\n')
 			end
+
 			f:close()
 		end
+
 		fi:close()
 	end
 end
 
 local function copyFile(src, dst)
 	local fi = io.open(src, "rb")
+	
 	if (fi) then
 		local buf = fi:read("*a")
 		fi:close()
 		fi = io.open(dst, "wb")
+
 		if (fi) then
 			fi:write(buf)
 			fi:close()
-			return true;
+			return true
 		end
+
 		log3('copyFile failed to write: ', src, dst)
-		return false;
+		return false
 	end
+
 	log3('copyFile failed to read: ', src, dst)
 	return false;
 end
 
-local function copyDir( src, dst )
-	if windows then
-		local cmd = 'robocopy "' .. src .. '" ' .. '"' .. dst.. '" /e 2> nul'
-		-- robocopy failed when exit code is > 7... Windows  ¯\_(ツ)_/¯ 
-		log3('copydir:', cmd)
-		return processExecute(cmd)>7 and 1 or 0
+local function copyDir(src, dst)
+	local cmd = 'cp -R ' .. quoteString(src) .. '/. ' ..  quoteString(dst)
+	log3('copydir:', cmd)
+
+	return os.execute(cmd)
+end
+
+local function removeDir(dir)
+	local cmd = "rm -f -r " .. quoteString(dir)
+	log3('removeDir:', cmd)
+
+	os.execute(cmd)
+end
+
+local function loadTable(path)
+	local loc = location
+
+	if not location then
+		loc = defaultLocation
+	end
+
+	local file, errorString = io.open(path, "r")
+
+	if not file then
+		return {}
 	else
-		local cmd = 'cp -R ' .. quoteString(src) .. '/. ' ..  quoteString(dst)
-		log3('copydir:', cmd)
-		return os.execute(cmd)
+		local contents = file:read("*a")
+		local t = json.decode(contents)
+		io.close(file)
+
+		return t
 	end
 end
 
-local function removeDir( dir )
-	if windows then
-		local cmd = 'rmdir /s/q "' .. dir .. '"'
-		log3('removeDir:', cmd)
-		return processExecute(cmd)
+local function saveTable(t, path)
+	local loc = location
+
+	if not location then
+		loc = defaultLocation
+	end
+
+	local file, errorString = io.open(path, "w")
+
+	if not file then
+		print("File error: " .. errorString)
+		return false
 	else
-		local cmd = "rm -f -r " .. quoteString(dir)
-		log3('removeDir:', cmd)
-		os.execute(cmd)
+		file:write(json.encode(t))
+		io.close(file)
+
+		return true
 	end
 end
 
-local function linuxDownloadPlugins(buildRevision, tmpDir, pluginDstDir)
-	if type(buildSettings) ~= 'table' then
+local function printf(msg, ...)
+	print(msg:format(...))
+end
+
+local function linuxDownloadPlugins(pluginDestinationDir, forceDownload)
+	if (type(buildSettings) ~= 'table') then
 		-- no build.settings file, so no plugins to download
 		return nil
 	end
 
-	local collectorParams = { 
-		pluginPlatform = 'linux',
-		plugins = buildSettings.plugins or {},
-		destinationDirectory = tmpDir,
-		build = buildRevision,
-		extractLocation = pluginDstDir,
-	}
-	
-	local pluginCollector = require "CoronaBuilderPluginCollector"
-	return pluginCollector.collect(collectorParams)
+	local pluginMessagePrefix = "Linux Plugin Manager:"
+	local publisherIDKey = "publisherId"
+	local supportedPlatformsKey = "supportedPlatforms"
+	local linuxKey = "linux"
+	local linuxSimKey = "linux-sim"
+	local pluginBaseDir = sFormat("%s/.Solar2DPlugins", os.getenv("HOME"))
+	local pluginCatalogPath = sFormat("%s/.Solar2D/Plugins/catalog.json", os.getenv("HOME"))
+	local pluginCatalog = loadTable(pluginCatalogPath)
+	local updateTime = 1800 -- 30 minutes
+
+	local function downloadPlugin(options)
+		local url = options.url
+		local pluginName = options.pluginName
+		local downloadDir = options.downloadDir
+		local pluginPath = options.pluginPath
+		local pluginCatalogKey = options.pluginCatalogKey
+		local pluginArchiveDir = sFormat("%sdata.tgz", downloadDir)
+
+		local function removeOldPlugin()
+			if (fileExists(pluginPath)) then
+				os.remove(pluginPath)
+			end
+
+			if (dirExists(downloadDir)) then
+				os.execute(sFormat("rm -rf %s", downloadDir))
+			end
+		end
+
+		removeOldPlugin()
+		local success, reason = lfs.mkdir(downloadDir)
+
+		if (not success) then
+			printf("%s failed to create directory %s, reason: %s - Aborting", pluginMessagePrefix, downloadDir, reason)
+			return
+		end
+
+		printf("%s trying to download %s from %s", pluginMessagePrefix, pluginName, url)
+		
+		local file = ltn12.sink.file(io.open(pluginArchiveDir, 'w'))
+		local body, code, headers, err = http.request(
+		{
+			url = url,
+			method = "GET",
+			sink = file,
+		})
+
+		if (code == 200 and fileExists(pluginArchiveDir)) then
+			printf("%s downloaded %s successfully", pluginMessagePrefix, pluginName)
+
+			local ret = extractTar(pluginArchiveDir, pluginDestinationDir)
+
+			if (ret ~= 0) then
+				return sFormat('%s failed to unpack plugin %s to %s - error: %s', pluginMessagePrefix, pluginName, pluginDestinationDir, ret)
+			end
+
+			if (fileExists(pluginPath)) then
+				pluginCatalog[pluginCatalogKey] = {lastUpdate = os.time()}
+				saveTable(pluginCatalog, pluginCatalogPath)
+			end
+		else
+			removeOldPlugin()
+			printf("%s Failed to download %s. err: %s, %s", pluginMessagePrefix, pluginName, code, err)
+		end
+	end
+
+	printf("%s gathering plugins", pluginMessagePrefix)
+
+	-- gather the plugins
+	if (type(buildSettings.plugins) == "table") then
+		for k, v in pairs(buildSettings.plugins) do
+			if (type(v) == "table") then
+				local pluginName = k
+				local pluginPath = sFormat("%s/.Solar2D/Plugins/%s.so", os.getenv("HOME"), pluginName)
+
+				for pluginKey, pluginValue in pairs(v) do
+					if (pluginKey == publisherIDKey) then
+						local publisherID = pluginValue
+						local pluginCatalogKey = sFormat("%s/%s", publisherID, pluginName)
+						local shouldDownloadPlugin = true
+
+						-- only download the plugin again if it's time to refresh it
+						if (not forceDownload and pluginCatalog[pluginCatalogKey] ~= nil) then
+							if (pluginCatalog[pluginCatalogKey].lastUpdate ~= nil) then
+								if (os.time() - pluginCatalog[pluginCatalogKey].lastUpdate < updateTime) then
+									printf("%s not downloading %s again, it has only been %s seconds since it was last updated", pluginMessagePrefix, pluginName, os.time() - pluginCatalog[pluginCatalogKey].lastUpdate)
+									shouldDownloadPlugin = false
+								end
+							end
+						end
+
+						-- only download the plugin again if it doesn't exist
+						if (not forceDownload and not fileExists(pluginPath)) then
+							shouldDownloadPlugin = true
+						end
+					
+						-- look for the plugin
+						local pluginDir = sFormat("%s/%s/%s/%s/data.tgz", pluginBaseDir, publisherID, linuxKey, pluginName)
+						local otherPluginDir = sFormat("%s/%s/%s/%s/data.tgz", pluginBaseDir, publisherID, linuxSimKey, pluginName)
+						local pluginDownloadDir = sFormat("%s/.Solar2D/Plugins/%s/", os.getenv("HOME"), pluginName)
+
+						if (shouldDownloadPlugin) then
+							-- check local plugin storage first
+							if (fileExists(pluginDir)) then
+								printf("%s found %s at path %s", pluginMessagePrefix, pluginName, pluginDir)
+								local ret = extractTar(pluginDir, pluginDestinationDir)
+
+								if (ret ~= 0) then
+									return sFormat('%s failed to unpack plugin %s to %s - error: %s', pluginMessagePrefix, pluginName, pluginDestinationDir, ret)
+								end
+
+								pluginCatalog[pluginCatalogKey] = {lastUpdate = os.time()}
+								saveTable(pluginCatalog, pluginCatalogPath)
+							elseif (fileExists(otherPluginDir)) then
+								printf("%s found %s at path %s", pluginMessagePrefix, pluginName, otherPluginDir)
+								local ret = extractTar(pluginDir, pluginDestinationDir)
+
+								if (ret ~= 0) then
+									return sFormat('%s failed to unpack plugin %s to %s - error: %s', pluginMessagePrefix, pluginName, pluginDestinationDir, ret)
+								end
+
+								pluginCatalog[pluginCatalogKey] = {lastUpdate = os.time()}
+								saveTable(pluginCatalog, pluginCatalogPath)
+							-- plugin doesn't exist in local storage, look for it online
+							else
+								local supportedPlatforms = v[supportedPlatformsKey]
+								printf("%s %s does not exist in local storage", pluginMessagePrefix, pluginName)
+
+								if (supportedPlatforms ~= nil and type(supportedPlatforms) == "table") then
+									local linuxTable = supportedPlatforms[linuxKey]
+
+									if (linuxTable == nil) then
+										linuxTable = supportedPlatforms[linuxSimKey]
+									end
+
+									if (linuxTable ~= nil and type(linuxTable) == "table") then
+										local url = linuxTable["url"]
+
+										if (url ~= nil and type(url) == "string") then
+											downloadPlugin(
+											{
+												url = url,
+												pluginName = pluginName,
+												pluginPath = pluginPath,
+												downloadDir = pluginDownloadDir,
+												pluginCatalogKey = pluginCatalogKey
+											})	
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 
 local function getExcludePredecate()
-	local excludes = {
-			"*.config",
-			"*.lu",
-			"*.lua",
-			"*.bak",
-			"*.orig",
-			"*.swp",
-			"*.DS_Store",
-			"*.apk",
-			"*.obb",
-			"*.obj",
-			"*.o",
-			"*.lnk",
-			"*.class",
-			"*.log",
-			".*",
-			"build.properties",
-		}
+	local excludes = 
+	{
+		"*.config",
+		"*.lu*",
+		"**/*lu*",
+		"*.bak",
+		"*.orig",
+		"*.swp",
+		"*.DS_Store",
+		"*.apk",
+		"*.obb",
+		"*.obj",
+		"*.o",
+		"*.lnk",
+		"*.class",
+		"*.log",
+		"*.xcassets",
+		"*.storyboardc",
+		".*",
+		"*.properties",
+		"*.settings",
+		"**AndroidResources",
+		"**res",
+		"*Icon*.png",
+	}
 
-		-- append 'all:' and 'linux:'
-		if buildSettings and buildSettings.excludeFiles then
-			if buildSettings.excludeFiles.all then
-				-- append excludes from 'all:'
-				local excl = buildSettings.excludeFiles.all		
-				for i = 1, #excl do	
-					excludes[#excludes + 1] = excl[i]
-				end
-			end
-			if buildSettings.excludeFiles.linux then
-				-- append excludes from 'linux:'
-				local excl = buildSettings.excludeFiles.linux
-				for i = 1, #excl do	
-					excludes[#excludes + 1] = excl[i]
-				end
+	-- append 'all:' and 'linux:'
+	if (buildSettings and buildSettings.excludeFiles) then
+		if (buildSettings.excludeFiles.all) then
+			-- append excludes from 'all:'
+			local excl = buildSettings.excludeFiles.all
+
+			for i = 1, #excl do	
+				excludes[#excludes + 1] = excl[i]
 			end
 		end
 
-		-- glob ==> regexp
+		if (buildSettings.excludeFiles.linux) then
+			-- append excludes from 'linux:'
+			local excl = buildSettings.excludeFiles.linux
+
+			for i = 1, #excl do	
+				excludes[#excludes + 1] = excl[i]
+			end
+		end
+	end
+
+	-- glob ==> regexp
+	for i = 1, #excludes do
+		excludes[i] = globToPattern(excludes[i])
+	end
+
+	return function(fileName)
 		for i = 1, #excludes do
-			excludes[i] = globToPattern(excludes[i])
-		end
-
---		for i = 1, #excludes do
---			log3('Exclude rule: ', excludes[i])
---		end
-
-		return
-
-		function(fileName)
-			for i = 1, #excludes do
-				local rc = fileName:find(excludes[i])
-				if rc ~= nil then
-					return false
-				end
+			local rc = fileName:match(excludes[i])
+			
+			if (rc ~= nil) then
+				return true
 			end
-			return true
 		end
+	
+		return false
+	end
 end
 
 local function deleteUnusedFiles(srcDir, excludePredicate)
-	log3('Deleting unused assets from ' .. srcDir)
-	for file in lfs.dir(srcDir) do
-		local f = pathJoin(srcDir, file)
-		if excludePredicate(file) then
-			local attr = lfs.attributes (f)
-			if attr.mode == "directory" then
-				deleteUnusedFiles( pathJoin(srcDir, file), excludePredicate)
-			else
-			end
-		else
-			if file ~= '..' and file ~= '.' then
-				local result, reason = os.remove(f);
-				if result then
---					log3('Excluded ' .. f)
-				else
-					log3("Failed to exclude" .. f) 
+	local paths = {srcDir}
+	local count = 0
+	local dirCount = 0
+	local fileList = {}
+	local directoryList = {}
+
+	local function scanFoldersRecursively(event)
+		if (#paths == 0) then
+			paths = nil
+			
+			for i = 1, #fileList do
+				local file = fileList[i]
+
+				if (excludePredicate(file)) then
+					local result, reason = os.remove(file)
+
+					if (result) then
+						--log('removed file at  ' .. file)
+					else
+						--log("! couldn't remove file at " .. file) 
+					end
 				end
 			end
-    end
+
+			for i = 1, #directoryList do
+				local dir = directoryList[i]
+				
+				if (excludePredicate(dir)) then
+					--log("removing directory: " ..  dir)
+					os.execute(sFormat('rm -rf "%s"', dir))
+				end
+			end
+
+			fileList = nil
+			directoryList = nil
+
+			return
+		end
+
+		local fullPath = nil
+		local attributes = nil
+
+		for file in lfs.dir(paths[1]) do
+			if (file ~= "." and file ~= "..") then
+				fullPath = sFormat("%s/%s", paths[1], file)
+				attributes = lfs.attributes(fullPath)
+
+				if (attributes) then
+					if (attributes.mode == "directory") then
+						--print("file: " .. file .. " is directory")
+						table.insert(paths, fullPath)
+						dirCount = dirCount + 1
+						directoryList[dirCount] = fullPath
+					elseif (attributes.mode == "file") then
+						count = count + 1
+						fileList[count] = fullPath
+					end
+				end
+			end
+		end
+
+		table.remove(paths, 1)
+		scanFoldersRecursively()
 	end
+
+	scanFoldersRecursively()
+end
+
+local function getPathFromString(str)
+	local pathIndexes = {}
+
+	for i = 1, #str do
+		if (str:sub(i, i) == "/") then
+			pathIndexes[#pathIndexes + 1] = i
+		end
+	end
+
+	return string.sub(str, 1, pathIndexes[#pathIndexes])
+end
+
+local function getLastPathComponent(str)
+	local pathIndexes = {}
+
+	for i = 1, #str do
+		if (str:sub(i, i) == "/") then
+			pathIndexes[#pathIndexes + 1] = i
+		end
+	end
+
+	return string.sub(str, pathIndexes[#pathIndexes - 1], pathIndexes[#pathIndexes])
 end
 
 local function makeApp(arch, linuxappFolder, template, args, templateName)
-	local localTmpDir = pathJoin(args.tmpDir, arch)
 	-- sanity check
+	local archivesize = lfs.attributes(template, "size")
 
-	local archivesize = lfs.attributes (template, "size")
-	if archivesize == nil or archivesize == 0 then
-		return 'Failed to open template: ' .. template
+	if (archivesize == nil or archivesize == 0) then
+		return sFormat('%s failed to open template: %s', linuxBuilderPrefx, template)
 	end
 
-	-- create tmp folder
-	removeDir(localTmpDir)
-	local success = lfs.mkdir(localTmpDir)
-	if not success then
-		log('Failed to create tmpDir: ' .. localTmpDir)
-		return 'Failed to create tmpDir: ' .. localTmpDir
+	local ret = extractTar(template, linuxappFolder)
+
+	if (ret ~= 0) then
+		return sFormat('%s failed to unpack template %s to %s - error: %s', linuxBuilderPrefx, template, linuxappFolder, ret)
 	end
-	log3('Created tmp folder: ' .. localTmpDir)
 
-	--local ret = unzip(template, localTmpDir)
-	local ret = unpackPlugin(template, localTmpDir, localTmpDir, templateName)
-	if ret ~= 0 then
-		return 'Failed to unpack template ' .. template .. ' to ' .. localTmpDir ..  ', err=' .. ret
-	end
-	log3('Unzipped ' .. template, ' to ', localTmpDir) 
+	printf('%s unzipped %s to %s', linuxBuilderPrefx, template, linuxappFolder)
 
-	local binFile = args.applicationName
-	local oldname = pathJoin(localTmpDir, 'CONTENTS', 'usr', 'bin', 'linux_rtt')
-	local newname = pathJoin(localTmpDir, 'CONTENTS', 'usr', 'bin', binFile)
-	os.rename(oldname, newname)
-
-	-- exclude from build
-	os.remove(pathJoin(localTmpDir, 'CONTENTS', 'usr', 'bin', '.info'))
-	os.remove(pathJoin(localTmpDir, 'CONTENTS', 'usr', 'share', 'corona', '.info'))
-
-	local appFolder = pathJoin(localTmpDir, 'CONTENTS', 'usr', 'share', 'corona', args.applicationName)
-	local appBinaryFolder = pathJoin(localTmpDir, 'CONTENTS', 'usr', 'bin')
-
-	local success = lfs.mkdir(appFolder)
-	if not success then
-		return 'Failed to create app folder: ' .. appFolder
-	end
-	log3('Created app folder: ' .. appFolder)
+	-- copy binary
+	local binaryPath = sFormat("%s/%s", linuxappFolder, "template_x64")
+	printf("%s renaming binary from %s to %s/%s", linuxBuilderPrefx, linuxappFolder, linuxappFolder, args.applicationName)
+	os.rename(binaryPath, sFormat("%s/%s", linuxappFolder , args.applicationName))
 
 	-- dowmload plugins
 	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
 	local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
-
+	local binPlugnDir = pathJoin(pluginExtractDir, arch)
 	local luaPluginDir = pathJoin(pluginExtractDir, 'lua', 'lua_51')
-	if dir_exists( luaPluginDir ) then
+
+	if (dirExists(luaPluginDir)) then
 		copyDir(luaPluginDir, pluginExtractDir)
 	end
-	local binPlugnDir = pathJoin(pluginExtractDir, arch)
-	if dir_exists( binPlugnDir ) then
-		copyDir(binPlugnDir, appFolder)
-		copyDir(binPlugnDir, appBinaryFolder)
+	
+	if (dirExists(binPlugnDir)) then
+		copyDir(binPlugnDir, linuxappFolder)
+		copyDir(binPlugnDir, linuxappFolder)
 	end
 	
-	-- gather files into appFolder (tmp folder)
-	local ret = copyDir( args.srcDir, appFolder )
-	if ret ~= 0 then
-		return "Failed to copy " .. args.srcDir .. ' to ' .. appFolder
+	-- gather files into appFolder
+	ret = copyDir(args.srcDir, linuxappFolder)
+
+	if (ret ~= 0) then
+		return sFormat("%s failed to copy %s to %s", linuxBuilderPrefx, args.srcDir, linuxappFolder)
 	end
-	log3("Copied app files from ", args.srcDir, ' to ', appFolder)
+
+	log(sFormat("%s copied app files from %s to %s", linuxBuilderPrefx, args.srcDir, linuxappFolder))
 
 	-- copy standard resources
-	local widgetsDir = pathJoin(localTmpDir, 'CONTENTS', 'usr', 'share', 'corona', 'res_widget')
-	if args.useStandartResources then
-		local ret = copyDir(widgetsDir, appFolder)
-		if ret ~= 0 then
-			return "Failed to copy standard resources"
-		end
-		log3("Copied startard resources")
-	end
+	local widgetsDir = pathJoin(getPathFromString(template), 'Corona')
 
-	-- remove res_widget folder from .deb because else it will common for all apps in the host
-	removeDir(widgetsDir)
+	if (args.useStandardResources) then
+		ret = copyDir(widgetsDir, pathJoin(linuxappFolder, "Resources"))
+
+		if (ret ~= 0) then
+			return sFormat("%s failed to copy widget resources", linuxBuilderPrefx)
+		end
+
+		printf("%s copied widget resources", linuxBuilderPrefx)
+	end
 
 	-- compile .lua
-	local rc = compileScriptsAndMakeCAR(args.linuxParams, appFolder, appFolder, localTmpDir)
-	if not rc then
-		return "Failed to create .car file"
-	end
-	log3("Created .car file")
+	local rc = compileScriptsAndMakeCAR(args.linuxParams, linuxappFolder, linuxappFolder, linuxappFolder)
 
-	-- delete .lua, .lu, etc
-	deleteUnusedFiles(appFolder, getExcludePredecate())
-
-	-- add debian package control file
-	setControlParams(args, localTmpDir)
-
-	-- commpress and create deb file
-
-	createTarGZ(pathJoin(localTmpDir, 'CONTENTS'), 'data.tar', 'data.tar.gz')
-	createTarGZ(pathJoin(localTmpDir, 'DEBIAN'), 'control.tar', 'control.tar.gz')
-
-	local debFile = args.applicationName .. '-' .. arch .. '-' .. args.versionName .. '.deb'
-	createDebArchive(debFile, localTmpDir)
-
-	-- copy .deb to build folder
-	local ret = copyFile(pathJoin(localTmpDir, debFile), pathJoin(linuxappFolder, debFile))
-	if not ret then
-			return "Failed to create Linux deb package "
-	end
-	log3("Created " .. pathJoin(linuxappFolder, debFile))
-
-	--
-	-- create portable .zip 
-	--
-
-	local binSrc = pathJoin(localTmpDir, 'CONTENTS', 'usr', 'bin', binFile)
-	local binFolder = pathJoin(localTmpDir, 'CONTENTS', 'usr', 'share', 'corona', args.applicationName)
-	local binDst = pathJoin(binFolder, binFile)
-	local ret = copyFile(binSrc, binDst)
-	if not ret then
-			return "Failed to copy bin file: " .. binSrc
+	if (not rc) then
+		return sFormat("%s failed to create resource.car file", linuxBuilderPrefx)
 	end
 
-	-- set 'executable' attribute
-	if not windows then
-		os.execute('chmod +x ' .. quoteString(binDst))
-	end
+	lfs.mkdir(pathJoin(linuxappFolder, "Resources"))
+	os.rename(pathJoin(linuxappFolder, "resource.car"), pathJoin(linuxappFolder, "Resources", "resource.car"))
+	printf("%s created resource.car", linuxBuilderPrefx)
 
-	local ret = createTarGZ(binFolder, 'app.tar', 'app.tar.gz')
-	if ret ~= 0 then
-		-- log3('Failed to create app.tar.gz')
-	end
-
-	local appFile = args.applicationName .. '-' .. arch .. '-' .. args.versionName .. '.tar.gz'
-	local dstFile = pathJoin(linuxappFolder, appFile)
-	os.remove(dstFile)
-
-	-- copy .tar.gz to build folder
-	local src = pathJoin(binFolder, 'app.tar.gz')
-	local ret = copyFile(src, dstFile)
-	if not ret then
-			return "Failed to create Linux app"
-	end
-	log3("Created " .. dstFile)
+	-- delete unused files
+	deleteUnusedFiles(linuxappFolder, getExcludePredecate())
 end
 
---
 -- global script to call from C++
----
-function linuxPackageApp( args )
+function linuxPackageApp(args)
 	debugBuildProcess = args.debugBuildProcess
-	log('Linux builder started')
-	log3(json.prettify(args))
 
 	local template = args.templateLocation
-
--- for debugging
-	-- local template = 'C:\\Program Files (x86)\\Corona Labs\\Corona\\Resources\\linuxtemplate.tar.gz'
-	-- local template = '/Users/mymac/linuxtemplate.tar.gz'
-
-	if not template then
-		local coronaRoot
-		if windows then
-			coronaRoot = os.getenv("CORONA_PATH")
-		else
-			local coronaDir = lfs.symlinkattributes(os.getenv('HOME') .. '/Library/Application Support/Corona/Native', "target")
-			if coronaDir then
-				coronaRoot = coronaDir .. "../Corona Simulator.app/Contents"
-			end
-		end
-		template = pathJoin(coronaRoot , 'Resources', 'linuxtemplate.tar.gz')
-	end
-
 	local templateArm = template
-	templateArm = templateArm:gsub('linuxtemplate.tar.gz', 'raspbiantemplate.tar.gz')
+	templateArm = templateArm:gsub('template_x64.tgz', 'template_arm.tgz')
 
 	-- read settings
 	local buildSettingsFile = pathJoin(args.srcDir, 'build.settings')
@@ -667,35 +853,53 @@ function linuxPackageApp( args )
 
 	local success = false;
 
-	-- create app folder if it does not exists
-	local linuxappFolder = pathJoin(args.dstDir, args.applicationName)
-	if not dir_exists(linuxappFolder) then
-		success = lfs.mkdir(linuxappFolder)
-		if not success then
-			return 'Failed to create app folder: ' .. linuxappFolder
+	if (args.onlyGetPlugins) then
+		local msg = linuxDownloadPlugins(sFormat("%s/.Solar2D/Plugins", os.getenv("HOME")))
+
+		if (type(msg) == 'string') then
+			return msg
 		end
-		log3('Created app folder: ' .. linuxappFolder)
+	else
+		local startTime = os.time()
+		printf("%s build started", linuxBuilderPrefx)
+		--print(json.prettify(args))
+		--printf("%s template: %s", linuxBuilderPrefx, getLastPathComponent(args.templateLocation))
+
+		printf("%s template location: %s", linuxBuilderPrefx, getPathFromString(args.templateLocation))
+
+		-- create app folder
+		local linuxappFolder = pathJoin(args.dstDir, args.applicationName)
+
+		os.execute(sFormat('rm -rf "%s"', linuxappFolder))
+
+		local success = lfs.mkdir(getPathFromString(linuxappFolder))
+		success = lfs.mkdir(linuxappFolder)
+		if (not success) then
+			return sFormat('%s failed to create app folder: %s', linuxBuilderPrefx, linuxappFolder)
+		end
+
+		printf("%s created app folder: %s", linuxBuilderPrefx, linuxappFolder)
+
+		local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
+		local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
+		lfs.mkdir(pluginDownloadDir)
+		lfs.mkdir(pluginExtractDir)
+
+
+		local rc = makeApp('x86-64', linuxappFolder, template, args, getLastPathComponent(template))
+
+		if (rc ~= nil) then
+			return rc
+		end
+
+		local msg = linuxDownloadPlugins(linuxappFolder, true)
+
+		if (type(msg) == 'string') then
+			return msg
+		end
+
+		printf("%s build finished in %s seconds", linuxBuilderPrefx, os.difftime(os.time(), startTime))
 	end
 
-	local pluginDownloadDir = pathJoin(args.tmpDir, "pluginDownloadDir")
-	local pluginExtractDir = pathJoin(args.tmpDir, "pluginExtractDir")
-	lfs.mkdir(pluginDownloadDir)
-	lfs.mkdir(pluginExtractDir)
-	local msg = linuxDownloadPlugins(args.buildRevision, pluginDownloadDir, pluginExtractDir)
-	if type(msg) == 'string' then
-		return msg
-	end
-
-	local rc = makeApp('ubuntu-18.04-x86-64', linuxappFolder, template, args, 'linuxtemplate')
-	if rc ~= nil then
-		return rc
-	end
-
-	local rc = makeApp('raspberry-pi3', linuxappFolder, templateArm, args, 'raspbiantemplate')
-	if rc ~= nil then
-		return rc
-	end
-
-	log('LINUX builder ended')
 	return nil 
 end

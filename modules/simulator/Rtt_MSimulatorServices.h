@@ -25,6 +25,7 @@ struct RecentProjectInfo;
 class MSimulatorServices
 {
 	public:
+        virtual bool CloneProject() const = 0;
 		virtual bool NewProject() const = 0;
 		virtual bool OpenProject( const char *name ) const = 0;
 		virtual bool BuildProject( const char *platform ) const = 0;

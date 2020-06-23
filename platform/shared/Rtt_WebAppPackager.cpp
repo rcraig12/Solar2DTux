@@ -235,7 +235,7 @@ int WebAppPackager::Build(AppPackagerParams* params, const char* tmpDirBase)
 	const WebAppPackagerParams *webParams = (WebAppPackagerParams*) params;
 	Rtt_ASSERT(webParams);
 
-	bool useStandartResources = webParams->useStandartResources;
+	bool useStandardResources = webParams->useStandardResources;
 	bool createFBInstantArchive = webParams->createFBInstantArchive;
 	time_t startTime = time(NULL);
 
@@ -315,8 +315,8 @@ int WebAppPackager::Build(AppPackagerParams* params, const char* tmpDirBase)
 		lua_pushinteger(L, debugBuildProcess);
 		lua_setfield(L, -2, "debugBuildProcess");
 
-		lua_pushboolean(L, useStandartResources);
-		lua_setfield(L, -2, "useStandartResources");
+		lua_pushboolean(L, useStandardResources);
+		lua_setfield(L, -2, "useStandardResources");
 
 		lua_pushboolean(L, createFBInstantArchive);
 		lua_setfield(L, -2, "createFBInstantArchive");

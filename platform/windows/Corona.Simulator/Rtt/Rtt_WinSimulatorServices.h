@@ -50,6 +50,7 @@ class WinSimulatorServices : public MSimulatorServices
 		///  <para>Set to null or empty string to display the "Open File" dialog for selecting a project.</para>
 		/// </param>
 		virtual bool OpenProject(const char *name) const;
+		virtual bool CloneProject() const;
 
 		/// <summary>Display the "Build" window for the currently open Corona project.</summary>
 		/// <param name="platformName">The name of the platform to build for such as iOS, Android, etc.</param>

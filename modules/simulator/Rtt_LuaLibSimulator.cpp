@@ -43,6 +43,10 @@ show( lua_State *L )
 		{
 			simulator->SetBuildMessage( lua_tostring( L, 2 ) );
 		}
+        else if ( strcmp( "clone", arg ) == 0 )
+        {
+            simulator->CloneProject();
+        }
 		else if ( strcmp( "new", arg ) == 0 )
 		{
 			simulator->NewProject();
