@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -16,50 +16,46 @@
 
 #ifdef _WIN32
 
-namespace Rtt 
+namespace Rtt
 {
 	LinuxInputDevice::LinuxInputDevice(const InputDeviceDescriptor &descriptor)
-		: Super(descriptor)
-		, fConnected(InputDeviceConnectionState::kConnected)
-		, fCanVibrate(false)
-		, fd(-1)
-		, fAxesCount(0)
+		: Super(descriptor), fConnected(InputDeviceConnectionState::kConnected), fCanVibrate(false), fd(-1), fAxesCount(0)
 	{
 	}
 
 	LinuxInputDevice::~LinuxInputDevice()
 	{
 	}
-	
-	const char* LinuxInputDevice::getAxisName(int i)
+
+	const char *LinuxInputDevice::getAxisName(int i)
 	{
 		return "?";
 	}
 
-	void LinuxInputDevice::init(const char* dev)
+	void LinuxInputDevice::init(const char *dev)
 	{
 	}
-	
-	void LinuxInputDevice::dispatchEvents(Runtime* runtime)
-	{
-	}	
 
-	const char* LinuxInputDevice::GetProductName()
+	void LinuxInputDevice::dispatchEvents(Runtime *runtime)
+	{
+	}
+
+	const char *LinuxInputDevice::GetProductName()
 	{
 		return fSerialNumber.c_str();
 	}
 
-	bool LinuxInputDevice::AddNamedAxis(const char* axisName)
+	bool LinuxInputDevice::AddNamedAxis(const char *axisName)
 	{
 		return false;
 	}
-			
-	const char* LinuxInputDevice::GetDisplayName()
+
+	const char *LinuxInputDevice::GetDisplayName()
 	{
 		return fSerialNumber.c_str();
 	}
 
-	const char* LinuxInputDevice::GetPermanentStringId()
+	const char *LinuxInputDevice::GetPermanentStringId()
 	{
 		return fSerialNumber.c_str();
 	}
@@ -74,12 +70,12 @@ namespace Rtt
 		return fCanVibrate;
 	}
 
-	PlatformInputAxis* LinuxInputDevice::OnCreateAxisUsing(const InputAxisDescriptor &descriptor)
+	PlatformInputAxis *LinuxInputDevice::OnCreateAxisUsing(const InputAxisDescriptor &descriptor)
 	{
 		return NULL;
 	}
 
-	const char* LinuxInputDevice::GetDriverName()
+	const char *LinuxInputDevice::GetDriverName()
 	{
 		return fDriverName.c_str();
 	}
@@ -89,8 +85,7 @@ namespace Rtt
 	}
 
 	LinuxInputAxis::LinuxInputAxis(const InputAxisDescriptor &descriptor)
-		: PlatformInputAxis(descriptor)
-		, centerPoint0(true)
+		: PlatformInputAxis(descriptor), centerPoint0(true)
 	{
 	}
 
@@ -98,7 +93,7 @@ namespace Rtt
 	{
 		return 0;
 	}
-}
+} // namespace Rtt
 
 #else
 
@@ -107,51 +102,47 @@ namespace Rtt
 // Axis map max size
 #define AXMAP_SIZE ABS_MAX + 1
 
-namespace Rtt 
+namespace Rtt
 {
 
 	static char *sAxisNames[ABS_MAX + 1] = {
-	"X", "Y", "Z", "Rx", "Ry", "Rz", "Throttle", "Rudder", "Wheel", "Gas", "Brake", "?", "?", "?", "?", "?", "Hat0X", "Hat0Y", "Hat1X", "Hat1Y", "Hat2X", 
-	"Hat2Y", "Hat3X", "Hat3Y", "?", "?", "?", "?", "?", "?", "?" };
-	
+		"X", "Y", "Z", "Rx", "Ry", "Rz", "Throttle", "Rudder", "Wheel", "Gas", "Brake", "?", "?", "?", "?", "?", "Hat0X", "Hat0Y", "Hat1X", "Hat1Y", "Hat2X",
+		"Hat2Y", "Hat3X", "Hat3Y", "?", "?", "?", "?", "?", "?", "?"};
+
 	static std::map<std::string, InputAxisType> sAxisTypes = {
-		{"X", InputAxisType::kX }, 
-		{"Y", InputAxisType::kY }, 
-		{"Z", InputAxisType::kZ }, 
-		{"Rx", InputAxisType::kRotationX }, 
-		{"Ry", InputAxisType::kRotationY }, 
-		{"Rz", InputAxisType::kRotationZ }, 
-		{"Hat0X", InputAxisType::kHatX }, 
-		{"Hat0Y", InputAxisType::kHatY },
+		{"X", InputAxisType::kX},
+		{"Y", InputAxisType::kY},
+		{"Z", InputAxisType::kZ},
+		{"Rx", InputAxisType::kRotationX},
+		{"Ry", InputAxisType::kRotationY},
+		{"Rz", InputAxisType::kRotationZ},
+		{"Hat0X", InputAxisType::kHatX},
+		{"Hat0Y", InputAxisType::kHatY},
 	};
 
 	LinuxInputDevice::LinuxInputDevice(const InputDeviceDescriptor &descriptor)
-		: Super(descriptor)
-		, fConnected(InputDeviceConnectionState::kConnected)
-		, fCanVibrate(false)
-		, fd(-1)
-		, fAxesCount(0)
+		: Super(descriptor), fConnected(InputDeviceConnectionState::kConnected), fCanVibrate(false), fd(-1), fAxesCount(0)
 	{
 		fSerialNumber = "Unknown";
 		fConnected = InputDeviceConnectionState::kDisconnected;
-		
+
 		fAxesMap = new uint8_t[AXMAP_SIZE];
 		for (int i = 0; i < AXMAP_SIZE; i++)
 		{
 			fAxesMap[i] = static_cast<uint8_t>(-1);
 		}
 	}
-	
+
 	LinuxInputDevice::~LinuxInputDevice()
 	{
 		if (fd >= 0)
 		{
 			close(fd);
 		}
-		delete [] fAxesMap;
+		delete[] fAxesMap;
 	}
-	
-	const char* LinuxInputDevice::getAxisName(int i)
+
+	const char *LinuxInputDevice::getAxisName(int i)
 	{
 		// sanity check
 		if (i >= 0 && i < AXMAP_SIZE)
@@ -165,28 +156,28 @@ namespace Rtt
 		return "?";
 	}
 
-	void LinuxInputDevice::init(const char* dev)
+	void LinuxInputDevice::init(const char *dev)
 	{
 		fd = open(dev, O_RDONLY | O_NONBLOCK);
 		if (fd >= 0)
 		{
 			char name[128] = {0};
 			ioctl(fd, JSIOCGNAME(sizeof(name)), name);
-			ioctl (fd, JSIOCGAXES, &fAxesCount);
+			ioctl(fd, JSIOCGAXES, &fAxesCount);
 			ioctl(fd, JSIOCGAXMAP, fAxesMap);
-			
+
 			int driverVer = 0;
-			ioctl(fd, JSIOCGVERSION	, driverVer);
+			ioctl(fd, JSIOCGVERSION, driverVer);
 			fDriverName = "driver-";
 			fDriverName += std::to_string(driverVer);
-			
-//			printf("Joystick (%s) has %d axes (", name, fAxesCount);
-//			for (int i = 0; i < fAxesCount; i++)
-//			{
-//				printf("%s%s", i > 0 ? ", " : "", getAxisName(i));
-//			}
-//			puts(")");
-								
+
+			//			printf("Joystick (%s) has %d axes (", name, fAxesCount);
+			//			for (int i = 0; i < fAxesCount; i++)
+			//			{
+			//				printf("%s%s", i > 0 ? ", " : "", getAxisName(i));
+			//			}
+			//			puts(")");
+
 			fSerialNumber = name;
 			fCanVibrate = false; // fixme
 
@@ -202,98 +193,100 @@ namespace Rtt
 			{
 				axesNeutral0 = AddNamedAxis(getAxisName(i)) || axesNeutral0;
 			}
-			
+
 			// HACK: most of devices have bad habbit of reporting all axes from 0 to 255. It means that
 			// neutral position is 0.5, which is not nice.
 			// So, if any of the axes reports it's minimal position as negative, we assume that device knows where it's neutral position is
 			// and reports it as 0. So we would set old way of scaling for all axis on device
 			if (!axesNeutral0)
 			{
-				const ReadOnlyInputAxisCollection& axes = GetAxes();
+				const ReadOnlyInputAxisCollection &axes = GetAxes();
 				for (S32 index = axes.GetCount() - 1; index >= 0; index--)
 				{
-					LinuxInputAxis* axis = (LinuxInputAxis*) axes.GetByIndex(index);
+					LinuxInputAxis *axis = (LinuxInputAxis *)axes.GetByIndex(index);
 					if (axis)
 					{
 						axis->centerPoint0 = false;
 					}
 				}
 			}
+
+#ifdef Rtt_DEBUG
 			Rtt_LogException("Joystick %s on %s found\n", name, dev);
-		}		
+#endif
+		}
 		else
 		{
-//			Rtt_LogException("no joystick on %s\n", dev);
+			//	Rtt_LogException("no joystick on %s\n", dev);
 		}
 	}
-	
-	void LinuxInputDevice::dispatchEvents(Runtime* runtime)
+
+	void LinuxInputDevice::dispatchEvents(Runtime *runtime)
 	{
 		struct js_event e;
-		while (fd >=0 && read(fd, &e, sizeof(e)) > 0)
+		while (fd >= 0 && read(fd, &e, sizeof(e)) > 0)
 		{
 			if (e.type & JS_EVENT_INIT)
 			{
 				continue;
 			}
-			
+
 			switch (e.type)
 			{
-				case JS_EVENT_BUTTON:
+			case JS_EVENT_BUTTON:
+			{
+				//printf("JS_EVENT_BUTTON: type=%d, value=%d, button=%d\n", e.type, e.value, e.number);
+				bool pressed = e.value == 1;
+				unsigned int key = e.number;
+				KeyEvent::Phase phase = e.value == 1 ? KeyEvent::kDown : KeyEvent::kUp;
+
+				// disabled system button-map
+
+				char buttonName[25];
+
+				//this part is sketcy. I'm not really sure how to tell which button is it...
+				const char *keyNames[] = {KeyName::kButton1, KeyName::kButton2, KeyName::kButton3, KeyName::kButton4, KeyName::kButton5, KeyName::kButton6, KeyName::kButton7, KeyName::kButton8, KeyName::kButton9, KeyName::kButton10, KeyName::kButton11, KeyName::kButton12, KeyName::kButton13, KeyName::kButton14, KeyName::kButton15, KeyName::kButton16};
+				if (key < ARRAYSIZE(keyNames))
 				{
-					//printf("JS_EVENT_BUTTON: type=%d, value=%d, button=%d\n", e.type, e.value, e.number);
-					bool pressed = e.value == 1;
-					unsigned int key = e.number;
-					KeyEvent::Phase phase = e.value == 1 ? KeyEvent::kDown : KeyEvent::kUp;
-
-					// disabled system button-map
-					
-					char buttonName[25];
-
-					//this part is sketcy. I'm not really sure how to tell which button is it...
-					const char* keyNames[] = { KeyName::kButton1, KeyName::kButton2, KeyName::kButton3, KeyName::kButton4, KeyName::kButton5, KeyName::kButton6, KeyName::kButton7, KeyName::kButton8, KeyName::kButton9, KeyName::kButton10, KeyName::kButton11, KeyName::kButton12, KeyName::kButton13, KeyName::kButton14, KeyName::kButton15, KeyName::kButton16 };
-					if ( key < ARRAYSIZE(keyNames))
-					{
-						strncpy(buttonName, keyNames[key], sizeof(buttonName));
-					}
-					else
-					{
-						snprintf(buttonName, sizeof(buttonName), "button%d", key + 1);
-					}
-
-					// 188 - copied from android. Joystick buttons should not use KeyCodes, but it is required. So joystick keycodes would
-					// start from 188 as they do on Android.
-					KeyEvent event(this, phase, buttonName, 188 + key % 100, false, false, false, false);
-					runtime->DispatchEvent(event);
-					break;
+					strncpy(buttonName, keyNames[key], sizeof(buttonName));
 				}
-				case JS_EVENT_AXIS:
-				{				
+				else
+				{
+					snprintf(buttonName, sizeof(buttonName), "button%d", key + 1);
+				}
+
+				// 188 - copied from android. Joystick buttons should not use KeyCodes, but it is required. So joystick keycodes would
+				// start from 188 as they do on Android.
+				KeyEvent event(this, phase, buttonName, 188 + key % 100, false, false, false, false);
+				runtime->DispatchEvent(event);
+				break;
+			}
+			case JS_EVENT_AXIS:
+			{
 				//	printf("JS_EVENT_AXIS: type=%d, value=%d, axis=%d, axisname=%s\n", e.type, e.value, e.number, getAxisName(e.number));
-					PlatformInputAxis *axis = GetAxes().GetByIndex(e.number);
-					if (axis)
-					{
-						AxisEvent event(this, axis, e.value);
-						runtime->DispatchEvent(event);
-					}
- 					break;
+				PlatformInputAxis *axis = GetAxes().GetByIndex(e.number);
+				if (axis)
+				{
+					AxisEvent event(this, axis, e.value);
+					runtime->DispatchEvent(event);
 				}
-				default:
-					Rtt_ASSERT(0);
+				break;
+			}
+			default:
+				Rtt_ASSERT(0);
 			}
 		}
-		
-	}	
+	}
 
-	const char* LinuxInputDevice::GetProductName()
+	const char *LinuxInputDevice::GetProductName()
 	{
 		return fSerialNumber.c_str();
 	}
 
-	bool LinuxInputDevice::AddNamedAxis(const char* axisName)
+	bool LinuxInputDevice::AddNamedAxis(const char *axisName)
 	{
-		PlatformInputAxis* axis = AddAxis();
-		
+		PlatformInputAxis *axis = AddAxis();
+
 		auto it = sAxisTypes.find(axisName);
 		if (it != sAxisTypes.end())
 		{
@@ -307,7 +300,7 @@ namespace Rtt
 
 		float physicalMax = 32767;
 		float physicalMin = -32767;
-		bool absolute = true; 
+		bool absolute = true;
 
 		axis->SetMinValue(physicalMin);
 		axis->SetMaxValue(physicalMax);
@@ -318,13 +311,13 @@ namespace Rtt
 
 		return physicalMax < 0 || physicalMin < 0;
 	}
-			
-	const char* LinuxInputDevice::GetDisplayName()
+
+	const char *LinuxInputDevice::GetDisplayName()
 	{
 		return fSerialNumber.c_str();
 	}
 
-	const char* LinuxInputDevice::GetPermanentStringId()
+	const char *LinuxInputDevice::GetPermanentStringId()
 	{
 		return fSerialNumber.c_str();
 	}
@@ -339,12 +332,12 @@ namespace Rtt
 		return fCanVibrate;
 	}
 
-	PlatformInputAxis* LinuxInputDevice::OnCreateAxisUsing(const InputAxisDescriptor &descriptor)
+	PlatformInputAxis *LinuxInputDevice::OnCreateAxisUsing(const InputAxisDescriptor &descriptor)
 	{
 		return Rtt_NEW(GetAllocator(), LinuxInputAxis(descriptor));
 	}
 
-	const char* LinuxInputDevice::GetDriverName()
+	const char *LinuxInputDevice::GetDriverName()
 	{
 		fDriverName.c_str();
 	}
@@ -354,11 +347,9 @@ namespace Rtt
 	}
 
 	LinuxInputAxis::LinuxInputAxis(const InputAxisDescriptor &descriptor)
-		: PlatformInputAxis(descriptor)
-		, centerPoint0(true)
+		: PlatformInputAxis(descriptor), centerPoint0(true)
 	{
 	}
-
 
 	Rtt_Real LinuxInputAxis::GetNormalizedValue(Rtt_Real rawValue)
 	{
@@ -375,5 +366,5 @@ namespace Rtt
 		return ret;
 	}
 
-}
+} // namespace Rtt
 #endif
