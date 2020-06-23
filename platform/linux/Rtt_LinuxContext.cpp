@@ -444,18 +444,7 @@ namespace Rtt
 		fSaveFolder.append(homedir);
 		fSaveFolder.append("/Documents/Solar Built Apps");
 
-		// tar.gz app ?
 		string assetsDir = startDir;
-		assetsDir.append("/resource.car");
-
-		//Rtt_LogException("Checking %s\n", assetsDir.c_str());
-		if (Rtt_FileExists(assetsDir.c_str()))
-		{
-			fPathToApp = startDir;
-			return;
-		}
-
-		// next check if main.lua exists
 		assetsDir = startDir;
 		assetsDir.append("/main.lua");
 
@@ -463,34 +452,6 @@ namespace Rtt
 		if (Rtt_FileExists(assetsDir.c_str()))
 		{
 			fPathToApp = startDir;
-			return;
-		}
-
-		// look for DEB package ?
-		startDir = "/usr/share/solar2d/";
-		startDir.append(fAppName);
-
-		// check for resource.car
-		assetsDir = startDir;
-		assetsDir.append("/resource.car");
-		//Rtt_LogException("Checking %s\n", assetsDir.c_str());
-
-		if (Rtt_FileExists(assetsDir.c_str()))
-		{
-			fPathToApp = startDir;
-			fIsDebApp = true;
-			return;
-		}
-
-		// next check if main.lua exists
-		assetsDir = startDir;
-		assetsDir.append("/main.lua");
-
-		//Rtt_LogException("Checking %s\n", assetsDir.c_str());
-		if (Rtt_FileExists(assetsDir.c_str()))
-		{
-			fPathToApp = startDir;
-			fIsDebApp = true;
 			return;
 		}
 
