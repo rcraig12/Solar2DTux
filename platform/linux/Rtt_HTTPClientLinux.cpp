@@ -77,7 +77,6 @@ namespace Rtt
 			curl_easy_setopt(curlHandle, CURLOPT_WRITEFUNCTION, NULL);
 			// execute the request
 			CURLcode res = curl_easy_perform(curlHandle);
-			Rtt_Log("CURL CODE: %d\n", res);
 			// push the result
 			lua_pushnumber(L, res);
 			// close the response file

@@ -33,10 +33,11 @@
 #include "Rtt_LinuxContainer.h"
 #include "Rtt_PreferenceCollection.h"
 #include "Rtt_Freetype.h"
-
 #include <wx/wx.h>
 #include "wx/activityindicator.h"
 #include <pwd.h>
+
+using namespace std;
 
 namespace Rtt
 {
@@ -502,6 +503,13 @@ namespace Rtt
 
 	void LinuxPlatform::RuntimeErrorNotification(const char *errorType, const char *message, const char *stacktrace) const
 	{
+		string title(errorType);
+		string errorMsg(message);
+		errorMsg.append("\n");
+		errorMsg.append(stacktrace);
+
+		wxMessageDialog *msgDialog = new wxMessageDialog(NULL, errorMsg.c_str(), title.c_str(), wxOK);
+		msgDialog->ShowModal();
 	}
 
 	const MCrypto &LinuxPlatform::GetCrypto() const
