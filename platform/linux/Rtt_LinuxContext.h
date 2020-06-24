@@ -37,8 +37,8 @@ wxDECLARE_EVENT(eventOpenProject, wxCommandEvent);
 wxDECLARE_EVENT(eventNewProject, wxCommandEvent);
 wxDECLARE_EVENT(eventRelaunchProject, wxCommandEvent);
 wxDECLARE_EVENT(eventWelcomeProject, wxCommandEvent);
+wxDECLARE_EVENT(eventOpenPreferences, wxCommandEvent);
 wxDECLARE_EVENT(eventCloneProject, wxCommandEvent);
-wxDECLARE_EVENT(eventNewProject, wxCommandEvent);
 
 namespace Rtt
 {
@@ -208,6 +208,7 @@ public:
 	void OnAbout(wxCommandEvent &event);
 	void OnQuit(wxCommandEvent &event);
 	void OnOpen(wxCommandEvent &event);
+	void OnOpenPreferences(wxCommandEvent &event);
 	void OnCloneProject(wxCommandEvent &event);
 	void OnNewProject(wxCommandEvent &event);
 	void OnRelaunch(wxCommandEvent &event);

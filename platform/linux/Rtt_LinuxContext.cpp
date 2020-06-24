@@ -32,6 +32,7 @@
 #include "Rtt_LuaLibSimulator.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_MPlatformServices.h"
+#include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_LinuxCloneProjectDialog.h"
 #include "Rtt_LinuxNewProjectDialog.h"
 
@@ -49,15 +50,21 @@
 #define ID_MENU_CLEAR_PROJECT_SANDBOX wxID_HIGHEST + 20
 #define ID_MENU_OPEN_SAMPLE_CODE wxID_HIGHEST + 21
 #define ID_MENU_OPEN_DOCUMENTATION wxID_HIGHEST + 22
-
-using namespace Rtt;
-using namespace std;
-
 //#include "wx/msgdlg.h"
 #include "wx/menu.h"
 #include "wx/dcclient.h"
 #include "wx/app.h"
 #include "wx/display.h"
+
+using namespace Rtt;
+using namespace std;
+
+wxDEFINE_EVENT(eventOpenProject, wxCommandEvent);
+wxDEFINE_EVENT(eventRelaunchProject, wxCommandEvent);
+wxDEFINE_EVENT(eventWelcomeProject, wxCommandEvent);
+wxDEFINE_EVENT(eventOpenPreferences, wxCommandEvent);
+wxDEFINE_EVENT(eventCloneProject, wxCommandEvent);
+wxDEFINE_EVENT(eventNewProject, wxCommandEvent);
 
 static const char *getStartupPath(string *exeFileName)
 {
@@ -97,12 +104,6 @@ static char *CalculateMD5(string filename)
 
 	return hex;
 }
-
-wxDEFINE_EVENT(eventOpenProject, wxCommandEvent);
-wxDEFINE_EVENT(eventRelaunchProject, wxCommandEvent);
-wxDEFINE_EVENT(eventWelcomeProject, wxCommandEvent);
-wxDEFINE_EVENT(eventCloneProject, wxCommandEvent);
-wxDEFINE_EVENT(eventNewProject, wxCommandEvent);
 
 namespace Rtt
 {
@@ -916,27 +917,27 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 		EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
 			EVT_MENU(wxID_OPEN, MyFrame::OnOpenFileDialog)
 				EVT_MENU(wxID_NEW, MyFrame::OnNewProject)
+					EVT_MENU(wxID_PREFERENCES, MyFrame::OnOpenPreferences)
 
-					EVT_MENU(ID_MENU_WELCOME, MyFrame::OnOpenWelcome)
-						EVT_MENU(ID_MENU_BUILD_ANDROID, MyFrame::OnBuildAndroid)
-							EVT_MENU(ID_MENU_BUILD_WEB, MyFrame::OnBuildWeb)
-								EVT_MENU(ID_MENU_BUILD_LINUX, MyFrame::OnBuildLinux)
-									EVT_MENU(ID_MENU_RELAUNCH, MyFrame::OnRelaunch)
-										EVT_MENU(ID_MENU_CLOSE, MyFrame::OnOpenWelcome)
-											EVT_MENU(ID_MENU_OPEN_IN_EDITOR, MyFrame::OnOpenInEditor)
-												EVT_MENU(ID_MENU_SHOW_PROJECT_SANDBOX, MyFrame::OnShowProjectSandbox)
-													EVT_MENU(ID_MENU_CLEAR_PROJECT_SANDBOX, MyFrame::OnClearProjectSandbox)
-														EVT_MENU(ID_MENU_OPEN_SAMPLE_CODE, MyFrame::OnOpenSampleProjects)
-															EVT_MENU(ID_MENU_OPEN_DOCUMENTATION, MyFrame::OnOpenDocumentation)
+						EVT_MENU(ID_MENU_WELCOME, MyFrame::OnOpenWelcome)
+							EVT_MENU(ID_MENU_BUILD_ANDROID, MyFrame::OnBuildAndroid)
+								EVT_MENU(ID_MENU_BUILD_WEB, MyFrame::OnBuildWeb)
+									EVT_MENU(ID_MENU_BUILD_LINUX, MyFrame::OnBuildLinux)
+										EVT_MENU(ID_MENU_RELAUNCH, MyFrame::OnRelaunch)
+											EVT_MENU(ID_MENU_CLOSE, MyFrame::OnOpenWelcome)
+												EVT_MENU(ID_MENU_OPEN_IN_EDITOR, MyFrame::OnOpenInEditor)
+													EVT_MENU(ID_MENU_SHOW_PROJECT_SANDBOX, MyFrame::OnShowProjectSandbox)
+														EVT_MENU(ID_MENU_CLEAR_PROJECT_SANDBOX, MyFrame::OnClearProjectSandbox)
+															EVT_MENU(ID_MENU_OPEN_SAMPLE_CODE, MyFrame::OnOpenSampleProjects)
+																EVT_MENU(ID_MENU_OPEN_DOCUMENTATION, MyFrame::OnOpenDocumentation)
+																	EVT_COMMAND(wxID_ANY, eventOpenProject, MyFrame::OnOpen)
+																		EVT_COMMAND(wxID_ANY, eventCloneProject, MyFrame::OnCloneProject)
+																			EVT_COMMAND(wxID_ANY, eventNewProject, MyFrame::OnNewProject)
+																				EVT_COMMAND(wxID_ANY, eventRelaunchProject, MyFrame::OnRelaunch)
+																					EVT_COMMAND(wxID_ANY, eventWelcomeProject, MyFrame::OnOpenWelcome)
+																						wxEND_EVENT_TABLE()
 
-																EVT_COMMAND(wxID_ANY, eventOpenProject, MyFrame::OnOpen)
-																	EVT_COMMAND(wxID_ANY, eventCloneProject, MyFrame::OnCloneProject)
-																		EVT_COMMAND(wxID_ANY, eventNewProject, MyFrame::OnNewProject)
-																			EVT_COMMAND(wxID_ANY, eventRelaunchProject, MyFrame::OnRelaunch)
-																				EVT_COMMAND(wxID_ANY, eventWelcomeProject, MyFrame::OnOpenWelcome)
-																					wxEND_EVENT_TABLE()
-
-																						MyFrame::MyFrame()
+																							MyFrame::MyFrame()
 	: wxFrame(NULL, wxID_ANY, "", wxDefaultPosition, wxSize(320, 480), wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX), m_mycanvas(NULL), fContext(NULL), fMenuMain(NULL), fMenuProject(NULL), fWatcher(NULL),
 	  fProjectPath("")
 {
@@ -1031,7 +1032,6 @@ void MyFrame::createMenus()
 		mi = m_pFileMenu->Append(wxID_SAVE, _T("&Relaunch Last Project	\tCtrl-R"));
 		m_pFileMenu->AppendSeparator();
 		mi = m_pFileMenu->Append(wxID_PREFERENCES, _T("&Preferences..."));
-		mi->Enable(false);
 		m_pFileMenu->AppendSeparator();
 		mi = m_pFileMenu->Append(wxID_EXIT, _T("&Exit"));
 		fMenuMain->Append(m_pFileMenu, _T("&File"));
@@ -1076,7 +1076,6 @@ void MyFrame::createMenus()
 		mi = m_pFileMenu->Append(ID_MENU_CLOSE, _T("Close Project	\tCtrl-W"));
 		m_pFileMenu->AppendSeparator();
 		mi = m_pFileMenu->Append(wxID_PREFERENCES, _T("&Preferences..."));
-		mi->Enable(false);
 		m_pFileMenu->AppendSeparator();
 		mi = m_pFileMenu->Append(wxID_EXIT, _T("&Exit"));
 		fMenuProject->Append(m_pFileMenu, _T("&File"));
@@ -1341,6 +1340,17 @@ void MyFrame::OnRelaunch(wxCommandEvent &event)
 		setMenu(fAppPath.c_str());
 		m_mycanvas->startTimer(1000.0f / (float)fContext->getFPS());
 	}
+}
+
+void MyFrame::OnOpenPreferences(wxCommandEvent &event)
+{
+	NewPreferencesDialog *newPreferencesDialog = new NewPreferencesDialog(this, wxID_ANY, wxEmptyString);
+
+	if (newPreferencesDialog->ShowModal() == wxID_OK)
+	{
+	}
+
+	newPreferencesDialog->Destroy();
 }
 
 void MyFrame::OnCloneProject(wxCommandEvent &event)
