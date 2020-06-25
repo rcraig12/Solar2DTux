@@ -31,7 +31,7 @@ namespace Rtt
 	{
 		SetSize(wxSize(520, 480));
 		errorText = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 180), wxTE_READONLY | wxTE_MULTILINE);
-		stackTraceText = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(10, 0), wxSize(500, 120), wxTE_READONLY | wxTE_MULTILINE);
+		stackTraceText = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 120), wxTE_READONLY | wxTE_MULTILINE);
 		errorLabel = new wxStaticText(this, wxID_ANY, wxT("Error Message:"));
 		stackTracebackLabel = new wxStaticText(this, wxID_ANY, wxT("Stack Traceback:"));
 		relaunchProjectLabel = new wxStaticText(this, wxID_ANY, wxT("Do you want to relaunch the project?"));

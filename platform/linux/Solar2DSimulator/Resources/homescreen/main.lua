@@ -214,8 +214,13 @@ local openProjectButton = createButton("Open Existing Project",
 	function(event)
 		local recentProjects = loadTable(recentProjectsPath)
 		simulator.show("open")
-			
+
 		local projectPath = simulator.getCurrentProjectPath()
+
+		if (projectPath == nil or projectPath:len() <= 1) then
+			return
+		end
+
 		local projectName = getAppName(projectPath)
 		local projectDir = projectPath
 
