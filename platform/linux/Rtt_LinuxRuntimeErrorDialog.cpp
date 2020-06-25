@@ -30,8 +30,8 @@ namespace Rtt
 	NewRuntimeErrorDialog::NewRuntimeErrorDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style) : wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 	{
 		SetSize(wxSize(520, 480));
-		errorText = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 150), wxTE_READONLY | wxTE_MULTILINE);
-		stackTraceText = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 120), wxTE_READONLY | wxTE_MULTILINE);
+		errorText = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(500, 180), wxTE_READONLY | wxTE_MULTILINE);
+		stackTraceText = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(10, 0), wxSize(500, 120), wxTE_READONLY | wxTE_MULTILINE);
 		errorLabel = new wxStaticText(this, wxID_ANY, wxT("Error Message:"));
 		stackTracebackLabel = new wxStaticText(this, wxID_ANY, wxT("Stack Traceback:"));
 		relaunchProjectLabel = new wxStaticText(this, wxID_ANY, wxT("Do you want to relaunch the project?"));
@@ -57,32 +57,28 @@ namespace Rtt
 		wxBoxSizer *dialogMiddle = new wxBoxSizer(wxHORIZONTAL);
 		wxBoxSizer *dialogBottom = new wxBoxSizer(wxVERTICAL);
 		wxBoxSizer *dialogButtons = new wxBoxSizer(wxHORIZONTAL);
-		wxBoxSizer *boxSizerTopColumn1 = new wxBoxSizer(wxVERTICAL);
-		wxBoxSizer *boxSizerTopColumn2 = new wxBoxSizer(wxVERTICAL);
-		wxBoxSizer *boxSizerTopColumn3 = new wxBoxSizer(wxVERTICAL);
+		wxBoxSizer *boxSizerTopColumn = new wxBoxSizer(wxVERTICAL);
 		wxStaticLine *staticLineSeparator = new wxStaticLine(this, wxID_ANY);
 
 		// set fonts
 
 		// add to box sizers
-		boxSizerTopColumn1->Add(errorLabel, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM | wxTOP, 3);
-		boxSizerTopColumn1->Add(errorText, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM | wxTOP, 6);
-		boxSizerTopColumn1->Add(stackTracebackLabel, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM | wxTOP, 3);
-		boxSizerTopColumn1->Add(stackTraceText, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM | wxTOP, 6);
-		boxSizerTopColumn1->Add(relaunchProjectLabel, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM | wxTOP, 3);
+		boxSizerTopColumn->Add(errorLabel, 0, wxALIGN_CENTER_HORIZONTAL, 3);
+		boxSizerTopColumn->Add(errorText, 0, 0, 6);
+		boxSizerTopColumn->Add(stackTracebackLabel, 0, wxALIGN_CENTER_HORIZONTAL, 3);
+		boxSizerTopColumn->Add(stackTraceText, 0, 0, 6);
+		boxSizerTopColumn->Add(relaunchProjectLabel, 0, wxALIGN_CENTER_HORIZONTAL, 3);
 
 		// add to dialog buttons
 		dialogButtons->Add(btnOK, 0, wxRIGHT, 5);
 		dialogButtons->Add(btnCancel, 0, 0, 0);
 
 		// add to dialog layouts
-		dialogTop->Add(boxSizerTopColumn1, 0, wxLEFT | wxRIGHT, 7);
-		dialogTop->Add(boxSizerTopColumn2, 1, wxLEFT | wxRIGHT, 0);
-		dialogTop->Add(boxSizerTopColumn3, 0, wxEXPAND | wxLEFT | wxRIGHT, 7);
+		dialogTop->Add(boxSizerTopColumn, 0, wxEXPAND, 0);
 		dialogBottom->Add(staticLineSeparator, 0, wxEXPAND | wxLEFT | wxRIGHT, 7);
 		dialogBottom->Add(dialogButtons, 1, wxALIGN_CENTER_HORIZONTAL | wxALL, 7);
-		dialogLayout->Add(dialogTop, 0, wxBOTTOM | wxEXPAND | wxTOP, 8);
-		dialogLayout->Add(dialogBottom, 0, wxEXPAND, 0);
+		dialogLayout->Add(dialogTop, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 7);
+		dialogLayout->Add(dialogBottom, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 0);
 
 		SetSizer(dialogLayout);
 		Layout();
