@@ -33,6 +33,7 @@
 #include "Rtt_LinuxContainer.h"
 #include "Rtt_PreferenceCollection.h"
 #include "Rtt_Freetype.h"
+#include "Rtt_LinuxRuntimeErrorDialog.h"
 #include <wx/wx.h>
 #include "wx/activityindicator.h"
 #include <pwd.h>
@@ -503,13 +504,14 @@ namespace Rtt
 
 	void LinuxPlatform::RuntimeErrorNotification(const char *errorType, const char *message, const char *stacktrace) const
 	{
-		string title(errorType);
-		string errorMsg(message);
-		errorMsg.append("\n");
-		errorMsg.append(stacktrace);
+		NewRuntimeErrorDialog *newRuntimeErrorDialog = new NewRuntimeErrorDialog(NULL, wxID_ANY, wxEmptyString);
+		newRuntimeErrorDialog->SetProperties(errorType, message, stacktrace);
 
-		wxMessageDialog *msgDialog = new wxMessageDialog(NULL, errorMsg.c_str(), title.c_str(), wxOK);
-		msgDialog->ShowModal();
+		if (newRuntimeErrorDialog->ShowModal() == wxID_OK)
+		{
+		}
+
+		newRuntimeErrorDialog->Destroy();
 	}
 
 	const MCrypto &LinuxPlatform::GetCrypto() const

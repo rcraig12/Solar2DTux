@@ -19,7 +19,6 @@ namespace Rtt
 	private:
 		void SetProperties();
 		void SetLayout();
-		void CloneProject();
 
 	protected:
 		wxCheckBox *showRuntimeErrors;
