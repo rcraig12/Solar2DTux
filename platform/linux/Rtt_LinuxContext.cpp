@@ -50,6 +50,7 @@
 #define ID_MENU_CLEAR_PROJECT_SANDBOX wxID_HIGHEST + 20
 #define ID_MENU_OPEN_SAMPLE_CODE wxID_HIGHEST + 21
 #define ID_MENU_OPEN_DOCUMENTATION wxID_HIGHEST + 22
+#define ID_MENU_SUSPEND wxID_HIGHEST + 23
 //#include "wx/msgdlg.h"
 #include "wx/menu.h"
 #include "wx/dcclient.h"
@@ -65,6 +66,7 @@ wxDEFINE_EVENT(eventWelcomeProject, wxCommandEvent);
 wxDEFINE_EVENT(eventOpenPreferences, wxCommandEvent);
 wxDEFINE_EVENT(eventCloneProject, wxCommandEvent);
 wxDEFINE_EVENT(eventNewProject, wxCommandEvent);
+wxDEFINE_EVENT(eventSuspendOrResume, wxCommandEvent);
 
 static const char *getStartupPath(string *exeFileName)
 {
@@ -379,19 +381,33 @@ namespace Rtt
 		PlatformInputDevice *dev = NULL;
 		auto it = fKeyName.find(keycode);
 		const char *keyName = it == fKeyName.end() ? KeyName::kUnknown : it->second.c_str();
+		bool wasCtrlDown = false;
+		bool wasDownArrowDown = false;
 
-		if (down == false && (strcmp(keyName, "r") == 0) && isCtrlDown)
+		if (down == false)
 		{
+			wasCtrlDown = isCtrlDown;
+			wasDownArrowDown = strcmp(keyName, KeyName::kDown) == 0;
+
 			// relaunch
-			wxCommandEvent ev(eventRelaunchProject);
-			wxPostEvent(wxGetApp().getFrame(), ev);
+			if (strcmp(keyName, KeyName::kR) == 0 && isCtrlDown)
+			{
+				wxCommandEvent ev(eventRelaunchProject);
+				wxPostEvent(wxGetApp().getFrame(), ev);
+			}
+			// close
+			else if (strcmp(keyName, KeyName::kW) == 0 && isCtrlDown)
+			{
+				wxCommandEvent ev(eventRelaunchProject);
+				wxPostEvent(wxGetApp().getFrame(), ev);
+			}
 		}
 		else
 		{
-			if (down == false && (strcmp(keyName, "w") == 0) && isCtrlDown)
+			// suspend/resume
+			if (wasDownArrowDown && wasCtrlDown)
 			{
-				// close
-				wxCommandEvent ev(eventRelaunchProject);
+				wxCommandEvent ev(eventSuspendOrResume);
 				wxPostEvent(wxGetApp().getFrame(), ev);
 			}
 		}
@@ -924,25 +940,28 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 								EVT_MENU(ID_MENU_BUILD_WEB, MyFrame::OnBuildWeb)
 									EVT_MENU(ID_MENU_BUILD_LINUX, MyFrame::OnBuildLinux)
 										EVT_MENU(ID_MENU_RELAUNCH, MyFrame::OnRelaunch)
-											EVT_MENU(ID_MENU_CLOSE, MyFrame::OnOpenWelcome)
-												EVT_MENU(ID_MENU_OPEN_IN_EDITOR, MyFrame::OnOpenInEditor)
-													EVT_MENU(ID_MENU_SHOW_PROJECT_SANDBOX, MyFrame::OnShowProjectSandbox)
-														EVT_MENU(ID_MENU_CLEAR_PROJECT_SANDBOX, MyFrame::OnClearProjectSandbox)
-															EVT_MENU(ID_MENU_OPEN_SAMPLE_CODE, MyFrame::OnOpenSampleProjects)
-																EVT_MENU(ID_MENU_OPEN_DOCUMENTATION, MyFrame::OnOpenDocumentation)
-																	EVT_COMMAND(wxID_ANY, eventOpenProject, MyFrame::OnOpen)
-																		EVT_COMMAND(wxID_ANY, eventCloneProject, MyFrame::OnCloneProject)
-																			EVT_COMMAND(wxID_ANY, eventNewProject, MyFrame::OnNewProject)
-																				EVT_COMMAND(wxID_ANY, eventRelaunchProject, MyFrame::OnRelaunch)
-																					EVT_COMMAND(wxID_ANY, eventWelcomeProject, MyFrame::OnOpenWelcome)
-																						wxEND_EVENT_TABLE()
+											EVT_MENU(ID_MENU_SUSPEND, MyFrame::OnSuspendOrResume)
+												EVT_MENU(ID_MENU_CLOSE, MyFrame::OnOpenWelcome)
+													EVT_MENU(ID_MENU_OPEN_IN_EDITOR, MyFrame::OnOpenInEditor)
+														EVT_MENU(ID_MENU_SHOW_PROJECT_SANDBOX, MyFrame::OnShowProjectSandbox)
+															EVT_MENU(ID_MENU_CLEAR_PROJECT_SANDBOX, MyFrame::OnClearProjectSandbox)
+																EVT_MENU(ID_MENU_OPEN_SAMPLE_CODE, MyFrame::OnOpenSampleProjects)
+																	EVT_MENU(ID_MENU_OPEN_DOCUMENTATION, MyFrame::OnOpenDocumentation)
+																		EVT_COMMAND(wxID_ANY, eventOpenProject, MyFrame::OnOpen)
+																			EVT_COMMAND(wxID_ANY, eventSuspendOrResume, MyFrame::OnSuspendOrResume)
+																				EVT_COMMAND(wxID_ANY, eventCloneProject, MyFrame::OnCloneProject)
+																					EVT_COMMAND(wxID_ANY, eventNewProject, MyFrame::OnNewProject)
+																						EVT_COMMAND(wxID_ANY, eventRelaunchProject, MyFrame::OnRelaunch)
+																							EVT_COMMAND(wxID_ANY, eventWelcomeProject, MyFrame::OnOpenWelcome)
+																								wxEND_EVENT_TABLE()
 
-																							MyFrame::MyFrame()
+																									MyFrame::MyFrame()
 	: wxFrame(NULL, wxID_ANY, "", wxDefaultPosition, wxSize(320, 480), wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX), m_mycanvas(NULL), fContext(NULL), fMenuMain(NULL), fMenuProject(NULL), fWatcher(NULL),
 	  fProjectPath("")
 {
 	wxGLAttributes vAttrs;
 	vAttrs.PlatformDefaults().Defaults().EndList();
+	suspendedPanel = NULL;
 	bool accepted = wxGLCanvas::IsDisplaySupported(vAttrs);
 
 	if (accepted == false)
@@ -1081,7 +1100,7 @@ void MyFrame::createMenus()
 		fMenuProject->Append(m_pFileMenu, _T("&File"));
 
 		// hardware menu
-		wxMenu *m_pHardwareMenu = new wxMenu();
+		m_pHardwareMenu = new wxMenu();
 		mi = m_pHardwareMenu->Append(wxID_HELP_CONTENTS, _T("&Rotate Left"));
 		mi->Enable(false);
 		mi = m_pHardwareMenu->Append(wxID_HELP_INDEX, _T("&Rotate Right"));
@@ -1092,8 +1111,7 @@ void MyFrame::createMenus()
 		mi = m_pHardwareMenu->Append(wxID_ABOUT, _T("&Back"));
 		mi->Enable(false);
 		m_pHardwareMenu->AppendSeparator();
-		mi = m_pHardwareMenu->Append(wxID_ABOUT, _T("&Suspend"));
-		mi->Enable(false);
+		mi = m_pHardwareMenu->Append(ID_MENU_SUSPEND, _T("&Suspend	\tCtrl-Down"));
 		fMenuProject->Append(m_pHardwareMenu, _T("&Hardware"));
 
 		// View menu
@@ -1105,6 +1123,7 @@ void MyFrame::createMenus()
 		m_pViewMenu->AppendSeparator();
 		mi = m_pViewMenu->Append(wxID_ABOUT, _T("&View As"));
 		mi->Enable(false);
+
 		m_pViewMenu->AppendSeparator();
 		mi = m_pViewMenu->Append(ID_MENU_WELCOME, _T("&Welcome Screen"));
 		mi = m_pViewMenu->Append(wxID_ABOUT, _T("&Console"));
@@ -1316,21 +1335,18 @@ void MyFrame::OnOpenDocumentation(wxCommandEvent &ev)
 
 void MyFrame::OnRelaunch(wxCommandEvent &event)
 {
-	if (fAppPath.size() > 0)
+	if (fAppPath.size() > 0 && fContext->getAppName() != "homescreen")
 	{
 		delete fContext;
 		fContext = new CoronaAppContext(fAppPath.c_str());
 		_chdir(fContext->getAppPath());
 
+		RemoveSuspendedPanel();
 		watchFolder(fContext->getAppPath(), fContext->getAppName().c_str());
 
 		bool fullScreen = fContext->Init();
 
-		if (fContext->getAppName() != "homescreen")
-		{
-			LinuxSimulatorView::OnLinuxPluginGet(fContext->getAppPath(), fContext->getAppName().c_str(), fContext->getPlatform());
-		}
-
+		LinuxSimulatorView::OnLinuxPluginGet(fContext->getAppPath(), fContext->getAppName().c_str(), fContext->getPlatform());
 		fContext->loadApp(m_mycanvas);
 		resetSize();
 		m_mycanvas->fContext = fContext;
@@ -1340,6 +1356,53 @@ void MyFrame::OnRelaunch(wxCommandEvent &event)
 		setMenu(fAppPath.c_str());
 		m_mycanvas->startTimer(1000.0f / (float)fContext->getFPS());
 	}
+}
+
+void MyFrame::CreateSuspendedPanel()
+{
+#ifdef Rtt_SIMULATOR
+	if (suspendedPanel == NULL)
+	{
+		suspendedPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(fContext->getWidth(), fContext->getHeight()));
+		suspendedPanel->SetBackgroundColour(wxColour(*wxBLACK));
+		suspendedPanel->SetForegroundColour(wxColour(*wxBLACK));
+		suspendedText = new wxStaticText(this, -1, "Suspended", wxDefaultPosition, wxDefaultSize);
+		suspendedText->SetForegroundColour(*wxWHITE);
+		suspendedText->CenterOnParent();
+	}
+#endif
+}
+
+void MyFrame::RemoveSuspendedPanel()
+{
+#ifdef Rtt_SIMULATOR
+	if (suspendedPanel == NULL)
+	{
+		return;
+	}
+
+	suspendedPanel->Destroy();
+	suspendedText->Destroy();
+	suspendedPanel = NULL;
+#endif
+}
+
+void MyFrame::OnSuspendOrResume(wxCommandEvent &event)
+{
+#ifdef Rtt_SIMULATOR
+	if (fContext->GetRuntime()->IsSuspended())
+	{
+		RemoveSuspendedPanel();
+		m_pHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Suspend	\tCtrl-Down");
+		fContext->resume();
+	}
+	else
+	{
+		CreateSuspendedPanel();
+		m_pHardwareMenu->SetLabel(ID_MENU_SUSPEND, "&Resume	\tCtrl-Down");
+		fContext->pause();
+	}
+#endif
 }
 
 void MyFrame::OnOpenPreferences(wxCommandEvent &event)
@@ -1384,6 +1447,7 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 	fContext = new CoronaAppContext(path.c_str());
 	_chdir(fContext->getAppPath());
 
+	RemoveSuspendedPanel();
 	watchFolder(fContext->getAppPath(), fContext->getAppName().c_str());
 
 	if (fContext->getAppName() != "homescreen")

@@ -22,6 +22,8 @@
 
 #include "wx/app.h"
 #include "wx/frame.h"
+#include "wx/panel.h"
+#include "wx/stattext.h"
 #include "wx/glcanvas.h"
 #include <wx/timer.h>
 #include "wx/fswatcher.h"
@@ -39,6 +41,7 @@ wxDECLARE_EVENT(eventRelaunchProject, wxCommandEvent);
 wxDECLARE_EVENT(eventWelcomeProject, wxCommandEvent);
 wxDECLARE_EVENT(eventOpenPreferences, wxCommandEvent);
 wxDECLARE_EVENT(eventCloneProject, wxCommandEvent);
+wxDECLARE_EVENT(eventSuspendOrResume, wxCommandEvent);
 
 namespace Rtt
 {
@@ -212,6 +215,7 @@ public:
 	void OnCloneProject(wxCommandEvent &event);
 	void OnNewProject(wxCommandEvent &event);
 	void OnRelaunch(wxCommandEvent &event);
+	void OnSuspendOrResume(wxCommandEvent &event);
 	void OnOpenFileDialog(wxCommandEvent &event);
 	void OnOpenWelcome(wxCommandEvent &event);
 	void OnBuildAndroid(wxCommandEvent &ev);
@@ -223,6 +227,8 @@ public:
 	void OnOpenSampleProjects(wxCommandEvent &ev);
 	void OnOpenDocumentation(wxCommandEvent &ev);
 	void SetOGLString(const wxString &ogls) { m_OGLString = ogls; }
+	void CreateSuspendedPanel();
+	void RemoveSuspendedPanel();
 
 	MyGLCanvas *getCanvas() const { return m_mycanvas; }
 	Rtt::CoronaAppContext *getContext() const { return fContext; }
@@ -231,6 +237,9 @@ public:
 	void createMenus();
 	void watchFolder(const char *path, const char *appName);
 
+	wxPanel *suspendedPanel;
+	wxStaticText *suspendedText;
+	wxMenu *m_pHardwareMenu;
 	wxString m_OGLString;
 	MyGLCanvas *m_mycanvas;
 	Rtt::CoronaAppContext *fContext;
