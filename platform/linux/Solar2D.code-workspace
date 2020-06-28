@@ -17,6 +17,9 @@
 		}
 	],
 	"settings": {
+		"C_Cpp.default.includePath": [
+			"../../../**"
+		],
 		"files.associations": {
 			"array": "cpp",
 			"atomic": "cpp",
@@ -76,6 +79,9 @@
 			"hash_map": "cpp",
 			"hash_set": "cpp",
 			"numeric": "cpp"
-		}
-	}
+		},
+		"editor.renderWhitespace": "boundary",
+		"editor.dragAndDrop": false,
+		"editor.formatOnSave": true
+	},
 }
