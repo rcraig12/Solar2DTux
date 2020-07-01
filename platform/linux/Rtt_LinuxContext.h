@@ -25,9 +25,9 @@
 #include "wx/panel.h"
 #include "wx/stattext.h"
 #include "wx/glcanvas.h"
-#include <wx/timer.h>
+#include "wx/timer.h"
 #include "wx/fswatcher.h"
-#include <wx/aboutdlg.h>
+#include "wx/aboutdlg.h"
 
 #pragma once
 

@@ -23,8 +23,6 @@ rsync -r $BUILD_FOLDER/DEBIAN/ $INSTALLER_FOLDER/DEBIAN/
 sh copy_plugin_deps.sh
 # copy corona simulator binary
 rsync -avz -q --exclude "android*" Solar2DSimulator/ $DEBIAN_CONTENTS_INSTALL_FOLDER/
-# rename simulator binary
-mv $DEBIAN_CONTENTS_INSTALL_FOLDER/Solar2DSimulator_release $DEBIAN_CONTENTS_INSTALL_FOLDER/Solar2DSimulator
 # remove the debug binary
 rm -rf $DEBIAN_CONTENTS_INSTALL_FOLDER/Solar2DSimulator_debug
 # copy corona resources

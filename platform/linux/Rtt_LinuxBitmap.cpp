@@ -166,10 +166,13 @@ namespace Rtt
 			return false;
 		}
 
-		if (strcmp(filePath + strlen(filePath) - 4, ".png") != 0)
+		wxBitmapType bitmapType = wxBITMAP_TYPE_JPEG;
+
+		if (strcmp(filePath + strlen(filePath) - 4, ".png") == 0)
 		{
-			Rtt_LogException("Failed to save %s, .png files are supported only\n", filePath);
-			return false;
+			bitmapType = wxBITMAP_TYPE_PNG;
+			//Rtt_LogException("Failed to save %s, .png files are supported only\n", filePath);
+			//return false;
 		}
 
 		S32 w = bitmap->Width();
@@ -187,10 +190,8 @@ namespace Rtt
 		}
 
 		// save
-
 		U8 *rgb = (U8 *)malloc(w * h * 3);
 		U8 *alpha = (U8 *)malloc(w * h);
-
 		U8 *prgb = rgb;
 		U8 *palpha = alpha;
 		for (int y = 0; y < h; y++)
@@ -209,11 +210,13 @@ namespace Rtt
 		}
 
 		wxImage img(w, h, rgb, alpha, true); // disable taking ownership of the data and free it afterwards.
-		bool rc = img.SaveFile(filePath);
+		bool rc = img.SaveFile(filePath, bitmapType);
 
 		free(rgb);
 		free(alpha);
 		return rc;
+
+		return true;
 	}
 
 	//

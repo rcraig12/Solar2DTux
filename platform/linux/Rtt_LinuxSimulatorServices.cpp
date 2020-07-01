@@ -58,6 +58,7 @@ namespace Rtt
 		else
 		{
 			wxFileDialog openFileDialog(wxGetApp().getParent(), _("Open"), "~/Documents/Solar2D Projects", "", "Simulator Files (main.lua)|main.lua", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+
 			if (openFileDialog.ShowModal() == wxID_CANCEL)
 			{
 				return false;
@@ -84,12 +85,14 @@ namespace Rtt
 	bool LinuxSimulatorServices::BuildProject(const char *platformName) const
 	{
 		TargetDevice::Platform platformType = TargetDevice::PlatformForString(platformName);
+
 		switch (platformType)
 		{
-		case TargetDevice::kAndroidPlatform:
-			//			fSimulatorView.PostMessage(WM_COMMAND, ID_FILE_OPENFORBUILD);
-			return true;
+			case TargetDevice::kAndroidPlatform:
+				//			fSimulatorView.PostMessage(WM_COMMAND, ID_FILE_OPENFORBUILD);
+				return true;
 		}
+
 		return false;
 	}
 
@@ -110,11 +113,8 @@ namespace Rtt
 		Rtt_TRACE_SIM(("WARNING: SelectSaveFilename not available on Linux\n"));
 	}
 
-	// stub to match Mac implementation
 	const char *LinuxSimulatorServices::GetCurrProjectPath() const
 	{
-		//Rtt_TRACE_SIM(("WARNING: GetCurrProjectPath not available on Linux\n"));
-
 		return currentProjectPath.c_str();
 	}
 
@@ -199,7 +199,6 @@ namespace Rtt
 		Rtt_TRACE_SIM(("WARNING: SetWindowTitle not available on Linux\n"));
 	}
 
-	// stub to match Mac implementation
 	void LinuxSimulatorServices::OpenTextEditor(const char *filename) const
 	{
 		string command("xdg-open ");

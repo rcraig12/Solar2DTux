@@ -33,25 +33,25 @@ public:
     wxWebViewWebKit();
 
     wxWebViewWebKit(wxWindow *parent,
-           wxWindowID id = wxID_ANY,
-           const wxString& url = wxWebViewDefaultURLStr,
-           const wxPoint& pos = wxDefaultPosition,
-           const wxSize& size = wxDefaultSize, long style = 0,
-           const wxString& name = wxWebViewNameStr)
+                    wxWindowID id = wxID_ANY,
+                    const wxString &url = wxWebViewDefaultURLStr,
+                    const wxPoint &pos = wxDefaultPosition,
+                    const wxSize &size = wxDefaultSize, long style = 0,
+                    const wxString &name = wxWebViewNameStr)
     {
         Create(parent, id, url, pos, size, style, name);
     }
 
     virtual bool Create(wxWindow *parent,
-           wxWindowID id = wxID_ANY,
-           const wxString& url = wxWebViewDefaultURLStr,
-           const wxPoint& pos = wxDefaultPosition,
-           const wxSize& size = wxDefaultSize, long style = 0,
-           const wxString& name = wxWebViewNameStr) wxOVERRIDE;
+                        wxWindowID id = wxID_ANY,
+                        const wxString &url = wxWebViewDefaultURLStr,
+                        const wxPoint &pos = wxDefaultPosition,
+                        const wxSize &size = wxDefaultSize, long style = 0,
+                        const wxString &name = wxWebViewNameStr) wxOVERRIDE;
 
     virtual ~wxWebViewWebKit();
 
-    virtual bool Enable( bool enable = true ) wxOVERRIDE;
+    virtual bool Enable(bool enable = true) wxOVERRIDE;
 
     // implementation
     // --------------
@@ -60,7 +60,7 @@ public:
     GetClassDefaultAttributes(wxWindowVariant variant = wxWINDOW_VARIANT_NORMAL);
 
     virtual void Stop() wxOVERRIDE;
-    virtual void LoadURL(const wxString& url) wxOVERRIDE;
+    virtual void LoadURL(const wxString &url) wxOVERRIDE;
     virtual void GoBack() wxOVERRIDE;
     virtual void GoForward() wxOVERRIDE;
     virtual void Reload(wxWebViewReloadFlags flags = wxWEBVIEW_RELOAD_DEFAULT) wxOVERRIDE;
@@ -69,8 +69,8 @@ public:
     virtual void ClearHistory() wxOVERRIDE;
     virtual void EnableContextMenu(bool enable = true) wxOVERRIDE;
     virtual void EnableHistory(bool enable = true) wxOVERRIDE;
-    virtual wxVector<wxSharedPtr<wxWebViewHistoryItem> > GetBackwardHistory() wxOVERRIDE;
-    virtual wxVector<wxSharedPtr<wxWebViewHistoryItem> > GetForwardHistory() wxOVERRIDE;
+    virtual wxVector<wxSharedPtr<wxWebViewHistoryItem>> GetBackwardHistory() wxOVERRIDE;
+    virtual wxVector<wxSharedPtr<wxWebViewHistoryItem>> GetForwardHistory() wxOVERRIDE;
     virtual void LoadHistoryItem(wxSharedPtr<wxWebViewHistoryItem> item) wxOVERRIDE;
     virtual wxString GetCurrentURL() const wxOVERRIDE;
     virtual wxString GetCurrentTitle() const wxOVERRIDE;
@@ -100,7 +100,7 @@ public:
     virtual void Redo() wxOVERRIDE;
 
     //Find function
-    virtual long Find(const wxString& text, int flags = wxWEBVIEW_FIND_DEFAULT) wxOVERRIDE;
+    virtual long Find(const wxString &text, int flags = wxWEBVIEW_FIND_DEFAULT) wxOVERRIDE;
 
     //Editing functions
     virtual void SetEditable(bool enable = true) wxOVERRIDE;
@@ -114,13 +114,13 @@ public:
     virtual wxString GetSelectedSource() const wxOVERRIDE;
     virtual void ClearSelection() wxOVERRIDE;
 
-    virtual bool RunScript(const wxString& javascript, wxString* output = NULL) wxOVERRIDE;
+    virtual bool RunScript(const wxString &javascript, wxString *output = NULL) wxOVERRIDE;
 
     //Virtual Filesystem Support
     virtual void RegisterHandler(wxSharedPtr<wxWebViewHandler> handler) wxOVERRIDE;
-    virtual wxVector<wxSharedPtr<wxWebViewHandler> > GetHandlers() { return m_handlerList; }
+    virtual wxVector<wxSharedPtr<wxWebViewHandler>> GetHandlers() { return m_handlerList; }
 
-    virtual void* GetNativeBackend() const wxOVERRIDE { return m_web_view; }
+    virtual void *GetNativeBackend() const wxOVERRIDE { return m_web_view; }
 
     /** TODO: check if this can be made private
      * The native control has a getter to check for busy state, but except in
@@ -140,12 +140,11 @@ public:
     bool m_creating;
 
 protected:
-    virtual void DoSetPage(const wxString& html, const wxString& baseUrl) wxOVERRIDE;
+    virtual void DoSetPage(const wxString &html, const wxString &baseUrl) wxOVERRIDE;
 
-    virtual GdkWindow *GTKGetWindow(wxArrayGdkWindows& windows) const wxOVERRIDE;
+    virtual GdkWindow *GTKGetWindow(wxArrayGdkWindows &windows) const wxOVERRIDE;
 
 private:
-
     void ZoomIn();
     void ZoomOut();
     void SetWebkitZoom(float level);
@@ -155,18 +154,18 @@ private:
     void FindClear();
 
     // focus event handler: calls GTKUpdateBitmap()
-    void GTKOnFocus(wxFocusEvent& event);
+    void GTKOnFocus(wxFocusEvent &event);
 
 #if wxUSE_WEBVIEW_WEBKIT2
-    bool CanExecuteEditingCommand(const gchar* command) const;
+    bool CanExecuteEditingCommand(const gchar *command) const;
     void SetupWebExtensionServer();
-    bool RunScriptSync(const wxString& javascript, wxString* output = NULL);
+    bool RunScriptSync(const wxString &javascript, wxString *output = NULL);
 #endif
 
     WebKitWebView *m_web_view;
     int m_historyLimit;
 
-    wxVector<wxSharedPtr<wxWebViewHandler> > m_handlerList;
+    wxVector<wxSharedPtr<wxWebViewHandler>> m_handlerList;
 
     //variables used for Find()
     int m_findFlags;
@@ -186,17 +185,18 @@ private:
 class WXDLLIMPEXP_WEBVIEW wxWebViewFactoryWebKit : public wxWebViewFactory
 {
 public:
-    virtual wxWebView* Create() wxOVERRIDE { return new wxWebViewWebKit; }
-    virtual wxWebView* Create(wxWindow* parent,
+    virtual wxWebView *Create() wxOVERRIDE { return new wxWebViewWebKit; }
+    virtual wxWebView *Create(wxWindow *parent,
                               wxWindowID id,
-                              const wxString& url = wxWebViewDefaultURLStr,
-                              const wxPoint& pos = wxDefaultPosition,
-                              const wxSize& size = wxDefaultSize,
+                              const wxString &url = wxWebViewDefaultURLStr,
+                              const wxPoint &pos = wxDefaultPosition,
+                              const wxSize &size = wxDefaultSize,
                               long style = 0,
-                              const wxString& name = wxWebViewNameStr) wxOVERRIDE
-    { return new wxWebViewWebKit(parent, id, url, pos, size, style, name); }
+                              const wxString &name = wxWebViewNameStr) wxOVERRIDE
+    {
+        return new wxWebViewWebKit(parent, id, url, pos, size, style, name);
+    }
 };
-
 
 #endif // wxUSE_WEBVIEW && wxUSE_WEBVIEW_WEBKIT && defined(__WXGTK__)
 

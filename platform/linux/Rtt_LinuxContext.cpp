@@ -32,6 +32,7 @@
 #include "Rtt_LuaLibSimulator.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_MPlatformServices.h"
+#include "Rtt_LinuxSimulator.h"
 #include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_LinuxCloneProjectDialog.h"
 #include "Rtt_LinuxNewProjectDialog.h"
@@ -462,10 +463,17 @@ namespace Rtt
 		fSaveFolder.append("/Documents/Solar Built Apps");
 
 		string assetsDir = startDir;
+		assetsDir.append("/Resources/resource.car");
+
+		if (Rtt_FileExists(assetsDir.c_str()))
+		{
+			fPathToApp = startDir;
+			return;
+		}
+
 		assetsDir = startDir;
 		assetsDir.append("/main.lua");
 
-		//Rtt_LogException("Checking %s\n", assetsDir.c_str());
 		if (Rtt_FileExists(assetsDir.c_str()))
 		{
 			fPathToApp = startDir;
@@ -566,12 +574,14 @@ namespace Rtt
 		{
 			Rtt_MakeDirectory(documentsDir.c_str());
 		}
+
 		if (Rtt_IsDirectory(systemCachesDir.c_str()) == false)
 		{
 			Rtt_MakeDirectory(systemCachesDir.c_str());
 		}
 
 		Rtt_DeleteDirectory(temporaryDir.c_str());
+
 		if (Rtt_IsDirectory(temporaryDir.c_str()) == false)
 		{
 			Rtt_MakeDirectory(temporaryDir.c_str());
@@ -642,6 +652,7 @@ namespace Rtt
 		else if (orientation == "portrait")
 		{
 			fRuntimeDelegate->fOrientation = DeviceOrientation::kUpright; // bottom of device is at the bottom
+
 			if (w > 0 && h > 0)
 			{
 				fRuntimeDelegate->fContentWidth = w;
@@ -674,6 +685,7 @@ namespace Rtt
 		}
 
 		bool fullScreen = (fMode == "maximized");
+
 		if (fullScreen)
 		{
 			wxDisplay screen;
@@ -756,40 +768,51 @@ namespace Rtt
 		int top = lua_gettop(L);
 
 		lua_getfield(L, -1, table);
+
 		if (lua_istable(L, -1))
 		{
 			rc = true;
 			lua_getfield(L, -1, "defaultViewWidth");
+
 			if ((!lua_isnil(L, -1)) && (lua_isnumber(L, -1)))
 			{
 				*w = lua_tointeger(L, -1);
 			}
+
 			lua_pop(L, 1);
 
 			lua_getfield(L, -1, "defaultViewHeight");
+
 			if ((!lua_isnil(L, -1)) && (lua_isnumber(L, -1)))
 			{
 				*h = lua_tointeger(L, -1);
 			}
+
 			lua_pop(L, 1);
 
 			lua_getfield(L, -1, "defaultMode");
+
 			if ((!lua_isnil(L, -1)) && (lua_isstring(L, -1)))
 			{
 				*mode = lua_tostring(L, -1);
 			}
+
 			lua_pop(L, 1);
 
 			lua_getfield(L, -1, "titleText");
+
 			if (lua_istable(L, -1))
 			{
 				lua_getfield(L, -1, "default");
+
 				if ((!lua_isnil(L, -1)) && (lua_isstring(L, -1)))
 				{
 					*title = lua_tostring(L, -1);
 				}
+
 				lua_pop(L, 1); // remove default
 			}
+
 			lua_pop(L, 1); // remove titleText
 		}
 
@@ -822,23 +845,29 @@ namespace Rtt
 			// so push a "fake" error msg on the stack so we are consistent with those cases
 			lua_pushnil(L);
 		}
+
 		lua_pop(L, 1); // remove DoFile result
 
 		if (status == 0)
 		{
 			lua_getglobal(L, "settings"); // settings
+
 			if (lua_istable(L, -1))
 			{
 				lua_getfield(L, -1, "orientation"); // settings.orientation
+
 				if (lua_istable(L, -1))
 				{
 					lua_getfield(L, -1, "default");
+
 					if ((!lua_isnil(L, -1)) && (lua_isstring(L, -1)))
 					{
 						*orientation = lua_tostring(L, -1);
 					}
+
 					lua_pop(L, 1);
 				}
+
 				lua_pop(L, 1); // remove orientation
 
 				// first try settings from 'web' table
@@ -848,6 +877,7 @@ namespace Rtt
 					readTable(L, "window", w, h, title, mode);
 				}
 			}
+
 			lua_pop(L, 1); // remove settings
 		}
 		else if (status == 3)
@@ -858,6 +888,7 @@ namespace Rtt
 		{
 			Rtt_LogException("Failed to read build.settings file\n");
 		}
+
 		lua_settop(L, top);
 	}
 
@@ -868,6 +899,7 @@ namespace Rtt
 			lua_pushstring(L, fEventName.c_str());
 			lua_setfield(L, -2, kTypeKey);
 		}
+
 		return 1;
 	}
 } // namespace Rtt
@@ -913,6 +945,7 @@ bool MyApp::OnInit()
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -930,32 +963,32 @@ LinuxPlatform *MyApp::getPlatform() const
 
 wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_MENU(wxID_EXIT, MyFrame::OnQuit)
-		EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
-			EVT_MENU(wxID_OPEN, MyFrame::OnOpenFileDialog)
-				EVT_MENU(wxID_NEW, MyFrame::OnNewProject)
-					EVT_MENU(wxID_PREFERENCES, MyFrame::OnOpenPreferences)
+	EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
+	EVT_MENU(wxID_OPEN, MyFrame::OnOpenFileDialog)
+	EVT_MENU(wxID_NEW, MyFrame::OnNewProject)
+	EVT_MENU(wxID_PREFERENCES, MyFrame::OnOpenPreferences)
 
-						EVT_MENU(ID_MENU_WELCOME, MyFrame::OnOpenWelcome)
-							EVT_MENU(ID_MENU_BUILD_ANDROID, MyFrame::OnBuildAndroid)
-								EVT_MENU(ID_MENU_BUILD_WEB, MyFrame::OnBuildWeb)
-									EVT_MENU(ID_MENU_BUILD_LINUX, MyFrame::OnBuildLinux)
-										EVT_MENU(ID_MENU_RELAUNCH, MyFrame::OnRelaunch)
-											EVT_MENU(ID_MENU_SUSPEND, MyFrame::OnSuspendOrResume)
-												EVT_MENU(ID_MENU_CLOSE, MyFrame::OnOpenWelcome)
-													EVT_MENU(ID_MENU_OPEN_IN_EDITOR, MyFrame::OnOpenInEditor)
-														EVT_MENU(ID_MENU_SHOW_PROJECT_SANDBOX, MyFrame::OnShowProjectSandbox)
-															EVT_MENU(ID_MENU_CLEAR_PROJECT_SANDBOX, MyFrame::OnClearProjectSandbox)
-																EVT_MENU(ID_MENU_OPEN_SAMPLE_CODE, MyFrame::OnOpenSampleProjects)
-																	EVT_MENU(ID_MENU_OPEN_DOCUMENTATION, MyFrame::OnOpenDocumentation)
-																		EVT_COMMAND(wxID_ANY, eventOpenProject, MyFrame::OnOpen)
-																			EVT_COMMAND(wxID_ANY, eventSuspendOrResume, MyFrame::OnSuspendOrResume)
-																				EVT_COMMAND(wxID_ANY, eventCloneProject, MyFrame::OnCloneProject)
-																					EVT_COMMAND(wxID_ANY, eventNewProject, MyFrame::OnNewProject)
-																						EVT_COMMAND(wxID_ANY, eventRelaunchProject, MyFrame::OnRelaunch)
-																							EVT_COMMAND(wxID_ANY, eventWelcomeProject, MyFrame::OnOpenWelcome)
-																								wxEND_EVENT_TABLE()
+	EVT_MENU(ID_MENU_WELCOME, MyFrame::OnOpenWelcome)
+	EVT_MENU(ID_MENU_BUILD_ANDROID, MyFrame::OnBuildAndroid)
+	EVT_MENU(ID_MENU_BUILD_WEB, MyFrame::OnBuildWeb)
+	EVT_MENU(ID_MENU_BUILD_LINUX, MyFrame::OnBuildLinux)
+	EVT_MENU(ID_MENU_RELAUNCH, MyFrame::OnRelaunch)
+	EVT_MENU(ID_MENU_SUSPEND, MyFrame::OnSuspendOrResume)
+	EVT_MENU(ID_MENU_CLOSE, MyFrame::OnOpenWelcome)
+	EVT_MENU(ID_MENU_OPEN_IN_EDITOR, MyFrame::OnOpenInEditor)
+	EVT_MENU(ID_MENU_SHOW_PROJECT_SANDBOX, MyFrame::OnShowProjectSandbox)
+	EVT_MENU(ID_MENU_CLEAR_PROJECT_SANDBOX, MyFrame::OnClearProjectSandbox)
+	EVT_MENU(ID_MENU_OPEN_SAMPLE_CODE, MyFrame::OnOpenSampleProjects)
+	EVT_MENU(ID_MENU_OPEN_DOCUMENTATION, MyFrame::OnOpenDocumentation)
+	EVT_COMMAND(wxID_ANY, eventOpenProject, MyFrame::OnOpen)
+	EVT_COMMAND(wxID_ANY, eventSuspendOrResume, MyFrame::OnSuspendOrResume)
+	EVT_COMMAND(wxID_ANY, eventCloneProject, MyFrame::OnCloneProject)
+	EVT_COMMAND(wxID_ANY, eventNewProject, MyFrame::OnNewProject)
+	EVT_COMMAND(wxID_ANY, eventRelaunchProject, MyFrame::OnRelaunch)
+	EVT_COMMAND(wxID_ANY, eventWelcomeProject, MyFrame::OnOpenWelcome)
+wxEND_EVENT_TABLE()
 
-																									MyFrame::MyFrame()
+MyFrame::MyFrame()
 	: wxFrame(NULL, wxID_ANY, "", wxDefaultPosition, wxSize(320, 480), wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX), m_mycanvas(NULL), fContext(NULL), fMenuMain(NULL), fMenuProject(NULL), fWatcher(NULL),
 	  fProjectPath("")
 {
@@ -971,6 +1004,7 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 		vAttrs.PlatformDefaults().RGBA().DoubleBuffer().Depth(16).EndList();
 
 		accepted = wxGLCanvas::IsDisplaySupported(vAttrs);
+
 		if (accepted == false)
 		{
 			Rtt_LogException("Failed to init OpenGL");
@@ -1105,8 +1139,7 @@ void MyFrame::createMenus()
 		mi->Enable(false);
 		mi = m_pHardwareMenu->Append(wxID_HELP_INDEX, _T("&Rotate Right"));
 		mi->Enable(false);
-		mi = m_pHardwareMenu->Append(wxID_ABOUT, _T("&Shake"));
-		mi->Enable(false);
+		//mi = m_pHardwareMenu->Append(wxID_ABOUT, _T("&Shake"));
 		m_pHardwareMenu->AppendSeparator();
 		mi = m_pHardwareMenu->Append(wxID_ABOUT, _T("&Back"));
 		mi->Enable(false);
@@ -1152,6 +1185,7 @@ void MyFrame::setMenu(const char *appPath)
 	{
 		SetMenuBar(fMenuProject);
 	}
+
 #endif
 }
 
@@ -1189,21 +1223,23 @@ void MyFrame::OnFileSystemEvent(wxFileSystemWatcherEvent &event)
 
 	switch (type)
 	{
-	case wxFSW_EVENT_CREATE:
-	case wxFSW_EVENT_DELETE:
-	case wxFSW_EVENT_RENAME:
-	case wxFSW_EVENT_MODIFY:
-	{
-		if (ext == "lua")
+		case wxFSW_EVENT_CREATE:
+		case wxFSW_EVENT_DELETE:
+		case wxFSW_EVENT_RENAME:
+		case wxFSW_EVENT_MODIFY:
 		{
-			// relaunch
-			wxCommandEvent ev(eventRelaunchProject);
-			wxPostEvent(wxGetApp().getFrame(), ev);
+			if (ext == "lua")
+			{
+				// relaunch
+				wxCommandEvent ev(eventRelaunchProject);
+				wxPostEvent(wxGetApp().getFrame(), ev);
+			}
+
+			break;
 		}
-		break;
-	}
-	default:
-		break;
+
+		default:
+			break;
 	}
 }
 
@@ -1346,7 +1382,9 @@ void MyFrame::OnRelaunch(wxCommandEvent &event)
 
 		bool fullScreen = fContext->Init();
 
+#ifdef Rtt_SIMULATOR
 		LinuxSimulatorView::OnLinuxPluginGet(fContext->getAppPath(), fContext->getAppName().c_str(), fContext->getPlatform());
+#endif
 		fContext->loadApp(m_mycanvas);
 		resetSize();
 		m_mycanvas->fContext = fContext;
@@ -1389,6 +1427,13 @@ void MyFrame::RemoveSuspendedPanel()
 
 void MyFrame::OnSuspendOrResume(wxCommandEvent &event)
 {
+	//fContext->GetRuntime()->WindowDidRotate(DeviceOrientation::kSidewaysRight, true);
+	//fContext->GetRuntime()->DispatchEvent(OrientationEvent());
+	//fContext->GetRuntime()->GetDisplay().SetContentOrientation(DeviceOrientation::kSidewaysRight);
+	//Rtt::LinuxSimulator *sim = new Rtt::LinuxSimulator;
+	//sim->Rotate(true);
+
+	//fContext->GetRuntime()->GetDisplay().WindowDidRotate(DeviceOrientation::kSidewaysRight, false);
 #ifdef Rtt_SIMULATOR
 	if (fContext->GetRuntime()->IsSuspended())
 	{
@@ -1459,7 +1504,9 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 
 	if (fContext->getAppName() != "homescreen")
 	{
+#ifdef Rtt_SIMULATOR
 		LinuxSimulatorView::OnLinuxPluginGet(fContext->getAppPath(), fContext->getAppName().c_str(), fContext->getPlatform());
+#endif
 	}
 
 	fContext->loadApp(m_mycanvas);
@@ -1479,16 +1526,16 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 
 wxBEGIN_EVENT_TABLE(MyGLCanvas, wxGLCanvas)
 	EVT_PAINT(MyGLCanvas::OnPaint)
-		EVT_SIZE(MyGLCanvas::OnSize)
-			EVT_MOUSE_EVENTS(MyGLCanvas::OnMouse)
-				EVT_CHAR(MyGLCanvas::OnChar)
-					EVT_KEY_UP(MyGLCanvas::OnKeyUp)
-						EVT_KEY_DOWN(MyGLCanvas::OnKeyDown)
-							EVT_TIMER(TIMER_ID, MyGLCanvas::OnTimer)
-								wxEND_EVENT_TABLE()
+	EVT_SIZE(MyGLCanvas::OnSize)
+	EVT_MOUSE_EVENTS(MyGLCanvas::OnMouse)
+	EVT_CHAR(MyGLCanvas::OnChar)
+	EVT_KEY_UP(MyGLCanvas::OnKeyUp)
+	EVT_KEY_DOWN(MyGLCanvas::OnKeyDown)
+	EVT_TIMER(TIMER_ID, MyGLCanvas::OnTimer)
+wxEND_EVENT_TABLE()
 
-	//We create a wxGLContext in this constructor, do OGL initialization at OnSize().
-	MyGLCanvas::MyGLCanvas(MyFrame *parent, const wxGLAttributes &canvasAttrs)
+//We create a wxGLContext in this constructor, do OGL initialization at OnSize().
+MyGLCanvas::MyGLCanvas(MyFrame *parent, const wxGLAttributes &canvasAttrs)
 	: wxGLCanvas(parent, canvasAttrs), fContext(NULL), m_timer(this, TIMER_ID)
 {
 	m_parent = parent;
@@ -1685,7 +1732,7 @@ void MyGLCanvas::OnMouse(wxMouseEvent &e)
 			}
 
 			Rtt::MouseEvent mouseEvent(eventType, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0,
-									   isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
+			                           isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
 
 			runtime->DispatchEvent(mouseEvent);
 			fContext->GetMouseListener()->TouchMoved(x, y, 0);

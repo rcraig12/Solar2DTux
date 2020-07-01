@@ -44,7 +44,7 @@ namespace Rtt
 {
 
 	LinuxPlatform::LinuxPlatform(const char *resourceDir, const char *documentsDir, const char *temporaryDir,
-								 const char *cachesDir, const char *systemCachesDir, const char *installDir)
+	                             const char *cachesDir, const char *systemCachesDir, const char *installDir)
 		: fAllocator(Rtt_AllocatorCreate()),
 		  fDevice(*fAllocator),
 		  fAudioPlayer(NULL),
@@ -58,6 +58,7 @@ namespace Rtt
 		  fCachesDir(fAllocator),
 		  fSystemCachesDir(fAllocator),
 		  fInstallDir(fAllocator),
+		  fSkinDir(fAllocator),
 		  fStoreProvider(NULL),
 		  fFBConnect(NULL),
 		  fScreenSurface(NULL)
@@ -261,24 +262,76 @@ namespace Rtt
 			// Create an absolute path by appending the file name to the base directory.
 			switch (baseDir)
 			{
-			case MPlatform::kResourceDir:
-			{
-				PathForFile(filename, fResourceDir.GetString(), result);
-				String result1;
-				String result2;
-
-				if (filename != NULL && FileExists(result.GetString()) == false)
+				case MPlatform::kResourceDir:
 				{
-					result1.Set(result);
-					// look for Resources dir
-					String resDir;
-					resDir.Append(fInstallDir);
-					resDir.Append("/Resources");
-					PathForFile(filename, resDir.GetString(), result);
-					result2.Set(result);
+					PathForFile(filename, fResourceDir.GetString(), result);
+					String result1;
+					String result2;
+
+					if (filename != NULL && FileExists(result.GetString()) == false)
+					{
+						result1.Set(result);
+						// look for Resources dir
+						String resDir;
+						resDir.Append(fInstallDir);
+						resDir.Append("/Resources");
+						PathForFile(filename, resDir.GetString(), result);
+						result2.Set(result);
+					}
+
+					if (filename != NULL && FileExists(result.GetString()) == false)
+					{
+						const char *homeDir = NULL;
+
+						if ((homeDir = getenv("HOME")) == NULL)
+						{
+							homeDir = getpwuid(getuid())->pw_dir;
+						}
+
+						// look in the plugins dir
+						String resDir;
+						resDir.Append(homeDir);
+						resDir.Append("/.Solar2D/Plugins/");
+						PathForFile(filename, resDir.GetString(), result);
+						Rtt_WARN_SIM(!filename || FileExists(result.GetString()), ("WARNING: Cannot create path for resource file '%s (%s || %s || %s)'. File does not exist.\n\n", filename, result1.GetString(), result2.GetString(), result.GetString()));
+					}
+					break;
 				}
 
-				if (filename != NULL && FileExists(result.GetString()) == false)
+				case MPlatform::kSystemResourceDir:
+				{
+					PathForFile(filename, fResourceDir.GetString(), result);
+					if (filename != NULL && FileExists(result.GetString()) == false)
+					{
+						// look for Resources dir
+						String resDir;
+						resDir.Append(fInstallDir);
+						resDir.Append("/Resources");
+						PathForFile(filename, resDir.GetString(), result);
+						Rtt_WARN_SIM(!filename || FileExists(result.GetString()), ("WARNING: Cannot create path for resource file '%s (%s)'. File does not exist.\n\n", filename, result.GetString()));
+					}
+					break;
+				}
+
+				case MPlatform::kCachesDir:
+				{
+					PathForFile(filename, fCachesDir.GetString(), result);
+					break;
+				}
+
+				case MPlatform::kSystemCachesDir:
+				{
+					PathForFile(filename, fSystemCachesDir.GetString(), result);
+					break;
+				}
+
+				case MPlatform::kTmpDir:
+				{
+					PathForFile(filename, fTemporaryDir.GetString(), result);
+					break;
+				}
+
+				case MPlatform::kPluginsDir:
 				{
 					const char *homeDir = NULL;
 
@@ -287,59 +340,23 @@ namespace Rtt
 						homeDir = getpwuid(getuid())->pw_dir;
 					}
 
-					// look in the plugins dir
-					String resDir;
-					resDir.Append(homeDir);
-					resDir.Append("/.Solar2D/Plugins/");
-					PathForFile(filename, resDir.GetString(), result);
-					Rtt_WARN_SIM(!filename || FileExists(result.GetString()), ("WARNING: Cannot create path for resource file '%s (%s || %s || %s)'. File does not exist.\n\n", filename, result1.GetString(), result2.GetString(), result.GetString()));
+					std::string pluginPath(homeDir);
+					pluginPath.append("/.Solar2D/Plugins");
+
+					PathForFile(filename, pluginPath.c_str(), result);
+					break;
 				}
-				break;
-			}
-			case MPlatform::kSystemResourceDir:
-				PathForFile(filename, fResourceDir.GetString(), result);
-				if (filename != NULL && FileExists(result.GetString()) == false)
+
+				case MPlatform::kSkinResourceDir:
 				{
-					// look for Resources dir
-					String resDir;
-					resDir.Append(fInstallDir);
-					resDir.Append("/Resources");
-					PathForFile(filename, resDir.GetString(), result);
-					Rtt_WARN_SIM(!filename || FileExists(result.GetString()), ("WARNING: Cannot create path for resource file '%s (%s)'. File does not exist.\n\n", filename, result.GetString()));
-				}
-				break;
-
-			case MPlatform::kCachesDir:
-				PathForFile(filename, fCachesDir.GetString(), result);
-				break;
-
-			case MPlatform::kSystemCachesDir:
-				PathForFile(filename, fSystemCachesDir.GetString(), result);
-				break;
-
-			case MPlatform::kTmpDir:
-				PathForFile(filename, fTemporaryDir.GetString(), result);
-				break;
-
-			case MPlatform::kPluginsDir:
-			{
-				const char *homeDir = NULL;
-
-				if ((homeDir = getenv("HOME")) == NULL)
-				{
-					homeDir = getpwuid(getuid())->pw_dir;
+					PathForFile(filename, fSkinDir.GetString(), result);
+					break;
 				}
 
-				std::string pluginPath(homeDir);
-				pluginPath.append("/.Solar2D/Plugins");
-
-				PathForFile(filename, pluginPath.c_str(), result);
-				break;
-			}
-			case MPlatform::kDocumentsDir:
-			default:
-				PathForFile(filename, fDocumentsDir.GetString(), result);
-				break;
+				case MPlatform::kDocumentsDir:
+				default:
+					PathForFile(filename, fDocumentsDir.GetString(), result);
+					break;
 			}
 		}
 
@@ -361,7 +378,7 @@ namespace Rtt
 
 	void LinuxPlatform::SetSkinResourceDirectory(const char *filename)
 	{
-		//		Rtt_ASSERT_NOT_IMPLEMENTED();
+		fSkinDir.Set(filename);
 	}
 
 	void LinuxPlatform::PathForFile(const char *filename, const char *baseDir, String &result) const
@@ -531,42 +548,42 @@ namespace Rtt
 		const char *resultPointer = "";
 		switch (category)
 		{
-		case kLocaleLanguage:
-			resultPointer = "en"; // fixme: jsGetLocaleLanguage();
-			break;
-		case kLocaleCountry:
-			resultPointer = "US"; // fixme: jsGetLocaleCountry();
-			break;
-		case kLocaleIdentifier:
-		case kUILanguage:
-		{
-			resultPointer = "en_US"; // fixme: jsGetLanguage();
-			break;
-		}
-		case kDefaultStatusBarFile:
-			// todo
-			break;
-		case kDarkStatusBarFile:
-			// todo
-			break;
-		case kTranslucentStatusBarFile:
-			// todo
-			break;
-		case kLightTransparentStatusBarFile:
-			// todo
-			break;
-		case kDarkTransparentStatusBarFile:
-			// todo
-			break;
-		case kScreenDressingFile:
-			// todo
-			break;
-		case kSubscription:
-			// todo
-			break;
-		default:
-			//			Rtt_ASSERT_NOT_REACHED();
-			break;
+			case kLocaleLanguage:
+				resultPointer = "en"; // fixme: jsGetLocaleLanguage();
+				break;
+			case kLocaleCountry:
+				resultPointer = "US"; // fixme: jsGetLocaleCountry();
+				break;
+			case kLocaleIdentifier:
+			case kUILanguage:
+			{
+				resultPointer = "en_US"; // fixme: jsGetLanguage();
+				break;
+			}
+			case kDefaultStatusBarFile:
+				// todo
+				break;
+			case kDarkStatusBarFile:
+				// todo
+				break;
+			case kTranslucentStatusBarFile:
+				// todo
+				break;
+			case kLightTransparentStatusBarFile:
+				// todo
+				break;
+			case kDarkTransparentStatusBarFile:
+				// todo
+				break;
+			case kScreenDressingFile:
+				// todo
+				break;
+			case kSubscription:
+				// todo
+				break;
+			default:
+				//			Rtt_ASSERT_NOT_REACHED();
+				break;
 		}
 
 		// Copy the requested preference string to the given value.
@@ -695,7 +712,8 @@ namespace Rtt
 		S32 numFonts = 0;
 #if 0
 		Rtt::StringArray fonts(fAllocator);
-		if (NativeToJavaBridge::GetInstance()->GetFonts(fonts)) {
+		if (NativeToJavaBridge::GetInstance()->GetFonts(fonts))
+		{
 			numFonts = fonts.GetLength();
 
 			for (int i = 0; i < numFonts; i++)
@@ -703,7 +721,7 @@ namespace Rtt
 				lua_pushstring(L, fonts.GetElement(i));
 				lua_rawseti(L, index, i + 1);
 			}
-	}
+		}
 #endif
 		return numFonts;
 	}

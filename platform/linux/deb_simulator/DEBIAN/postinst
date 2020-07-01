@@ -26,6 +26,9 @@ apt-get install libssl-dev -y
 apt-get install libvorbis-dev -y
 apt-get install libogg-dev -y
 apt-get install uuid-dev -y
+apt-get install libxxf86vm-dev -y
+apt-get install libwebkit2gtk-4.0-37 -y
+apt-get install libwebkit2gtk-4.0-dev -y
 apt-get install android-libandroidfw -y
 apt-get install android-libbacktrace -y
 apt-get install android-libbase -y

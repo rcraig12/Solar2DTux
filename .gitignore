@@ -271,6 +271,7 @@ commit-email.sh
 platform/resources/iostemplate
 platform/tvos/license.ccdata
 
+.codelite
 platform/iphone/*.tar.bz
 platform/tvos/*.tar.bz
 /*_output.zip
@@ -285,3 +286,7 @@ external/JNLua/.classpath
 external/JNLua/.project
 platform/linux/Solar2DSimulator/Resources/template_x64.tgz
 platform/linux/deb_simulator/solar2dtux.deb
+platform/Solar2DSimulator/Solar2DSimulator
+platform/linux/compile_flags.txt
+platform/linux/Solar2DSimulator.txt
+platform/linux/Solar2DSimulator/Solar2DSimulator

@@ -340,15 +340,15 @@
 #endif
 
 #if (defined(__WXGTK__) && !defined(__WXGTK3__)) || defined(__WXOSX__)
-#define wxUSE_WEBVIEW_WEBKIT 1
+#define wxUSE_WEBVIEW_WEBKIT 0
 #else
-#define wxUSE_WEBVIEW_WEBKIT 1
+#define wxUSE_WEBVIEW_WEBKIT 0
 #endif
 
 #if defined(__WXGTK3__)
-#define wxUSE_WEBVIEW_WEBKIT2 0
+#define wxUSE_WEBVIEW_WEBKIT2 1
 #else
-#define wxUSE_WEBVIEW_WEBKIT2 0
+#define wxUSE_WEBVIEW_WEBKIT2 1
 #endif
 
 

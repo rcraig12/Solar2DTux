@@ -62,6 +62,7 @@ namespace Rtt
 
 		// Read the application's "build.settings" file.
 		bool wasSuccessful = packager.ReadBuildSettings(srcDir);
+
 		if (!wasSuccessful)
 		{
 			return;
@@ -70,6 +71,7 @@ namespace Rtt
 		// Check if a custom build ID has been assigned.
 		// This is typically assigned to daily build versions of Corona.
 		const char *customBuildId = packager.GetCustomBuildId();
+
 		if (!Rtt_StringIsEmpty(customBuildId))
 		{
 			Rtt_Log("\nUsing custom Build Id %s\n", customBuildId);
@@ -99,12 +101,12 @@ namespace Rtt
 
 		// Package build settings parameters.
 		AndroidAppPackagerParams androidBuilderParams(
-			applicationName, versionName, identity, provisionFile,
-			srcDir, dstDir, sdkRoot,
-			targetPlatform, targetAppStoreName,
-			(S32)Rtt::TargetDevice::VersionForPlatform(Rtt::TargetDevice::kAndroidPlatform),
-			customBuildId, NULL,
-			package.c_str(), isDistribution, keystore.c_str(), keystore_pwd, alias, alias_pwd, versionCode);
+		    applicationName, versionName, identity, provisionFile,
+		    srcDir, dstDir, sdkRoot,
+		    targetPlatform, targetAppStoreName,
+		    (S32)Rtt::TargetDevice::VersionForPlatform(Rtt::TargetDevice::kAndroidPlatform),
+		    customBuildId, NULL,
+		    package.c_str(), isDistribution, keystore.c_str(), keystore_pwd, alias, alias_pwd, versionCode);
 
 		// Select build template
 		Rtt::Runtime *runtimePointer = ctx->GetRuntime();
@@ -127,6 +129,7 @@ namespace Rtt
 		params->fDlg->Close();
 
 		wxMessageDialog *dial;
+
 		if (rc == 0)
 		{
 
@@ -136,6 +139,7 @@ namespace Rtt
 		{
 			dial = new wxMessageDialog(NULL, wxT("Failed to build application."), wxT("Solar2D Simulator"), wxOK | wxICON_ERROR);
 		}
+
 		dial->ShowModal();
 	}
 
@@ -157,6 +161,7 @@ namespace Rtt
 
 		// Read the application's "build.settings" file.
 		bool wasSuccessful = packager.ReadBuildSettings(srcDir);
+
 		if (!wasSuccessful)
 		{
 			return;
@@ -165,6 +170,7 @@ namespace Rtt
 		// Check if a custom build ID has been assigned.
 		// This is typically assigned to daily build versions of Corona.
 		const char *customBuildId = packager.GetCustomBuildId();
+
 		if (!Rtt_StringIsEmpty(customBuildId))
 		{
 			Rtt_Log("\nUsing custom Build Id %s\n", customBuildId);
@@ -183,11 +189,11 @@ namespace Rtt
 
 		// Package build settings parameters.
 		LinuxAppPackagerParams linuxBuilderParams(
-			applicationName, versionName, identity, NULL,
-			srcDir, dstDir, NULL,
-			targetPlatform, targetVersion,
-			Rtt::TargetDevice::kLinux, customBuildId,
-			NULL, bundleId, isDistribution, NULL, useStandardResources, runAfterBuild, false);
+		    applicationName, versionName, identity, NULL,
+		    srcDir, dstDir, NULL,
+		    targetPlatform, targetVersion,
+		    Rtt::TargetDevice::kLinux, customBuildId,
+		    NULL, bundleId, isDistribution, NULL, useStandardResources, runAfterBuild, false);
 
 		// Select build template
 		Rtt::Runtime *runtimePointer = ctx->GetRuntime();
@@ -211,6 +217,7 @@ namespace Rtt
 		params->fDlg->Close();
 
 		wxMessageDialog *dial;
+
 		if (rc == 0)
 		{
 			dial = new wxMessageDialog(NULL, wxT("Your application was built successfully."), wxT("Solar2D Simulator"), wxOK | wxICON_INFORMATION);
@@ -219,6 +226,7 @@ namespace Rtt
 		{
 			dial = new wxMessageDialog(NULL, wxT("Failed to build application."), wxT("Solar2D Simulator"), wxOK | wxICON_ERROR);
 		}
+
 		dial->ShowModal();
 		wxYield();
 
@@ -246,6 +254,7 @@ namespace Rtt
 
 		// Read the application's "build.settings" file.
 		bool wasSuccessful = packager.ReadBuildSettings(appPath);
+
 		if (!wasSuccessful)
 		{
 			return;
@@ -259,11 +268,11 @@ namespace Rtt
 
 		// Package build settings parameters.
 		LinuxAppPackagerParams linuxBuilderParams(
-			appName, NULL, identity, NULL,
-			appPath, NULL, NULL,
-			targetPlatform, targetVersion,
-			Rtt::TargetDevice::kLinux, NULL,
-			NULL, NULL, false, NULL, false, false, true);
+		    appName, NULL, identity, NULL,
+		    appPath, NULL, NULL,
+		    targetPlatform, targetVersion,
+		    Rtt::TargetDevice::kLinux, NULL,
+		    NULL, NULL, false, NULL, false, false, true);
 
 		const char kBuildSettings[] = "build.settings";
 		Rtt::String buildSettingsPath;
@@ -296,6 +305,7 @@ namespace Rtt
 
 		// Read the application's "build.settings" file.
 		bool wasSuccessful = packager.ReadBuildSettings(srcDir);
+
 		if (!wasSuccessful)
 		{
 			return;
@@ -304,6 +314,7 @@ namespace Rtt
 		// Check if a custom build ID has been assigned.
 		// This is typically assigned to daily build versions of Corona.
 		const char *customBuildId = packager.GetCustomBuildId();
+
 		if (!Rtt_StringIsEmpty(customBuildId))
 		{
 			Rtt_Log("\nUsing custom Build Id %s\n", customBuildId);
@@ -325,11 +336,11 @@ namespace Rtt
 
 		// Package build settings parameters.
 		WebAppPackagerParams webBuilderParams(
-			applicationName, versionName, identity, NULL,
-			srcDir, dstDir, NULL,
-			targetPlatform, targetVersion,
-			Rtt::TargetDevice::kWebGenericBrowser, customBuildId,
-			NULL, bundleId, isDistribution, useStandardResources, runAfterBuild, webtemplate.c_str(), createFBInstantArchive);
+		    applicationName, versionName, identity, NULL,
+		    srcDir, dstDir, NULL,
+		    targetPlatform, targetVersion,
+		    Rtt::TargetDevice::kWebGenericBrowser, customBuildId,
+		    NULL, bundleId, isDistribution, useStandardResources, runAfterBuild, webtemplate.c_str(), createFBInstantArchive);
 
 		// Select build template
 		Rtt::Runtime *runtimePointer = ctx->GetRuntime();
@@ -353,6 +364,7 @@ namespace Rtt
 		params->fDlg->Close();
 
 		wxMessageDialog *dial;
+
 		if (rc == 0)
 		{
 			dial = new wxMessageDialog(NULL, wxT("Your application was built successfully."), wxT("Solar2D Simulator"), wxOK | wxICON_INFORMATION);
@@ -361,6 +373,7 @@ namespace Rtt
 		{
 			dial = new wxMessageDialog(NULL, wxT("Failed to build application."), wxT("Solar2D Simulator"), wxOK | wxICON_ERROR);
 		}
+
 		dial->ShowModal();
 	}
 
@@ -524,7 +537,7 @@ namespace Rtt
 
 		wxButton *okButton = new wxButton(OpenDialog, -1, wxT("Build"), wxDefaultPosition, wxSize(70, 30));
 		okButton->Bind(wxEVT_BUTTON, &LinuxSimulatorView::OnAndroidBuild, wxID_ANY, wxID_ANY,
-					   new androidBuildParams(OpenDialog, ctx, wxKeystore, wxPackage));
+		               new androidBuildParams(OpenDialog, ctx, wxKeystore, wxPackage));
 		okButton->SetDefault();
 
 		wxButton *closeButton = new wxButton(OpenDialog, -1, wxT("Cancel"), wxDefaultPosition, wxSize(70, 30));
