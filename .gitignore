@@ -290,3 +290,5 @@ platform/Solar2DSimulator/Solar2DSimulator
 platform/linux/compile_flags.txt
 platform/linux/Solar2DSimulator.txt
 platform/linux/Solar2DSimulator/Solar2DSimulator
+platform/linux/Solar2DSimulator.mk
+platform/linux/car.mk
