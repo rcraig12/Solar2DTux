@@ -32,7 +32,6 @@
 #include "Rtt_LuaLibSimulator.h"
 #include "Rtt_LinuxSimulatorView.h"
 #include "Rtt_MPlatformServices.h"
-#include "Rtt_LinuxSimulator.h"
 #include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_LinuxCloneProjectDialog.h"
 #include "Rtt_LinuxNewProjectDialog.h"
@@ -563,6 +562,7 @@ namespace Rtt
 		string temporaryDir(appDir);
 		string cachesDir(appDir);
 		string systemCachesDir(appDir);
+		string skinDir("/opt/Solar2D/Resources/Skins");
 
 		// setup directory paths
 		documentsDir.append("/Documents/");
@@ -593,7 +593,7 @@ namespace Rtt
 		}
 
 		setGlyphProvider(new glyph_freetype_provider(fPathToApp.c_str()));
-		fPlatform = new LinuxPlatform(fPathToApp.c_str(), documentsDir.c_str(), temporaryDir.c_str(), cachesDir.c_str(), systemCachesDir.c_str(), getStartupPath(NULL));
+		fPlatform = new LinuxPlatform(fPathToApp.c_str(), documentsDir.c_str(), temporaryDir.c_str(), cachesDir.c_str(), systemCachesDir.c_str(), skinDir.c_str(), getStartupPath(NULL));
 		fRuntime = new LinuxRuntime(*fPlatform, NULL);
 		fRuntime->SetDelegate(fRuntimeDelegate);
 		fRuntime->SetProperty(Runtime::kLinuxMaskSet, true);
