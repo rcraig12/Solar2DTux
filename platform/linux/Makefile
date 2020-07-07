@@ -1,8 +1,8 @@
 .PHONY: clean All
 
 All:
-	@echo "----------Building project:[ Solar2DSimulator - Debug ]----------"
-	@"$(MAKE)" -f  "Solar2DSimulator.mk" PreBuild && "$(MAKE)" -f  "Solar2DSimulator.mk" && "$(MAKE)" -f  "Solar2DSimulator.mk" PostBuild
+	@echo "----------Building project:[ Solar2DTuxConsole - Debug ]----------"
+	@"$(MAKE)" -f  "Solar2DTuxConsole.mk"
 clean:
-	@echo "----------Cleaning project:[ Solar2DSimulator - Debug ]----------"
-	@"$(MAKE)" -f  "Solar2DSimulator.mk" clean
+	@echo "----------Cleaning project:[ Solar2DTuxConsole - Debug ]----------"
+	@"$(MAKE)" -f  "Solar2DTuxConsole.mk" clean
