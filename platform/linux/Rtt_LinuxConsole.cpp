@@ -9,7 +9,7 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow* parent, wxWindowID id, const wxStri
 	timer = new wxTimer(this, wxID_ANY);
     panelToolBar = new wxPanel(this, wxID_ANY);
     statusbar = CreateStatusBar(1);
-	bitmapBtnSave = new wxBitmapButton(panelToolBar, wxID_ANY, wxBitmap( wxT("/Resources/Icons/save.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
+	bitmapBtnSave = new wxBitmapButton(panelToolBar, wxID_ANY, wxBitmap( wxFileName(fileLocation).GetPath() + wxT("/Resources/Icons/save.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
     bitmapBtnCopy = new wxBitmapButton(panelToolBar, wxID_ANY, wxBitmap(wxT("./Resources/Icons/copy.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
     bitmapBtnErase = new wxBitmapButton(panelToolBar, wxID_ANY, wxBitmap(wxT("./Resources/Icons/erase.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
     txtFind = new wxTextCtrl(panelToolBar, wxID_ANY, wxEmptyString);
@@ -32,9 +32,6 @@ void Rtt_LinuxConsole::SetProperties()
     SetTitle(wxT("Solar2DTux Simulator Console"));
     int statusbar_widths[] = { -1 };
     statusbar->SetStatusWidths(1, statusbar_widths);
-
-	wxStandardPaths stdPath;
-	wxString fileLocation = stdPath.GetExecutablePath();
 
     // statusbar fields
     const wxString statusbar_fields[] = {
