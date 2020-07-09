@@ -15,8 +15,7 @@
 #include <sys/wait.h>
 #include <wx/wx.h>
 #include <wx/image.h>
-#include <wx/stdpaths.h>
-#include <wx/filename.h>
+#include <wx/icon.h>
 #include "Rtt_LinuxIPCServer.h"
 #include "Rtt_LinuxIPCConnection.h"
 
@@ -30,8 +29,6 @@ public:
 private:
 
 	static const int intTimerInterval = 250;
-	wxStandardPaths* stdPath;
-	wxString fileLocation = stdPath->GetExecutablePath();
     void SetProperties();
     void DoLayout();
 	

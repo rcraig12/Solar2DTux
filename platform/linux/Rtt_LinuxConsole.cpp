@@ -1,23 +1,38 @@
 #include "Rtt_LinuxConsole.h"
 
+#ifndef wxHAS_IMAGES_IN_RESOURCES
+	#include "resource/simicon.xpm"
+	#include "resource/save.xpm"
+	#include "resource/copy.xpm"
+	#include "resource/erase.xpm"
+	#include "resource/search-left.xpm"
+	#include "resource/search-right.xpm"
+	#include "resource/match-case.xpm"
+	#include "resource/looping-search.xpm"	
+	#include "resource/cog.xpm"
+#endif
+
 using namespace std;
 
 Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE) 
 {
+	
+	SetIcon(simicon);		
+	
     SetSize(wxSize(1098, 437));
 	timer = new wxTimer(this, wxID_ANY);
     panelToolBar = new wxPanel(this, wxID_ANY);
     statusbar = CreateStatusBar(1);
-	bitmapBtnSave = new wxBitmapButton(panelToolBar, wxID_ANY, wxBitmap( wxFileName(fileLocation).GetPath() + wxT("/Resources/Icons/save.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
-    bitmapBtnCopy = new wxBitmapButton(panelToolBar, wxID_ANY, wxBitmap(wxT("./Resources/Icons/copy.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
-    bitmapBtnErase = new wxBitmapButton(panelToolBar, wxID_ANY, wxBitmap(wxT("./Resources/Icons/erase.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
+	bitmapBtnSave = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(save_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
+    bitmapBtnCopy = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(copy_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
+    bitmapBtnErase = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(erase_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
     txtFind = new wxTextCtrl(panelToolBar, wxID_ANY, wxEmptyString);
-    bitmapBtnFindLeft = new wxBitmapButton(panelToolBar, wxID_ANY, wxBitmap(wxT("./Resources/Icons/search-left.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
-    bitmapBtnFindRight = new wxBitmapButton(panelToolBar, wxID_ANY, wxBitmap(wxT("./Resources/Icons/search-right.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
-    bitmapBtnMatchCase = new wxBitmapButton(panelToolBar, wxID_ANY, wxBitmap(wxT("./Resources/Icons/match-case.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
-    bitmapBtnLoopingSearch = new wxBitmapButton(panelToolBar, wxID_ANY, wxBitmap(wxT("./Resources/Icons/looping-search.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
-    bitmapBtnMenu = new wxBitmapButton(panelToolBar, wxID_ANY, wxBitmap(wxT("./Resources/Icons/cog.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
+    bitmapBtnFindLeft = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(search_left_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
+    bitmapBtnFindRight = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(search_right_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
+    bitmapBtnMatchCase = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(match_case_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
+    bitmapBtnLoopingSearch = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(looping_search_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
+    bitmapBtnMenu = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(cog_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
     txtLog = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxTE_MULTILINE|wxTE_RICH2);
 	linuxIPCServer = new Rtt_LinuxIPCServer();
 	
@@ -29,6 +44,10 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow* parent, wxWindowID id, const wxStri
 
 void Rtt_LinuxConsole::SetProperties()
 {
+	
+	wxInitAllImageHandlers();
+
+	
     SetTitle(wxT("Solar2DTux Simulator Console"));
     int statusbar_widths[] = { -1 };
     statusbar->SetStatusWidths(1, statusbar_widths);
@@ -40,10 +59,10 @@ void Rtt_LinuxConsole::SetProperties()
     for(int i = 0; i < statusbar->GetFieldsCount(); ++i) {
         statusbar->SetStatusText(statusbar_fields[i], i);
     }
+	
     bitmapBtnSave->SetBackgroundColour(wxColour(37, 37, 38));
     bitmapBtnSave->SetSize(bitmapBtnSave->GetBestSize());
     bitmapBtnCopy->SetBackgroundColour(wxColour(37, 37, 38));
-    bitmapBtnCopy->SetBitmapPressed(wxBitmap(wxT("./Resources/Icons/copy.png"), wxBITMAP_TYPE_ANY));
     bitmapBtnCopy->SetSize(bitmapBtnCopy->GetBestSize());
     bitmapBtnErase->SetBackgroundColour(wxColour(37, 37, 38));
     bitmapBtnErase->SetSize(bitmapBtnErase->GetBestSize());
@@ -125,7 +144,6 @@ BEGIN_EVENT_TABLE(Rtt_LinuxConsole, wxFrame)
     EVT_BUTTON(wxID_ANY, Rtt_LinuxConsole::OnBtnLoopingSearchClick)
 	EVT_TIMER(wxID_ANY,Rtt_LinuxConsole::OnProgressTimer)
 END_EVENT_TABLE();
-
 
 void Rtt_LinuxConsole::OnBtnSaveClick(wxCommandEvent &event)
 {

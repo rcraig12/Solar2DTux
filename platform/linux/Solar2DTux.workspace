@@ -2,25 +2,25 @@
 <CodeLite_Workspace Name="corona" Database="" Version="10.0.0">
   <Project Name="Solar2DSimulator" Path="linux_rtt.project" Active="No"/>
   <Project Name="car" Path="car.project" Active="No"/>
-  <Project Name="Solar2DTuxConsole" Path="Solar2DTuxConsole.project" Active="Yes"/>
+  <Project Name="Solar2DConsole" Path="Solar2DTuxConsole.project" Active="Yes"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Release" Selected="no">
       <Environment/>
       <Project Name="car" ConfigName="Release"/>
       <Project Name="Solar2DSimulator" ConfigName="Release"/>
-      <Project Name="Solar2DTuxConsole" ConfigName="Release"/>
+      <Project Name="Solar2DConsole" ConfigName="Release"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="x64 Template" Selected="no">
       <Environment/>
       <Project Name="car" ConfigName="Release"/>
       <Project Name="Solar2DSimulator" ConfigName="X64 Template"/>
-      <Project Name="Solar2DTuxConsole" ConfigName="x64 Template"/>
+      <Project Name="Solar2DConsole" ConfigName="x64 Template"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>
       <Project Name="car" ConfigName="Debug"/>
       <Project Name="Solar2DSimulator" ConfigName="Debug"/>
-      <Project Name="Solar2DTuxConsole" ConfigName="Debug"/>
+      <Project Name="Solar2DConsole" ConfigName="Debug"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
