@@ -57,6 +57,11 @@
 #include "wx/app.h"
 #include "wx/display.h"
 
+
+#ifndef wxHAS_IMAGES_IN_RESOURCES
+	#include "resource/simulator.xpm"
+#endif
+
 using namespace Rtt;
 using namespace std;
 
@@ -1001,6 +1006,7 @@ MyFrame::MyFrame()
 	: wxFrame(NULL, wxID_ANY, "", wxDefaultPosition, wxSize(320, 480), wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX), m_mycanvas(NULL), fContext(NULL), fMenuMain(NULL), fMenuProject(NULL), fWatcher(NULL),
 	  fProjectPath("")
 {
+	SetIcon( simulator_xpm );
 	wxGLAttributes vAttrs;
 	vAttrs.PlatformDefaults().Defaults().EndList();
 	suspendedPanel = NULL;

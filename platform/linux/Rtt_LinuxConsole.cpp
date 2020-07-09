@@ -1,7 +1,7 @@
 #include "Rtt_LinuxConsole.h"
 
 #ifndef wxHAS_IMAGES_IN_RESOURCES
-	#include "resource/simicon.xpm"
+	#include "resource/console.xpm"
 	#include "resource/save.xpm"
 	#include "resource/copy.xpm"
 	#include "resource/erase.xpm"
@@ -18,7 +18,7 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow* parent, wxWindowID id, const wxStri
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE) 
 {
 	
-	SetIcon(simicon);		
+	SetIcon(console_xpm);		
 	
     SetSize(wxSize(1098, 437));
 	timer = new wxTimer(this, wxID_ANY);
