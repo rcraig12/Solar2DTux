@@ -21,7 +21,6 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow* parent, wxWindowID id, const wxStri
 	SetIcon(console_xpm);		
 	
     SetSize(wxSize(1098, 437));
-	timer = new wxTimer(this, wxID_ANY);
     panelToolBar = new wxPanel(this, wxID_ANY);
     statusbar = CreateStatusBar(1);
 	bitmapBtnSave = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(save_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
@@ -38,7 +37,7 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow* parent, wxWindowID id, const wxStri
 	
     SetProperties();
     DoLayout();
-	//timer->Start(1000);
+
 }
 
 
@@ -85,7 +84,7 @@ void Rtt_LinuxConsole::SetProperties()
 	statusbar->SetBackgroundColour(wxColour(37, 37, 38));
 	statusbar->SetForegroundColour(wxColour(255, 255, 255));
 	txtLog->SetFocus();
-	//timer->Start(intTimerInterval);
+
 /*	
 	const char * const kind =
 #if wxUSE_DDE_FOR_IPC
@@ -133,7 +132,6 @@ void Rtt_LinuxConsole::DoLayout()
 	
 }
 
-
 BEGIN_EVENT_TABLE(Rtt_LinuxConsole, wxFrame)
     EVT_BUTTON(wxID_ANY, Rtt_LinuxConsole::OnBtnSaveClick)
     EVT_BUTTON(wxID_ANY, Rtt_LinuxConsole::OnBtnCopyClick)
@@ -142,7 +140,6 @@ BEGIN_EVENT_TABLE(Rtt_LinuxConsole, wxFrame)
     EVT_BUTTON(wxID_ANY, Rtt_LinuxConsole::OnBtnFindRightClick)
     EVT_BUTTON(wxID_ANY, Rtt_LinuxConsole::OnBtnMatchCaseClick)
     EVT_BUTTON(wxID_ANY, Rtt_LinuxConsole::OnBtnLoopingSearchClick)
-	EVT_TIMER(wxID_ANY,Rtt_LinuxConsole::OnProgressTimer)
 END_EVENT_TABLE();
 
 void Rtt_LinuxConsole::OnBtnSaveClick(wxCommandEvent &event)
@@ -202,14 +199,6 @@ void Rtt_LinuxConsole::OnBtnLoopingSearchClick(wxCommandEvent &event)
     wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onBtnLoopingSearchClick) not implemented yet"));
 }
 
-void Rtt_LinuxConsole::OnProgressTimer(wxTimerEvent &event) 
-{
-    event.Skip();
-    // notify the user that he hasn't implemented the event handler yet
-	//LoadLogFile();
-    wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onProgressTimer) tick tock!"));
-}
-
 void Rtt_LinuxConsole::UpdateLog(wxString message)
 {
 	
@@ -218,6 +207,7 @@ void Rtt_LinuxConsole::UpdateLog(wxString message)
 	txtLog->AppendText( message );
 	
 }
+
 void Rtt_LinuxConsole::UpdateLogWarning(wxString message)
 {
 	
@@ -226,6 +216,7 @@ void Rtt_LinuxConsole::UpdateLogWarning(wxString message)
 	txtLog->AppendText( message  );
 	
 }
+
 void Rtt_LinuxConsole::UpdateLogError(wxString message)
 {
 	

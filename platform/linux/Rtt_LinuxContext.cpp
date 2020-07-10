@@ -35,6 +35,7 @@
 #include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_LinuxCloneProjectDialog.h"
 #include "Rtt_LinuxNewProjectDialog.h"
+#include "Rtt_LinuxIPCCient.h"
 
 //#define Rtt_DEBUG_TOUCH 1
 
@@ -385,7 +386,7 @@ namespace Rtt
 	void KeyListener::notifyKeyEvent(wxKeyEvent &e, bool down)
 	{
 		int mod = e.GetModifiers();
-		bool isNumLockDown = false;	 // fixme
+		bool isNumLockDown = false; // fixme
 		bool isCapsLockDown = false; // fixme
 		bool isShiftDown = mod & wxMOD_SHIFT ? true : false;
 		bool isCtrlDown = mod & wxMOD_CONTROL ? true : false;
@@ -437,6 +438,8 @@ namespace Rtt
 		struct passwd *pw = getpwuid(getuid());
 		const char *homedir = pw->pw_dir;
 		const char *appPath = getStartupPath(&exeFileName);
+		
+		
 
 		// override appPath if arg isn't NULL
 		if (path && *path != 0)

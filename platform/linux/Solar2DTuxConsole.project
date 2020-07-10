@@ -26,8 +26,6 @@
   <VirtualDirectory Name="include">
     <File Name="Rtt_LinuxIPCServer.h"/>
     <File Name="Rtt_LinuxConsoleApp.h"/>
-    <File Name="Rtt_LinuxIPCConnection.h"/>
-    <File Name="Rtt_LinuxIPCConnectionBase.h"/>
     <File Name="Rtt_LinuxConsole.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">

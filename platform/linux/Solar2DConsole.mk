@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=Robert
-Date                   :=09/07/20
+Date                   :=10/07/20
 CodeLitePath           :=/home/robert/.codelite
 LinkerName             :=g++
 SharedObjectLinkerName :=g++ -shared -fPIC
@@ -60,7 +60,7 @@ AS       := as
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
-Objects0=$(IntermediateDirectory)/Rtt_LinuxConsoleApp.cpp$(ObjectSuffix) $(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(ObjectSuffix) $(IntermediateDirectory)/Rtt_LinuxConsole.cpp$(ObjectSuffix) $(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(ObjectSuffix) $(IntermediateDirectory)/Rtt_LinuxIPCServer.cpp$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/Rtt_LinuxConsoleApp.cpp$(ObjectSuffix) $(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(ObjectSuffix) $(IntermediateDirectory)/Rtt_LinuxConsole.cpp$(ObjectSuffix) $(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(ObjectSuffix) $(IntermediateDirectory)/Rtt_LinuxIPCServer.cpp$(ObjectSuffix) 
 
 
 
@@ -99,13 +99,13 @@ $(IntermediateDirectory)/Rtt_LinuxConsoleApp.cpp$(DependSuffix): Rtt_LinuxConsol
 $(IntermediateDirectory)/Rtt_LinuxConsoleApp.cpp$(PreprocessSuffix): Rtt_LinuxConsoleApp.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/Rtt_LinuxConsoleApp.cpp$(PreprocessSuffix) Rtt_LinuxConsoleApp.cpp
 
-$(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(ObjectSuffix): Rtt_LinuxIPCConnectionBase.cpp $(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/robert/Solar2DTux/platform/linux/Rtt_LinuxIPCConnectionBase.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(DependSuffix): Rtt_LinuxIPCConnectionBase.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(DependSuffix) -MM Rtt_LinuxIPCConnectionBase.cpp
+$(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(ObjectSuffix): Rtt_LinuxIPCConnection.cpp $(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/robert/Solar2DTux/platform/linux/Rtt_LinuxIPCConnection.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(DependSuffix): Rtt_LinuxIPCConnection.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(DependSuffix) -MM Rtt_LinuxIPCConnection.cpp
 
-$(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(PreprocessSuffix): Rtt_LinuxIPCConnectionBase.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(PreprocessSuffix) Rtt_LinuxIPCConnectionBase.cpp
+$(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(PreprocessSuffix): Rtt_LinuxIPCConnection.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(PreprocessSuffix) Rtt_LinuxIPCConnection.cpp
 
 $(IntermediateDirectory)/Rtt_LinuxConsole.cpp$(ObjectSuffix): Rtt_LinuxConsole.cpp $(IntermediateDirectory)/Rtt_LinuxConsole.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/robert/Solar2DTux/platform/linux/Rtt_LinuxConsole.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/Rtt_LinuxConsole.cpp$(ObjectSuffix) $(IncludePath)
@@ -115,13 +115,13 @@ $(IntermediateDirectory)/Rtt_LinuxConsole.cpp$(DependSuffix): Rtt_LinuxConsole.c
 $(IntermediateDirectory)/Rtt_LinuxConsole.cpp$(PreprocessSuffix): Rtt_LinuxConsole.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/Rtt_LinuxConsole.cpp$(PreprocessSuffix) Rtt_LinuxConsole.cpp
 
-$(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(ObjectSuffix): Rtt_LinuxIPCConnection.cpp $(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/robert/Solar2DTux/platform/linux/Rtt_LinuxIPCConnection.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(DependSuffix): Rtt_LinuxIPCConnection.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(DependSuffix) -MM Rtt_LinuxIPCConnection.cpp
+$(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(ObjectSuffix): Rtt_LinuxIPCConnectionBase.cpp $(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/robert/Solar2DTux/platform/linux/Rtt_LinuxIPCConnectionBase.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(DependSuffix): Rtt_LinuxIPCConnectionBase.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(DependSuffix) -MM Rtt_LinuxIPCConnectionBase.cpp
 
-$(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(PreprocessSuffix): Rtt_LinuxIPCConnection.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/Rtt_LinuxIPCConnection.cpp$(PreprocessSuffix) Rtt_LinuxIPCConnection.cpp
+$(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(PreprocessSuffix): Rtt_LinuxIPCConnectionBase.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/Rtt_LinuxIPCConnectionBase.cpp$(PreprocessSuffix) Rtt_LinuxIPCConnectionBase.cpp
 
 $(IntermediateDirectory)/Rtt_LinuxIPCServer.cpp$(ObjectSuffix): Rtt_LinuxIPCServer.cpp $(IntermediateDirectory)/Rtt_LinuxIPCServer.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/robert/Solar2DTux/platform/linux/Rtt_LinuxIPCServer.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/Rtt_LinuxIPCServer.cpp$(ObjectSuffix) $(IncludePath)

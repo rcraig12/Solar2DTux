@@ -1,7 +1,6 @@
 #ifndef LINUXIPCSERVER_H
 #define LINUXIPCSERVER_H
 
-#include <wx/wx.h>
 #include <wx/ipc.h>
 
 // the default service name

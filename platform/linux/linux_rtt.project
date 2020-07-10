@@ -9,6 +9,7 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <VirtualDirectory Name="linux">
+      <File Name="Rtt_LinuxIPCCient.cpp"/>
       <File Name="Rtt_HTTPClientLinux.cpp"/>
       <VirtualDirectory Name="packagers">
         <VirtualDirectory Name="include">
