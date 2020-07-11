@@ -1737,5 +1737,22 @@ void MyGLCanvas::OnMouse(wxMouseEvent &e)
 			runtime->DispatchEvent(mouseEvent);
 			fContext->GetMouseListener()->TouchMoved(x, y, 0);
 		}
+
+		// mousewheel events
+		if (e.GetWheelRotation() > 0 || e.GetWheelRotation() < 0)
+		{
+			if (e.GetWheelAxis() == wxMOUSE_WHEEL_VERTICAL)
+			{
+				scrollWheelDeltaY = e.GetWheelRotation() * -1;
+			}
+			else
+			{
+				scrollWheelDeltaX = e.GetWheelRotation() * -1;
+			}
+
+			Rtt::MouseEvent mouseEvent(Rtt::MouseEvent::kScroll, x, y, Rtt_FloatToReal(scrollWheelDeltaX), Rtt_FloatToReal(scrollWheelDeltaY), 0,
+			                           isPrimaryDown, isSecondaryDown, isMiddleDown, IsShiftDown, IsAltDown, IsControlDown, IsCommandDown);
+			runtime->DispatchEvent(mouseEvent);
+		}
 	}
 }
