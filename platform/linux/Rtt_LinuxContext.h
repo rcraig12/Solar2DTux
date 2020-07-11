@@ -19,6 +19,7 @@
 #include "Core/Rtt_Array.h"
 #include "Rtt_LinuxInputDeviceManager.h"
 #include "Rtt_LinuxSimulatorServices.h"
+#include "Rtt_LinuxIPCCient.h"
 
 #include "wx/app.h"
 #include "wx/frame.h"
@@ -148,6 +149,8 @@ namespace Rtt
 		const std::string &getAppName() const { return fAppName; }
 		const std::string &getSaveFolder() const { return fSaveFolder; }
 		bool fIsStarted;
+		
+		Rtt_LinuxIPCClient *client;
 
 	private:
 		std::string fTitle;

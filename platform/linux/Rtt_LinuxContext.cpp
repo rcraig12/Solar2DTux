@@ -35,7 +35,7 @@
 #include "Rtt_LinuxPreferencesDialog.h"
 #include "Rtt_LinuxCloneProjectDialog.h"
 #include "Rtt_LinuxNewProjectDialog.h"
-#include "Rtt_LinuxIPCCient.h"
+
 
 //#define Rtt_DEBUG_TOUCH 1
 
@@ -438,6 +438,10 @@ namespace Rtt
 		struct passwd *pw = getpwuid(getuid());
 		const char *homedir = pw->pw_dir;
 		const char *appPath = getStartupPath(&exeFileName);
+		
+		client = new Rtt_LinuxIPCClient;
+		client->Connect( IPC_HOST, IPC_SERVICE, IPC_TOPIC);
+		client->GetConnection()->Execute("This is a standard log entry. Example for Solar2dTux console.\n");
 		
 		
 
