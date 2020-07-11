@@ -1112,8 +1112,6 @@ void MyFrame::createMenus()
 		mi = m_pBuildMenu->Append(ID_MENU_BUILD_WEB, _T("HTML5	\tCtrl-Shift-Alt-B"));
 		wxMenu *m_pBuildForLinuxMenu = new wxMenu();
 		mi = m_pBuildForLinuxMenu->Append(ID_MENU_BUILD_LINUX, _T("x64	\tCtrl-Alt-B"));
-		mi = m_pBuildForLinuxMenu->Append(ID_MENU_BUILD_LINUX, _T("x86	\tCtrl-Alt-I"));
-		mi->Enable(false);
 		mi = m_pBuildForLinuxMenu->Append(ID_MENU_BUILD_LINUX, _T("ARM	\tCtrl-Alt-A"));
 		mi->Enable(false);
 		m_pBuildMenu->AppendSubMenu(m_pBuildForLinuxMenu, _T("&Linux"));
