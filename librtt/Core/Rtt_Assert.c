@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -16,11 +16,11 @@
 #include "Core/Rtt_Assert.h"
 
 #ifdef Rtt_EMSCRIPTEN_ENV
-	#undef Rtt_Log
-	#undef Rtt_LogException
+#undef Rtt_Log
+#undef Rtt_LogException
 
 #if EMSCRIPTEN
-	#include "emscripten/emscripten.h"
+#include "emscripten/emscripten.h"
 #endif
 
 #endif
@@ -61,7 +61,7 @@ void
 Rtt_LogDisable()
 {
 #ifdef Rtt_DEBUG
-    // Don't ever disable logging in debug builds
+	// Don't ever disable logging in debug builds
 	fIsLoggingEnabled = 1;
 #else
 	fIsLoggingEnabled = 0;
@@ -112,6 +112,10 @@ Rtt_LogException( const char *format, ... )
 	result = Rtt_VLogException( format, ap );
 	va_end( ap );
 
+#if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
+	// console app output here
+#endif
+
 	return result;
 }
 
@@ -153,7 +157,7 @@ Rtt_VLogException(const char *format, va_list ap)
 			{
 				stringLength = result;
 			}
-			else if (result >(int)stringLength)
+			else if (result > (int)stringLength)
 			{
 				result = stringLength;
 			}
@@ -170,7 +174,7 @@ Rtt_VLogException(const char *format, va_list ap)
 				for (sourceIndex = 0, destinationIndex = 0; sourceIndex < stringLength; sourceIndex++)
 				{
 					if (('\r' == stringPointer[sourceIndex]) &&
-						((sourceIndex + 1) < stringLength) && ('\n' == stringPointer[sourceIndex + 1]))
+					        ((sourceIndex + 1) < stringLength) && ('\n' == stringPointer[sourceIndex + 1]))
 					{
 						result--;
 						continue;
@@ -192,8 +196,12 @@ Rtt_VLogException(const char *format, va_list ap)
 			}
 
 			// Output the string to stdout and the Visual Studio debugger.
-#if defined(Rtt_NINTENDO_ENV) || defined( Rtt_LINUX_ENV )
+#if defined(Rtt_NINTENDO_ENV)
 			fputs(stringPointer, stdout);
+#elif defined(Rtt_LINUX_ENV)
+			fputs(stringPointer, stdout);
+#elif defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
+			// console app output here
 #elif defined(Rtt_WIN_PHONE_ENV)
 			if (fLogHandler)
 			{
@@ -218,15 +226,16 @@ Rtt_VLogException(const char *format, va_list ap)
 #elif defined( Rtt_ANDROID_ENV )
 	result = __android_log_vprint( ANDROID_LOG_INFO, "Corona", format, ap );
 #elif defined(EMSCRIPTEN)
-		char	buffer[4096];
-		int n = vsnprintf(buffer, 4096, format, ap);	
-		if (n > 0)
+	char	buffer[4096];
+	int n = vsnprintf(buffer, 4096, format, ap);
+	if (n > 0)
+	{
+		EM_ASM(
 		{
-			EM_ASM({
-				var msg = UTF8ToString($0);
-				Module.printErr(msg);
-			}, buffer);
-		}
+			var msg = UTF8ToString($0);
+			Module.printErr(msg);
+		}, buffer);
+	}
 #else
 	result = vfprintf( stderr, format, ap );
 	fflush( stderr );
@@ -234,7 +243,7 @@ Rtt_VLogException(const char *format, va_list ap)
 
 #else
 
-	Rtt_ASSERT_NOT_IMPLEMENTED();		
+	Rtt_ASSERT_NOT_IMPLEMENTED();
 	result = fprintf( stderr, "vfprintf not supported\n" );
 
 #endif
@@ -253,6 +262,10 @@ Rtt_Log( const char *format, ... )
 		va_start(ap, format);
 		result = Rtt_VLogException(format, ap);
 		va_end(ap);
+
+#if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
+		// console app output here
+#endif
 	}
 
 	return result;
@@ -264,52 +277,52 @@ Rtt_Log( const char *format, ... )
 #ifdef Rtt_DEBUG
 
 #if defined( Rtt_MAC_ENV ) || defined( Rtt_IPHONE_ENV ) || defined( Rtt_TVOS_ENV )
-	#define Rtt_TRAP_WITH_SIGNAL	1
-	#include <signal.h>
+#define Rtt_TRAP_WITH_SIGNAL	1
+#include <signal.h>
 #if 0 // see stacktrace code below
-	#include <execinfo.h>
-	#include <stdio.h>
-	#include <stdlib.h>
+#include <execinfo.h>
+#include <stdio.h>
+#include <stdlib.h>
 #endif // 0
 #elif defined( Rtt_EMSCRIPTEN_ENV )
-	#define Rtt_Log printf
+#define Rtt_Log printf
 #endif
 
 static void
 Rtt_UserBreak( )
 {
-    #if defined( Rtt_TRAP_WITH_SIGNAL )
-        raise( SIGINT );
-    #elif defined( Rtt_WIN_ENV )
-		__debugbreak();
-	#elif defined( __ARMCC_VERSION )
-		__breakpoint( 1 );
-    #endif
+#if defined( Rtt_TRAP_WITH_SIGNAL )
+	raise( SIGINT );
+#elif defined( Rtt_WIN_ENV )
+	__debugbreak();
+#elif defined( __ARMCC_VERSION )
+	__breakpoint( 1 );
+#endif
 }
 
 static void
 Rtt_LogStack()
 {
-	#if defined( Rtt_EMSCRIPTEN_ENV )
-		#if EMSCRIPTEN
-			emscripten_log( EM_LOG_C_STACK | EM_LOG_JS_STACK | EM_LOG_DEMANGLE, "" );
-		#endif
-	#elif defined( Rtt_MAC_ENV ) || defined( Rtt_IPHONE_ENV )
-		/*
-		
-		Rtt_LogEnable();
-		
-		void* callstack[128];
-		int i, frames = backtrace(callstack, 128);
-		char** strs = backtrace_symbols(callstack, frames);
-		Rtt_Log("stack trace:\n");
-		for (i = 0; i < frames; ++i)
-		{
-			Rtt_Log("\t%s\n", strs[i]);
-		}
-		free(strs);
-		*/
-	#endif
+#if defined( Rtt_EMSCRIPTEN_ENV )
+#if EMSCRIPTEN
+	emscripten_log( EM_LOG_C_STACK | EM_LOG_JS_STACK | EM_LOG_DEMANGLE, "" );
+#endif
+#elif defined( Rtt_MAC_ENV ) || defined( Rtt_IPHONE_ENV )
+	/*
+
+	Rtt_LogEnable();
+
+	void* callstack[128];
+	int i, frames = backtrace(callstack, 128);
+	char** strs = backtrace_symbols(callstack, frames);
+	Rtt_Log("stack trace:\n");
+	for (i = 0; i < frames; ++i)
+	{
+		Rtt_Log("\t%s\n", strs[i]);
+	}
+	free(strs);
+	*/
+#endif
 }
 
 int
@@ -318,11 +331,11 @@ Rtt_Verify( int cond, const char *reason, const char *func, const char *file, in
 	if ( ! cond )
 	{
 		const char kNullStr[] = "(null)";
-		
+
 		if ( ! reason )	{ reason = kNullStr; }
 		if ( ! file )	{ file = kNullStr; }
 		if ( ! func )	{ func = kNullStr; }
-		
+
 		Rtt_TRACE( ( "Rtt_ASSERT [%s] at %s:%d (%s)\n", func, file, line, reason ) );
 		Rtt_LogStack();
 
