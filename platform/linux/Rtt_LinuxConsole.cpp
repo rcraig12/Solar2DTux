@@ -17,9 +17,7 @@ using namespace std;
 Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE) 
 {
-	
 	SetIcon(console_xpm);		
-	
     SetSize(wxSize(1098, 437));
     panelToolBar = new wxPanel(this, wxID_ANY);
     statusbar = CreateStatusBar(1);
@@ -34,19 +32,13 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow* parent, wxWindowID id, const wxStri
     bitmapBtnMenu = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(cog_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT);
     txtLog = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxTE_MULTILINE|wxTE_RICH2);
 	linuxIPCServer = new Rtt_LinuxIPCServer();
-	
     SetProperties();
     DoLayout();
-
 }
-
 
 void Rtt_LinuxConsole::SetProperties()
 {
-	
 	wxInitAllImageHandlers();
-
-	
     SetTitle(wxT("Solar2DTux Simulator Console"));
     int statusbar_widths[] = { -1 };
     statusbar->SetStatusWidths(1, statusbar_widths);
@@ -55,6 +47,7 @@ void Rtt_LinuxConsole::SetProperties()
     const wxString statusbar_fields[] = {
         wxT("Errors #0 Alerts #0"),
     };
+	
     for(int i = 0; i < statusbar->GetFieldsCount(); ++i) {
         statusbar->SetStatusText(statusbar_fields[i], i);
     }

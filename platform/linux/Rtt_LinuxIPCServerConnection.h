@@ -1,12 +1,12 @@
-#ifndef LINUXIPCCONNECTION_H
-#define LINUXIPCCONNECTION_H
+#ifndef LINUXIPCSERVERCONNECTION_H
+#define LINUXIPCSERVERCONNECTION_H
 
 #include <wx/wx.h>
 #include <string.h>
 #include "Rtt_LinuxConsoleApp.h"
 #include "Rtt_LinuxIPCConnectionBase.h"
 
-class Rtt_LinuxIPCConnection: public Rtt_LinuxIPCConnectionBase, public wxTimer
+class Rtt_LinuxIPCServerConnection: public Rtt_LinuxIPCConnectionBase, public wxTimer
 {
 public:
 	
@@ -37,4 +37,4 @@ enum
 
 
 
-#endif //LINUXIPCCONNECTION_H
+#endif //LINUXIPCSERVERCONNECTION_H

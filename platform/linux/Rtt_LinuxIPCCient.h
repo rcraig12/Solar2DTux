@@ -5,7 +5,7 @@
 
 #include "wx/ipc.h"
 #include "Rtt_LinuxIPCConnectionBase.h"
-#include "Rtt_LinuxIPCConnection.h"
+#include "Rtt_LinuxIPCClientConnection.h"
 
 
 // the default service name
@@ -20,7 +20,7 @@
 
 // the name of the item we're being advised about
 #define IPC_ADVISE_NAME "Item"
-
+	
 class Rtt_LinuxIPCClient: public wxClient
 {
 public:
@@ -30,12 +30,9 @@ public:
     void Disconnect();
     wxConnectionBase *OnMakeConnection() wxOVERRIDE;
     bool IsConnected() { return m_connection != NULL; }
-    wxConnectionBase *GetConnection() { return m_connection; }
-
+	Rtt_LinuxIPCClientConnection *GetConnection() { return m_connection; }
 protected:
-    wxConnection  *m_connection;
+    Rtt_LinuxIPCClientConnection  *m_connection;
 };
-
-
 
 #endif //LINUXIPCCLIENT_H

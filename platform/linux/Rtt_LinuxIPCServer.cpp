@@ -1,6 +1,6 @@
 #include <wx/wx.h>
 #include "Rtt_LinuxIPCConnectionBase.h"
-#include "Rtt_LinuxIPCConnection.h"
+#include "Rtt_LinuxIPCServerConnection.h"
 #include "Rtt_LinuxIPCServer.h"
 
 
@@ -21,7 +21,7 @@ wxConnectionBase *Rtt_LinuxIPCServer::OnAcceptConnection(const wxString& topic)
 
     if ( topic == IPC_TOPIC )
     {
-        m_connection = new Rtt_LinuxIPCConnection();
+        m_connection = new Rtt_LinuxIPCServerConnection();
     }
     else // unknown topic
     {

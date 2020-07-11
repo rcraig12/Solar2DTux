@@ -1,12 +1,12 @@
-#include "Rtt_LinuxIPCConnection.h"
+#include "Rtt_LinuxIPCServerConnection.h"
 
-bool Rtt_LinuxIPCConnection::OnExecute(const wxString& topic, const void *data, size_t size, wxIPCFormat format)
+bool Rtt_LinuxIPCServerConnection::OnExecute(const wxString& topic, const void *data, size_t size, wxIPCFormat format)
 {
     wxGetApp().UpdateLog( "This is the execute function..... \n" , 0);
     return true;
 }
 
-bool Rtt_LinuxIPCConnection::OnPoke(const wxString& topic, const wxString& item, const void *data, size_t size, wxIPCFormat format)
+bool Rtt_LinuxIPCServerConnection::OnPoke(const wxString& topic, const wxString& item, const void *data, size_t size, wxIPCFormat format)
 {
 	string test(static_cast<const char *>(data), size);
 	wxString msg;
@@ -17,16 +17,12 @@ bool Rtt_LinuxIPCConnection::OnPoke(const wxString& topic, const wxString& item,
     return wxConnection::OnPoke(topic, item, data, size, format);
 }
 
-const void *Rtt_LinuxIPCConnection::OnRequest(const wxString& topic, const wxString& item, size_t *size, wxIPCFormat format)
+const void *Rtt_LinuxIPCServerConnection::OnRequest(const wxString& topic, const wxString& item, size_t *size, wxIPCFormat format)
 {
-	//wxString s;
-    //m_requestData = s.mb_str();
-    //const void * const data = m_requestData;
 	wxGetApp().UpdateLog( "This is the request function..... \n" , 2);
-   // return data;
 }
 
-bool Rtt_LinuxIPCConnection::OnStartAdvise(const wxString& topic, const wxString& item)
+bool Rtt_LinuxIPCServerConnection::OnStartAdvise(const wxString& topic, const wxString& item)
 {
     //wxLogMessage("OnStartAdvise(\"%s\",\"%s\")", topic, item);
     //wxLogMessage("Returning true");
@@ -35,7 +31,7 @@ bool Rtt_LinuxIPCConnection::OnStartAdvise(const wxString& topic, const wxString
     return true;
 }
 
-bool Rtt_LinuxIPCConnection::OnStopAdvise(const wxString& topic, const wxString& item)
+bool Rtt_LinuxIPCServerConnection::OnStopAdvise(const wxString& topic, const wxString& item)
 {
     //wxLogMessage("OnStopAdvise(\"%s\",\"%s\")", topic, item);
     //wxLogMessage("Returning true");
@@ -44,7 +40,7 @@ bool Rtt_LinuxIPCConnection::OnStopAdvise(const wxString& topic, const wxString&
     return true;
 }
 
-void Rtt_LinuxIPCConnection::Notify()
+void Rtt_LinuxIPCServerConnection::Notify()
 {
     if (!m_sAdvise.empty())
     {
@@ -70,14 +66,14 @@ void Rtt_LinuxIPCConnection::Notify()
     }
 }
 
-bool Rtt_LinuxIPCConnection::DoAdvise(const wxString& item, const void *data, size_t size, wxIPCFormat format)
+bool Rtt_LinuxIPCServerConnection::DoAdvise(const wxString& item, const void *data, size_t size, wxIPCFormat format)
 {
     Log("Advise", "", item, data, size, format);
 	
     return wxConnection::DoAdvise(item, data, size, format);
 }
 
-bool Rtt_LinuxIPCConnection::OnDisconnect()
+bool Rtt_LinuxIPCServerConnection::OnDisconnect()
 {
     //wxLogMessage("OnDisconnect()");
     return true;

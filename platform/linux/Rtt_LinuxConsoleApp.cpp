@@ -1,7 +1,5 @@
 #include "Rtt_LinuxConsoleApp.h"
 
-//wxIMPLEMENT_APP(Rtt_LinuxConsoleApp);
-
 bool Rtt_LinuxConsoleApp::OnInit()
 {
     wxInitAllImageHandlers();
@@ -18,6 +16,7 @@ void Rtt_LinuxConsoleApp::UpdateLog( wxString message)
 	Solar2DTuxConsole->UpdateLog(message);
 	
 }
+
 void Rtt_LinuxConsoleApp::UpdateLog( wxString message, int color )
 {
 	

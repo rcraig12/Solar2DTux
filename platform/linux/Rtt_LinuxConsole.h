@@ -17,7 +17,7 @@
 #include <wx/image.h>
 #include <wx/icon.h>
 #include "Rtt_LinuxIPCServer.h"
-#include "Rtt_LinuxIPCConnection.h"
+#include "Rtt_LinuxIPCServerConnection.h"
 
 using namespace std;
 
