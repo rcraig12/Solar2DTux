@@ -28,7 +28,7 @@ void Rtt_LinuxIPCClient::Disconnect()
 {
     if ( m_connection )
     {
-        m_connection->Disconnect();
+        Rtt_LinuxIPCClientConnection m_connection->Disconnect();
         wxDELETE(m_connection);
         //wxLogMessage("Disconnected client");
     }
