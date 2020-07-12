@@ -58,6 +58,6 @@ void Rtt_LinuxIPCConnectionBase::Log(const wxString& command, const wxString& to
 			  break;
 		}
 
-	wxLogMessage("%s,%lu)", s, (unsigned long)size);
+	//wxLogMessage("%s,%lu)", s, (unsigned long)size);
 	
 }

@@ -2,18 +2,40 @@
 
 bool Rtt_LinuxIPCServerConnection::OnExecute(const wxString& topic, const void *data, size_t size, wxIPCFormat format)
 {
-    wxGetApp().UpdateLog( "This is the execute function..... \n" , 0);
+	string logMsg(static_cast<const char *>(data), size);
+	wxString msg;
+	msg.append(logMsg.c_str());
+    wxGetApp().UpdateLog( msg.c_str() , 0);
     return true;
 }
 
 bool Rtt_LinuxIPCServerConnection::OnPoke(const wxString& topic, const wxString& item, const void *data, size_t size, wxIPCFormat format)
 {
+	int logType;
 	string test(static_cast<const char *>(data), size);
 	wxString msg;
 	msg.append(test.c_str());
-	msg.append("test\n");
+	//msg.append("\n");
 	
-    wxGetApp().UpdateLog( msg.c_str() , 1 );
+	if ( item == "information" ){
+	
+		logType = 0; 
+
+	};
+	
+	if ( item == "warning" ){
+		
+		logType = 1;
+	
+	};
+	
+	if ( item == "error" ){
+		
+		logType = 2;
+	
+	};
+	
+    wxGetApp().UpdateLog( msg.c_str() , logType );
     return wxConnection::OnPoke(topic, item, data, size, format);
 }
 

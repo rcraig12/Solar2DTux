@@ -407,6 +407,7 @@
       <File Name="../../external/freetype-2.9/src/autofit/autofit.c"/>
     </VirtualDirectory>
     <VirtualDirectory Name="rtt">
+      <File Name="../../librtt/Core/Rtt_Assert.cpp"/>
       <VirtualDirectory Name="include">
         <File Name="../../librtt/Rtt_GPU.h"/>
         <File Name="../../external/smoothpolygon/SmoothPolygon.h"/>
@@ -788,7 +789,6 @@
       <File Name="../../librtt/Core/Rtt_StringHash.cpp"/>
       <File Name="../../librtt/Core/Rtt_String.cpp"/>
       <File Name="../../librtt/Core/Rtt_FileSystem.cpp"/>
-      <File Name="../../librtt/Core/Rtt_Assert.c"/>
       <File Name="../../librtt/Core/Rtt_Time.c"/>
       <File Name="../../librtt/Display/Rtt_VertexCache.cpp"/>
       <File Name="../../librtt/Display/Rtt_TextureResourceExternalAdapter.cpp"/>

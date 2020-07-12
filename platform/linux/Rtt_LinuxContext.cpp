@@ -438,12 +438,6 @@ namespace Rtt
 		struct passwd *pw = getpwuid(getuid());
 		const char *homedir = pw->pw_dir;
 		const char *appPath = getStartupPath(&exeFileName);
-		
-		client = new Rtt_LinuxIPCClient;
-		client->Connect( IPC_HOST, IPC_SERVICE, IPC_TOPIC);
-		client->GetConnection()->Execute("This is a standard log entry. Example for Solar2dTux console.\n");
-		
-		
 
 		// override appPath if arg isn't NULL
 		if (path && *path != 0)

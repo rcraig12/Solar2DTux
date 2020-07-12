@@ -21,7 +21,7 @@ wxConnectionBase *Rtt_LinuxIPCServer::OnAcceptConnection(const wxString& topic)
 
     if ( topic == IPC_TOPIC )
     {
-        m_connection = new Rtt_LinuxIPCServerConnection();
+        m_connection = new Rtt_LinuxIPCServerConnection;
     }
     else // unknown topic
     {

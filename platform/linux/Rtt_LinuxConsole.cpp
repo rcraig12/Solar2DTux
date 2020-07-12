@@ -156,6 +156,7 @@ void Rtt_LinuxConsole::OnBtnEraseClick(wxCommandEvent &event)
 {
     event.Skip();
 	txtLog->SetFocus();
+	txtLog->SetValue("");
     // notify the user that he hasn't implemented the event handler yet
     wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onBtnEraseClick) not implemented yet"));
 }
