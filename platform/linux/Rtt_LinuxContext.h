@@ -10,7 +10,8 @@
 #include <string>
 #include <map>
 #include <vector>
-
+#include <time.h>
+#include <sys/time.h>
 #include "Rtt_Event.h"
 #include "Core/Rtt_Types.h"
 #include "Rtt_Runtime.h"
@@ -20,7 +21,6 @@
 #include "Rtt_LinuxInputDeviceManager.h"
 #include "Rtt_LinuxSimulatorServices.h"
 #include "Rtt_LinuxIPCCient.h"
-
 #include "wx/app.h"
 #include "wx/frame.h"
 #include "wx/panel.h"
@@ -35,6 +35,7 @@
 class MyApp;
 class MyFrame;
 class MyGLCanvas;
+static Rtt_LinuxIPCClient *consoleClient;
 
 wxDECLARE_EVENT(eventOpenProject, wxCommandEvent);
 wxDECLARE_EVENT(eventNewProject, wxCommandEvent);
@@ -43,6 +44,78 @@ wxDECLARE_EVENT(eventWelcomeProject, wxCommandEvent);
 wxDECLARE_EVENT(eventOpenPreferences, wxCommandEvent);
 wxDECLARE_EVENT(eventCloneProject, wxCommandEvent);
 wxDECLARE_EVENT(eventSuspendOrResume, wxCommandEvent);
+
+static void LinuxConsoleLog(const char *message, bool isError = false)
+{
+	using namespace std;
+
+	if (consoleClient == NULL)
+	{
+		consoleClient = new Rtt_LinuxIPCClient();
+		consoleClient->Connect(IPC_HOST, IPC_SERVICE, IPC_TOPIC);
+	}
+
+	time_t timeNow = time(NULL);
+	char buffer[32];
+	char msBuffer[32];
+	int millisec;
+	struct tm* timeInfo;
+	struct timeval timeValue;
+
+	gettimeofday(&timeValue, NULL);
+	millisec = lrint(timeValue.tv_usec / 1000.0);
+
+	if (millisec >= 1000)
+	{
+		millisec -= 1000;
+		timeValue.tv_sec++;
+	}
+
+	timeInfo = localtime(&timeValue.tv_sec);
+	strftime(buffer, 26, "%H:%M:%S.", timeInfo);
+	sprintf(msBuffer, "%03d ", millisec);
+	strcat(buffer, msBuffer);
+	int bufferLen = strlen(buffer);
+	string outputMessage;
+	string messageCopy(message);
+	size_t currentMsgPos = 0;
+	string topic("information");
+	string content;
+	const string delimiter = "\n";
+	const string warningPrefix = "WARNING:";
+	const string errorPrefix = "ERROR:";
+
+	while ((currentMsgPos = messageCopy.find(delimiter)) != string::npos)
+	{
+		content = messageCopy.substr(0, currentMsgPos);
+		outputMessage.append(buffer).append(content).append(delimiter);
+		messageCopy.erase(0, currentMsgPos + delimiter.length());
+	}
+
+	if (isError)
+	{
+		topic = "error";
+	}
+	else
+	{
+		if (outputMessage.length() > bufferLen + warningPrefix.length())
+		{
+			if (outputMessage.compare(bufferLen, warningPrefix.length(), warningPrefix) == 0)
+			{
+				topic = "warning";
+			}
+			else if (outputMessage.compare(bufferLen, errorPrefix.length(), errorPrefix) == 0)
+			{
+				topic = "error";
+			}
+		}
+	}
+
+	if (outputMessage.find("kShowRuntimeErrorsSet") == string::npos && outputMessage.find("luaDebugAvailable") == string::npos)
+	{
+		consoleClient->GetConnection()->Poke(topic, outputMessage.c_str());
+	}
+}
 
 namespace Rtt
 {
@@ -149,8 +222,6 @@ namespace Rtt
 		const std::string &getAppName() const { return fAppName; }
 		const std::string &getSaveFolder() const { return fSaveFolder; }
 		bool fIsStarted;
-		
-		Rtt_LinuxIPCClient *client;
 
 	private:
 		std::string fTitle;

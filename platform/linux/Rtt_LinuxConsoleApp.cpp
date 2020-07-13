@@ -8,17 +8,30 @@ bool Rtt_LinuxConsoleApp::OnInit()
 	Solar2DTuxConsole->Show();
 
 	return true;
+<<<<<<< HEAD
+=======
 }
 
-void Rtt_LinuxConsoleApp::UpdateLog( wxString message)
+void Rtt_LinuxConsoleApp::ClearLog()
 {
+	Solar2DTuxConsole->ClearLog();
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
+}
+
+void Rtt_LinuxConsoleApp::UpdateLog(wxString message)
+{
+<<<<<<< HEAD
 
 	Solar2DTuxConsole->UpdateLog(message);
 
+=======
+	Solar2DTuxConsole->UpdateLog(message);
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
 }
 
-void Rtt_LinuxConsoleApp::UpdateLog( wxString message, int color )
+void Rtt_LinuxConsoleApp::UpdateLog(wxString message, int messageType)
 {
+<<<<<<< HEAD
 
 	if (color == 0 )
 	{
@@ -41,6 +54,22 @@ void Rtt_LinuxConsoleApp::UpdateLog( wxString message, int color )
 
 	}
 
+=======
+	switch(messageType)
+	{
+		case MessageType::Warning:
+			Solar2DTuxConsole->UpdateLogWarning(message);
+			break;
+
+		case MessageType::Error:
+			Solar2DTuxConsole->UpdateLogError(message);
+			break;
+
+		default:
+			Solar2DTuxConsole->UpdateLog(message);
+			break;
+	}
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
 }
 
 IMPLEMENT_APP(Rtt_LinuxConsoleApp);

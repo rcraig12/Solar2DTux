@@ -2,35 +2,34 @@
 
 Rtt_LinuxIPCClient::Rtt_LinuxIPCClient()
 {
-	m_connection = NULL;
+	mConnection = NULL;
 }
 
 Rtt_LinuxIPCClient::~Rtt_LinuxIPCClient()
 {
-    Disconnect();
+	Disconnect();
 }
 
-bool Rtt_LinuxIPCClient::Connect( const wxString& sHost, const wxString& sService, const wxString& sTopic )
+bool Rtt_LinuxIPCClient::Connect(const wxString &sHost, const wxString &sService, const wxString &sTopic)
 {
 	// suppress the log messages from MakeConnection()
-    wxLogNull nolog;
+	wxLogNull nolog;
 
-    m_connection = (Rtt_LinuxIPCClientConnection*)MakeConnection(sHost, sService, sTopic);
-    return m_connection    != NULL;
+	mConnection = (Rtt_LinuxIPCClientConnection*)MakeConnection(sHost, sService, sTopic);
+	return mConnection != NULL;
 }
 
 wxConnectionBase *Rtt_LinuxIPCClient::OnMakeConnection()
 {
-    return new Rtt_LinuxIPCClientConnection();
+	return new Rtt_LinuxIPCClientConnection();
 }
 
 void Rtt_LinuxIPCClient::Disconnect()
 {
-    if ( m_connection )
-    {
-        //m_connection->Disconnect();
-        wxDELETE(m_connection);
-        //wxLogMessage("Disconnected client");
-    }
+	if (mConnection)
+	{
+		//mConnection->Disconnect();
+		wxDELETE(mConnection);
+		//wxLogMessage("Disconnected client");
+	}
 }
-

@@ -9,13 +9,13 @@
 
 //#include "Core/Rtt_Build.h"
 #include "Core/Rtt_Config.h"
-
 #include "Core/Rtt_Macros.h"
 #include "Core/Rtt_Types.h"
-
 #include "Core/Rtt_Assert.h"
 
-#include "linux/Rtt_LinuxIPCCient.h"
+#ifdef Rtt_LINUX_ENV
+#include "../../platform/linux/Rtt_LinuxContext.h"
+#endif
 
 #ifdef Rtt_EMSCRIPTEN_ENV
 #undef Rtt_Log
@@ -47,15 +47,11 @@ Rtt_EXPORT_BEGIN
 #include <windows.h>
 #endif
 
-
+#ifdef Rtt_LINUX_ENV
+static bool linuxIsErrorMsg = false;
+#endif
 /// Static variable set to non-zero if logging is enabled. Set to zero if logging is disabled.
 static int fIsLoggingEnabled = 1;
-
-// Create a reference to the console client
-static Rtt_LinuxIPCClient* consoleClient;
-
-//string to hold the topic
-std::string topic = "information";
 
 /// Enables the logging system.
 void
@@ -113,16 +109,16 @@ Rtt_LogGetHandler(void)
 int
 Rtt_LogException( const char *format, ... )
 {
+#if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
+	linuxIsErrorMsg = true;
+#endif
+
 	int result = 0;
 	va_list ap;
 
 	va_start( ap, format );
 	result = Rtt_VLogException( format, ap );
 	va_end( ap );
-
-#if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
-	topic = "error";
-#endif
 
 	return result;
 }
@@ -206,8 +202,11 @@ Rtt_VLogException(const char *format, va_list ap)
 			// Output the string to stdout and the Visual Studio debugger.
 #if defined(Rtt_NINTENDO_ENV)
 			fputs(stringPointer, stdout);
+<<<<<<< HEAD
 #elif defined(Rtt_LINUX_ENV)
 			fputs(stringPointer, stdout);
+=======
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
 #elif defined(Rtt_WIN_PHONE_ENV)
 			if (fLogHandler)
 			{
@@ -232,7 +231,7 @@ Rtt_VLogException(const char *format, va_list ap)
 #elif defined( Rtt_ANDROID_ENV )
 	result = __android_log_vprint( ANDROID_LOG_INFO, "Corona", format, ap );
 #elif defined(EMSCRIPTEN)
-	char	buffer[4096];
+	char buffer[4096];
 	int n = vsnprintf(buffer, 4096, format, ap);
 	if (n > 0)
 	{
@@ -244,6 +243,7 @@ Rtt_VLogException(const char *format, va_list ap)
 	}
 #else
 #if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
+<<<<<<< HEAD
 	if (consoleClient == NULL)
 	{
 		consoleClient = new Rtt_LinuxIPCClient;
@@ -264,6 +264,14 @@ Rtt_VLogException(const char *format, va_list ap)
 		consoleClient->GetConnection()->Poke( topic, format);
 	}
 
+=======
+	char buffer[4096];
+	va_list apCopy;
+	va_copy(apCopy, ap);
+
+	int n = vsnprintf(buffer, 4096, format, apCopy);
+	LinuxConsoleLog((n > 0) ? buffer : format, linuxIsErrorMsg);
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
 #endif
 
 	result = vfprintf( stderr, format, ap );
@@ -288,7 +296,11 @@ Rtt_Log( const char *format, ... )
 	if (Rtt_LogIsEnabled())
 	{
 #if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
+<<<<<<< HEAD
 		topic = "information";
+=======
+		linuxIsErrorMsg = false;
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
 #endif
 
 		va_list ap;

@@ -26,14 +26,20 @@ using namespace std;
 class Rtt_LinuxConsole: public wxFrame
 {
 public:
+<<<<<<< HEAD
 	Rtt_LinuxConsole(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE);
 private:
+=======
+	Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE);
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
 
+private:
 	static const int intTimerInterval = 250;
 	void SetProperties();
 	void DoLayout();
 
 protected:
+<<<<<<< HEAD
 
 	wxStatusBar* statusbar;
 	wxBitmapButton* bitmapBtnSave;
@@ -49,6 +55,22 @@ protected:
 	wxTextCtrl* txtLog;
 	wxTimer* timer;
 	Rtt_LinuxIPCServer* linuxIPCServer;
+=======
+	wxStatusBar *statusbar;
+	wxBitmapButton *bitmapBtnSave;
+	wxBitmapButton *bitmapBtnCopy;
+	wxBitmapButton *bitmapBtnErase;
+	wxTextCtrl *txtFind;
+	wxBitmapButton *bitmapBtnFindLeft;
+	wxBitmapButton *bitmapBtnFindRight;
+	wxBitmapButton *bitmapBtnMatchCase;
+	wxBitmapButton *bitmapBtnLoopingSearch;
+	wxBitmapButton *bitmapBtnMenu;
+	wxPanel *panelToolBar;
+	wxTextCtrl *txtLog;
+	wxTimer *timer;
+	Rtt_LinuxIPCServer *linuxIPCServer;
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
 
 	DECLARE_EVENT_TABLE();
 
@@ -61,10 +83,17 @@ public:
 	void OnBtnMatchCaseClick(wxCommandEvent &event);
 	void OnBtnLoopingSearchClick(wxCommandEvent &event);
 	void OnProgressTimer(wxTimerEvent &event);
+<<<<<<< HEAD
 	void UpdateLog( wxString message);
 	void UpdateLogWarning( wxString message);
 	void UpdateLogError( wxString message);
 
+=======
+	void ClearLog();
+	void UpdateLog(wxString message);
+	void UpdateLogWarning(wxString message);
+	void UpdateLogError(wxString message);
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
 };
 
 #endif // LINUXCONSOLE_H
