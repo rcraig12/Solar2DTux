@@ -85,7 +85,6 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 }
 
 #elif defined( Rtt_WIN_ENV ) || defined( Rtt_NINTENDO_ENV )
-
 #include "Core\Rtt_Assert.h"
 #include <windows.h>
 
@@ -193,7 +192,6 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 				stringLength = newStringLength;
 			}
 		}
-
 		/* Print the final concatenated string to stdout and the Visual Studio debugger, if available. */
 #ifdef Rtt_WIN_PHONE_ENV
 		{

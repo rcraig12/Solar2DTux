@@ -4,9 +4,10 @@
 #include <wx/app.h>
 #include "Rtt_LinuxConsole.h"
 
-class Rtt_LinuxConsoleApp: public wxApp {
+class Rtt_LinuxConsoleApp: public wxApp
+{
 public:
-    bool OnInit();
+	bool OnInit();
 	void UpdateLog( wxString message);
 	void UpdateLog( wxString message, int colour);
 	Rtt_LinuxConsole* Solar2DTuxConsole;

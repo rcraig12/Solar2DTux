@@ -925,6 +925,10 @@ namespace Rtt
 
 MyApp::MyApp()
 {
+	    // start the console immediately
+#ifdef Rtt_SIMULATOR
+    wxExecute("./Solar2DConsole");
+#endif
 }
 
 MyApp::~MyApp()
@@ -1419,11 +1423,11 @@ void MyFrame::CreateSuspendedPanel()
 	{
 		suspendedPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(fContext->getWidth(), fContext->getHeight()));
 		suspendedPanel->SetBackgroundColour(wxColour(*wxBLACK));
-		suspendedPanel->SetForegroundColour(wxColour(*wxBLACK));
+		//suspendedPanel->SetForegroundColour(wxColour(*wxBLACK));
 		suspendedText = new wxStaticText(this, -1, "Suspended", wxDefaultPosition, wxDefaultSize);
 		suspendedText->SetForegroundColour(*wxWHITE);
 		suspendedText->CenterOnParent();
-	}
+	} 
 #endif
 }
 
@@ -1434,7 +1438,7 @@ void MyFrame::RemoveSuspendedPanel()
 	{
 		return;
 	}
-
+	
 	suspendedPanel->Destroy();
 	suspendedText->Destroy();
 	suspendedPanel = NULL;
