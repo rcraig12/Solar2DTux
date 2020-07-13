@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -17,25 +17,23 @@
 
 
 #include <stdio.h>
-#include "lua.h"
 #include "lauxlib.h"
 #include "Core/Rtt_Config.h"
 
-
-/* This is the stock Lua print function. 
+/* This is the stock Lua print function.
  * The goal is to reimplement this for every platform that can't use the stock one.
  * Use this one as the fall back definition.
  */
 
-#if defined( Rtt_APPLE_ENV ) 
-	/* Apple is defined in the .m file for Obj-C stuff. Make sure that is compiled in for this case. */
+#if defined( Rtt_APPLE_ENV )
+/* Apple is defined in the .m file for Obj-C stuff. Make sure that is compiled in for this case. */
 extern int Rtt_LuaCoronaBaseLib_print(lua_State *L);
 
 #elif defined ( Rtt_ANDROID_ENV )
 
 #include <android/log.h>
 
-/* Android's log system is annoying for two reasons. 
+/* Android's log system is annoying for two reasons.
  1. We must use __android_log_write. (Note: Don't use __android_log_print because we don't % characters to be evaluated.)
  2. __android_log_write only takes one string at a time, but will print timestamps and newlines for each call. There is no easy way to combine strings into one message, so we must do it ourselves the hard way.
 */
@@ -44,10 +42,10 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 	int n = lua_gettop(L);  /* number of arguments */
 	int i;
 	lua_newtable(L); /* create a new table/array to hold the resulting strings to call table.concat on later */
-	int concat_table_index = n+1;
+	int concat_table_index = n + 1;
 	const char* result = NULL;
 	lua_getglobal(L, "tostring");
-	for (i=1; i<=n; i++)
+	for (i = 1; i <= n; i++)
 	{
 		const char *s;
 		lua_pushvalue(L, -1);  /* function to be called */
@@ -57,9 +55,9 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 		if (s == NULL)
 		{
 			return luaL_error(L, LUA_QL("tostring") " must return a string to "
-							  LUA_QL("print"));
+			                  LUA_QL("print"));
 		}
-		/* We can build up the string using the standard C library like strcat, 
+		/* We can build up the string using the standard C library like strcat,
 		 or we can try to be more clever by leveraging Lua table.concat.
 		 The former can be messy dealing with malloc/realloc and may not be optimal depending on how reallocs are done.
 		 The latter punts the optimization issues to Lua, but the messiness is in dealing with the Lua stack.
@@ -68,19 +66,19 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 		lua_rawseti(L, concat_table_index, i); /* Put the string in our own array which happens to have the exact same indexing as our parameter list. Remember this pops the string off the top of the stack. */
 	}
 	lua_pop(L, 1); /* pop function 'tostring' */
-	
+
 	lua_getglobal(L, "table"); /* get the table library */
 	lua_pushliteral(L, "concat");
 	lua_gettable(L, -2); /* get table.concat function on top of stack */
-	
+
 	lua_pushvalue(L, concat_table_index); /* push the concat array as the first parameter */
 	lua_pushliteral(L, "\t"); /* Lua's built-in print separates each argument with tabs. Pass this as the second parameter to concat. */
 	lua_call(L, 2, 1);
 	result = lua_tostring(L, -1);  /* get result */
-	
+
 	/* Finally, we can write the output. Remember that this automatically includes a newline. */
 	__android_log_write(ANDROID_LOG_INFO, "Corona", result);
-	
+
 	return 0;
 }
 
@@ -127,7 +125,7 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 			return luaL_error(L, LUA_QL("tostring") " must return a string to " LUA_QL("print"));
 		}
 		concatenationCount++;
-		
+
 		/* Push a tab character if there are more arguments to concatenate. */
 		if (argumentIndex < argumentCount)
 		{
@@ -158,7 +156,7 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 			{
 				/* Check for a \r\n character pair. */
 				if (('\r' == luaStringPointer[sourceIndex]) &&
-				    ((sourceIndex + 1) < stringLength) && ('\n' == luaStringPointer[sourceIndex + 1]))
+				        ((sourceIndex + 1) < stringLength) && ('\n' == luaStringPointer[sourceIndex + 1]))
 				{
 					/* Create a copy of the Lua string, if not done already. */
 					if (!newStringPointer)
@@ -237,7 +235,8 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 	int n = lua_gettop(L);  /* number of arguments */
 	int i;
 	lua_getglobal(L, "tostring");
-	for (i=1; i<=n; i++) {
+	for (i = 1; i <= n; i++)
+	{
 		const char *s;
 		lua_pushvalue(L, -1);  /* function to be called */
 		lua_pushvalue(L, i);   /* value to print */
@@ -245,10 +244,16 @@ static int Rtt_LuaCoronaBaseLib_print(lua_State *L)
 		s = lua_tostring(L, -1);  /* get result */
 		if (s == NULL)
 			return luaL_error(L, LUA_QL("tostring") " must return a string to "
-							  LUA_QL("print"));
-		if (i>1) fputs("\t", stdout);
+			                  LUA_QL("print"));
+		if (i > 1) fputs("\t", stdout);
 		fputs(s, stdout);
 		lua_pop(L, 1);  /* pop result */
+
+#if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
+		char buffer[4096];
+		sprintf(buffer, "%s\n", s);
+		Rtt_Log(buffer);
+#endif
 	}
 	fputs("\n", stdout);
 	return 0;
@@ -268,7 +273,3 @@ int luaopen_coronabaselib(lua_State *L)
 	luaL_register(L, "coronabaselib", corona_base_funcs);
 	return 1;
 }
-
-
-
-

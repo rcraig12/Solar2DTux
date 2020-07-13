@@ -3,42 +3,39 @@
 #include "Rtt_LinuxIPCServerConnection.h"
 #include "Rtt_LinuxIPCServer.h"
 
-
 Rtt_LinuxIPCServer::Rtt_LinuxIPCServer()
 {
-    m_connection = NULL;
+	mConnection = NULL;
 }
 
 Rtt_LinuxIPCServer::~Rtt_LinuxIPCServer()
 {
-    Disconnect();
+	Disconnect();
 }
 
-wxConnectionBase *Rtt_LinuxIPCServer::OnAcceptConnection(const wxString& topic)
+wxConnectionBase *Rtt_LinuxIPCServer::OnAcceptConnection(const wxString &topic)
 {
-	
-    //wxLogMessage("OnAcceptConnection(\"%s\")", topic);
+	//wxLogMessage("OnAcceptConnection(\"%s\")", topic);
+	if (topic == IPC_TOPIC)
+	{
+		mConnection = new Rtt_LinuxIPCServerConnection();
+	}
+	else // unknown topic
+	{
+		//wxLogMessage("Unknown topic");
+		return NULL;
+	}
 
-    if ( topic == IPC_TOPIC )
-    {
-        m_connection = new Rtt_LinuxIPCServerConnection;
-    }
-    else // unknown topic
-    {
-        //wxLogMessage("Unknown topic");
-        return NULL;
-    }
-
-    //wxLogMessage("Connection accepted");
-	return m_connection;
+	//wxLogMessage("Connection accepted");
+	return mConnection;
 }
 
 void Rtt_LinuxIPCServer::Disconnect()
 {
-    if ( m_connection )
-    {
-        m_connection->Disconnect();
-        wxDELETE(m_connection);
-        //wxLogMessage("Disconnected client");
-    }
+	if (mConnection)
+	{
+		mConnection->Disconnect();
+		wxDELETE(mConnection);
+		//wxLogMessage("Disconnected client");
+	}
 }

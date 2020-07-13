@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md 
+// For overview and more information on licensing please refer to README.md
 // Home page: https://github.com/coronalabs/corona
 // Contact: support@coronalabs.com
 //
@@ -14,9 +14,9 @@
 
 #include "Core/Rtt_Macros.h"
 
-#define Rtt_VERSION_MAJOR	0
+#define Rtt_VERSION_MAJOR	1
 #define Rtt_VERSION_MINOR	0
-#define Rtt_VERSION_REVISION	1
+#define Rtt_VERSION_REVISION	0
 
 #define Rtt_LOCAL_BUILD_REVISION 0
 
@@ -43,7 +43,7 @@
 #define Rtt_STRING_BUILD	Rtt_MACRO_TO_STRING( Rtt_BUILD_YEAR ) "." Rtt_MACRO_TO_STRING( Rtt_BUILD_REVISION )
 
 // 2010.9.26
-#define Rtt_STRING_BUILD_DATE Rtt_MACRO_TO_STRING( Rtt_BUILD_YEAR ) "." Rtt_MACRO_TO_STRING( Rtt_BUILD_MONTH ) "." Rtt_MACRO_TO_STRING( Rtt_BUILD_DAY ) 
+#define Rtt_STRING_BUILD_DATE Rtt_MACRO_TO_STRING( Rtt_BUILD_YEAR ) "." Rtt_MACRO_TO_STRING( Rtt_BUILD_MONTH ) "." Rtt_MACRO_TO_STRING( Rtt_BUILD_DAY )
 
 #define Rtt_STRING_COPYRIGHT	"Copyright (C) 2020 Solar2DTux, Solar2D."
 

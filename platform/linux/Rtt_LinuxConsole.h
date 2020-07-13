@@ -23,47 +23,47 @@ using namespace std;
 
 #define TIMER_ID 1000
 
-class Rtt_LinuxConsole: public wxFrame {
+class Rtt_LinuxConsole: public wxFrame
+{
 public:
-    Rtt_LinuxConsole(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
+	Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE);
+
 private:
-
 	static const int intTimerInterval = 250;
-    void SetProperties();
-    void DoLayout();
-	
-protected:
-    
-    wxStatusBar* statusbar;
-    wxBitmapButton* bitmapBtnSave;
-    wxBitmapButton* bitmapBtnCopy;
-    wxBitmapButton* bitmapBtnErase;
-    wxTextCtrl* txtFind;
-    wxBitmapButton* bitmapBtnFindLeft;
-    wxBitmapButton* bitmapBtnFindRight;
-    wxBitmapButton* bitmapBtnMatchCase;
-    wxBitmapButton* bitmapBtnLoopingSearch;
-    wxBitmapButton* bitmapBtnMenu;
-    wxPanel* panelToolBar;
-    wxTextCtrl* txtLog;
-	wxTimer* timer;
-	Rtt_LinuxIPCServer* linuxIPCServer;
+	void SetProperties();
+	void DoLayout();
 
-    DECLARE_EVENT_TABLE();
+protected:
+	wxStatusBar *statusbar;
+	wxBitmapButton *bitmapBtnSave;
+	wxBitmapButton *bitmapBtnCopy;
+	wxBitmapButton *bitmapBtnErase;
+	wxTextCtrl *txtFind;
+	wxBitmapButton *bitmapBtnFindLeft;
+	wxBitmapButton *bitmapBtnFindRight;
+	wxBitmapButton *bitmapBtnMatchCase;
+	wxBitmapButton *bitmapBtnLoopingSearch;
+	wxBitmapButton *bitmapBtnMenu;
+	wxPanel *panelToolBar;
+	wxTextCtrl *txtLog;
+	wxTimer *timer;
+	Rtt_LinuxIPCServer *linuxIPCServer;
+
+	DECLARE_EVENT_TABLE();
 
 public:
-    void OnBtnSaveClick(wxCommandEvent &event);
-    void OnBtnCopyClick(wxCommandEvent &event); 
-    void OnBtnEraseClick(wxCommandEvent &event);
-    void OnBtnFindLeftClick(wxCommandEvent &event); 
-    void OnBtnFindRightClick(wxCommandEvent &event); 
-    void OnBtnMatchCaseClick(wxCommandEvent &event); 
-    void OnBtnLoopingSearchClick(wxCommandEvent &event); 
+	void OnBtnSaveClick(wxCommandEvent &event);
+	void OnBtnCopyClick(wxCommandEvent &event);
+	void OnBtnEraseClick(wxCommandEvent &event);
+	void OnBtnFindLeftClick(wxCommandEvent &event);
+	void OnBtnFindRightClick(wxCommandEvent &event);
+	void OnBtnMatchCaseClick(wxCommandEvent &event);
+	void OnBtnLoopingSearchClick(wxCommandEvent &event);
 	void OnProgressTimer(wxTimerEvent &event);
-	void UpdateLog( wxString message);
-	void UpdateLogWarning( wxString message);
-	void UpdateLogError( wxString message);
-	
-}; 
+	void ClearLog();
+	void UpdateLog(wxString message);
+	void UpdateLogWarning(wxString message);
+	void UpdateLogError(wxString message);
+};
 
 #endif // LINUXCONSOLE_H

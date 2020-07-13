@@ -408,6 +408,7 @@
     </VirtualDirectory>
     <VirtualDirectory Name="rtt">
       <File Name="../../librtt/Core/Rtt_Assert.cpp"/>
+      <File Name="../../librtt/Rtt_LuaCoronaBaseLib.c"/>
       <VirtualDirectory Name="include">
         <File Name="../../librtt/Rtt_GPU.h"/>
         <File Name="../../external/smoothpolygon/SmoothPolygon.h"/>
@@ -983,7 +984,6 @@
       <File Name="../../librtt/Rtt_LuaLibFacebook.cpp"/>
       <File Name="../../librtt/Rtt_LuaLibCrypto.cpp"/>
       <File Name="../../librtt/Rtt_LuaData.cpp"/>
-      <File Name="../../librtt/Rtt_LuaCoronaBaseLib.c"/>
       <File Name="../../librtt/Rtt_LuaContext.cpp"/>
       <File Name="../../librtt/Rtt_LuaContainer.cpp"/>
       <File Name="../../librtt/Rtt_LuaAux.cpp"/>
@@ -1357,6 +1357,7 @@
         <StartupCommands/>
       </Debugger>
       <PreBuild>
+        <Command Enabled="yes">make -f Solar2DConsole.mk</Command>
         <Command Enabled="yes">make -f lua2cpp.mk</Command>
       </PreBuild>
       <PostBuild>

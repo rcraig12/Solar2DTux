@@ -4,12 +4,15 @@
 #include <wx/app.h>
 #include "Rtt_LinuxConsole.h"
 
-class Rtt_LinuxConsoleApp: public wxApp {
+class Rtt_LinuxConsoleApp: public wxApp
+{
 public:
-    bool OnInit();
-	void UpdateLog( wxString message);
-	void UpdateLog( wxString message, int colour);
-	Rtt_LinuxConsole* Solar2DTuxConsole;
+	enum MessageType {Normal, Warning, Error};
+	Rtt_LinuxConsole *Solar2DTuxConsole;
+	bool OnInit();
+	void ClearLog();
+	void UpdateLog(wxString message);
+	void UpdateLog(wxString message, int messageType);
 };
 
 DECLARE_APP(Rtt_LinuxConsoleApp);
