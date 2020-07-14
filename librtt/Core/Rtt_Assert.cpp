@@ -208,13 +208,6 @@ Rtt_VLogException(const char *format, va_list ap)
 			fputs(stringPointer, stdout);
 #elif defined(Rtt_LINUX_ENV)
 			fputs(stringPointer, stdout);
-#elif defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
-			if (consoleClient == NULL){
-				consoleClient = new Rtt_LinuxIPCClient;
-				consoleClient->Connect( IPC_HOST, IPC_SERVICE, IPC_TOPIC);
-			}
-			consoleClient->GetConnection()->Poke( topic, format);
-			
 #elif defined(Rtt_WIN_PHONE_ENV)
 			if (fLogHandler)
 			{
@@ -250,6 +243,29 @@ Rtt_VLogException(const char *format, va_list ap)
 		}, buffer);
 	}
 #else
+#if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
+	if (consoleClient == NULL)
+	{
+		consoleClient = new Rtt_LinuxIPCClient;
+		consoleClient->Connect( IPC_HOST, IPC_SERVICE, IPC_TOPIC);
+	}
+
+	char buffer[4096];
+	va_list parm_copy;
+	va_copy(parm_copy, ap);
+	int n = vsnprintf(buffer, 4096, format, parm_copy);
+
+	if (n > 0)
+	{
+		consoleClient->GetConnection()->Poke( topic, buffer);
+	}
+	else
+	{
+		consoleClient->GetConnection()->Poke( topic, format);
+	}
+
+#endif
+
 	result = vfprintf( stderr, format, ap );
 	fflush( stderr );
 #endif
@@ -271,14 +287,14 @@ Rtt_Log( const char *format, ... )
 
 	if (Rtt_LogIsEnabled())
 	{
+#if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
+		topic = "information";
+#endif
+
 		va_list ap;
 		va_start(ap, format);
 		result = Rtt_VLogException(format, ap);
 		va_end(ap);
-
-#if defined(Rtt_LINUX_ENV) && defined(Rtt_SIMULATOR)
-		topic = "information";
-#endif
 	}
 
 	return result;

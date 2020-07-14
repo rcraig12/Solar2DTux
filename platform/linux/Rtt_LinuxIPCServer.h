@@ -22,12 +22,12 @@ class Rtt_LinuxIPCServer : public wxServer
 {
 public:
 	Rtt_LinuxIPCServer();
-    virtual ~Rtt_LinuxIPCServer();
-    void Disconnect();
-    bool IsConnected() { return m_connection != NULL; }
-    virtual wxConnectionBase *OnAcceptConnection(const wxString& topic) wxOVERRIDE;
+	virtual ~Rtt_LinuxIPCServer();
+	void Disconnect();
+	bool IsConnected() { return m_connection != NULL; }
+	virtual wxConnectionBase *OnAcceptConnection(const wxString& topic) wxOVERRIDE;
 protected:
-    wxConnection *m_connection;
+	wxConnection *m_connection;
 };
 
 #endif //LINUXIPCSERVER_H

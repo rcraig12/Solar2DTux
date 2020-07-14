@@ -6,39 +6,39 @@
 
 Rtt_LinuxIPCServer::Rtt_LinuxIPCServer()
 {
-    m_connection = NULL;
+	m_connection = NULL;
 }
 
 Rtt_LinuxIPCServer::~Rtt_LinuxIPCServer()
 {
-    Disconnect();
+	Disconnect();
 }
 
 wxConnectionBase *Rtt_LinuxIPCServer::OnAcceptConnection(const wxString& topic)
 {
-	
-    //wxLogMessage("OnAcceptConnection(\"%s\")", topic);
 
-    if ( topic == IPC_TOPIC )
-    {
-        m_connection = new Rtt_LinuxIPCServerConnection;
-    }
-    else // unknown topic
-    {
-        //wxLogMessage("Unknown topic");
-        return NULL;
-    }
+	//wxLogMessage("OnAcceptConnection(\"%s\")", topic);
 
-    //wxLogMessage("Connection accepted");
+	if ( topic == IPC_TOPIC )
+	{
+		m_connection = new Rtt_LinuxIPCServerConnection;
+	}
+	else // unknown topic
+	{
+		//wxLogMessage("Unknown topic");
+		return NULL;
+	}
+
+	//wxLogMessage("Connection accepted");
 	return m_connection;
 }
 
 void Rtt_LinuxIPCServer::Disconnect()
 {
-    if ( m_connection )
-    {
-        m_connection->Disconnect();
-        wxDELETE(m_connection);
-        //wxLogMessage("Disconnected client");
-    }
+	if ( m_connection )
+	{
+		m_connection->Disconnect();
+		wxDELETE(m_connection);
+		//wxLogMessage("Disconnected client");
+	}
 }
