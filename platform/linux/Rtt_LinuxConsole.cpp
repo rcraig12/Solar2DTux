@@ -14,13 +14,24 @@
 
 using namespace std;
 
+<<<<<<< HEAD
 Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
+<<<<<<< HEAD
+=======
+=======
+Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style):
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
 	wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
 	SetIcon(console_xpm);
 	SetSize(wxSize(1098, 437));
 	panelToolBar = new wxPanel(this, wxID_ANY);
 	statusbar = CreateStatusBar(1);
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
 	bitmapBtnSave = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(save_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnCopy = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(copy_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnErase = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(erase_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
@@ -30,6 +41,20 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow* parent, wxWindowID id, const wxStri
 	bitmapBtnMatchCase = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(match_case_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnLoopingSearch = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(looping_search_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
 	bitmapBtnMenu = new wxBitmapButton(panelToolBar, wxID_ANY,  wxIcon(cog_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
+<<<<<<< HEAD
+=======
+=======
+	bitmapBtnSave = new wxBitmapButton(panelToolBar, wxID_ANY, wxIcon(save_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
+	bitmapBtnCopy = new wxBitmapButton(panelToolBar, wxID_ANY, wxIcon(copy_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
+	bitmapBtnErase = new wxBitmapButton(panelToolBar, wxID_ANY, wxIcon(erase_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
+	txtFind = new wxTextCtrl(panelToolBar, wxID_ANY, wxEmptyString);
+	bitmapBtnFindLeft = new wxBitmapButton(panelToolBar, wxID_ANY, wxIcon(search_left_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
+	bitmapBtnFindRight = new wxBitmapButton(panelToolBar, wxID_ANY, wxIcon(search_right_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
+	bitmapBtnMatchCase = new wxBitmapButton(panelToolBar, wxID_ANY, wxIcon(match_case_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
+	bitmapBtnLoopingSearch = new wxBitmapButton(panelToolBar, wxID_ANY, wxIcon(looping_search_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
+	bitmapBtnMenu = new wxBitmapButton(panelToolBar, wxID_ANY, wxIcon(cog_xpm), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT);
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
 	txtLog = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE | wxTE_RICH2);
 	linuxIPCServer = new Rtt_LinuxIPCServer();
 	SetProperties();
@@ -38,8 +63,15 @@ Rtt_LinuxConsole::Rtt_LinuxConsole(wxWindow* parent, wxWindowID id, const wxStri
 
 void Rtt_LinuxConsole::SetProperties()
 {
+<<<<<<< HEAD
 	wxInitAllImageHandlers();
 	SetTitle(wxT("Solar2DTux Simulator Console"));
+<<<<<<< HEAD
+=======
+=======
+	SetTitle(wxT("Solar2DTux Console"));
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
 	int statusbar_widths[] = { -1 };
 	statusbar->SetStatusWidths(1, statusbar_widths);
 
@@ -49,7 +81,15 @@ void Rtt_LinuxConsole::SetProperties()
 		wxT("Errors #0 Alerts #0"),
 	};
 
+<<<<<<< HEAD
 	for(int i = 0; i < statusbar->GetFieldsCount(); ++i)
+=======
+<<<<<<< HEAD
+	for(int i = 0; i < statusbar->GetFieldsCount(); ++i)
+=======
+	for (int i = 0; i < statusbar->GetFieldsCount(); ++i)
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
 	{
 		statusbar->SetStatusText(statusbar_fields[i], i);
 	}
@@ -80,6 +120,10 @@ void Rtt_LinuxConsole::SetProperties()
 	statusbar->SetForegroundColour(wxColour(255, 255, 255));
 	txtLog->SetFocus();
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
 	/*
 		const char * const kind =
 	#if wxUSE_DDE_FOR_IPC
@@ -102,14 +146,39 @@ void Rtt_LinuxConsole::SetProperties()
 		//wxLogMessage("%s server started on %s", kind, IPC_SERVICE);
 
 	}
+<<<<<<< HEAD
 
 }
+=======
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
 
+=======
+	// Create a new server
+	if (!linuxIPCServer->Create(IPC_SERVICE))
+	{
+		//wxLogMessage("%s server failed to start on %s", kind, IPC_SERVICE);
+	}
+	else
+	{
+		//wxLogMessage("%s server started on %s", kind, IPC_SERVICE);
+	}
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
+}
 
 void Rtt_LinuxConsole::DoLayout()
 {
+<<<<<<< HEAD
 	wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer* sizer2 = new wxBoxSizer(wxHORIZONTAL);
+=======
+<<<<<<< HEAD
+	wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer* sizer2 = new wxBoxSizer(wxHORIZONTAL);
+=======
+	wxBoxSizer *sizer1 = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer *sizer2 = new wxBoxSizer(wxHORIZONTAL);
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
 	sizer2->Add(bitmapBtnSave, 0, 0, 0);
 	sizer2->Add(bitmapBtnCopy, 0, 0, 0);
 	sizer2->Add(bitmapBtnErase, 0, 0, 0);
@@ -164,6 +233,16 @@ void Rtt_LinuxConsole::OnBtnEraseClick(wxCommandEvent &event)
 	txtLog->SetValue("");
 	// notify the user that he hasn't implemented the event handler yet
 	wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onBtnEraseClick) not implemented yet"));
+<<<<<<< HEAD
+}
+
+void Rtt_LinuxConsole::OnBtnFindLeftClick(wxCommandEvent &event)
+=======
+<<<<<<< HEAD
+}
+
+void Rtt_LinuxConsole::OnBtnFindLeftClick(wxCommandEvent &event)
+=======
 }
 
 void Rtt_LinuxConsole::OnBtnFindLeftClick(wxCommandEvent &event)
@@ -175,18 +254,65 @@ void Rtt_LinuxConsole::OnBtnFindLeftClick(wxCommandEvent &event)
 }
 
 void Rtt_LinuxConsole::OnBtnFindRightClick(wxCommandEvent &event)
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
 {
 	event.Skip();
 	txtLog->SetFocus();
 	// notify the user that he hasn't implemented the event handler yet
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
+	wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onBtnFindLeftClick) not implemented yet"));
+}
+
+void Rtt_LinuxConsole::OnBtnFindRightClick(wxCommandEvent &event)
+<<<<<<< HEAD
+=======
+=======
 	wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onBtnFindRightClick) not implemented yet"));
 }
 
 void Rtt_LinuxConsole::OnBtnMatchCaseClick(wxCommandEvent &event)
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
 {
 	event.Skip();
 	txtLog->SetFocus();
 	// notify the user that he hasn't implemented the event handler yet
+<<<<<<< HEAD
+	wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onBtnFindRightClick) not implemented yet"));
+}
+
+void Rtt_LinuxConsole::OnBtnMatchCaseClick(wxCommandEvent &event)
+=======
+	wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onBtnMatchCaseClick) not implemented yet"));
+}
+
+void Rtt_LinuxConsole::OnBtnLoopingSearchClick(wxCommandEvent &event)
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
+{
+	event.Skip();
+	txtLog->SetFocus();
+	// notify the user that he hasn't implemented the event handler yet
+<<<<<<< HEAD
+	wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onBtnFindRightClick) not implemented yet"));
+}
+
+void Rtt_LinuxConsole::OnBtnMatchCaseClick(wxCommandEvent &event)
+=======
+<<<<<<< HEAD
+	wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onBtnMatchCaseClick) not implemented yet"));
+}
+
+void Rtt_LinuxConsole::OnBtnLoopingSearchClick(wxCommandEvent &event)
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
+{
+	event.Skip();
+	txtLog->SetFocus();
+	// notify the user that he hasn't implemented the event handler yet
+<<<<<<< HEAD
 	wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onBtnMatchCaseClick) not implemented yet"));
 }
 
@@ -196,31 +322,85 @@ void Rtt_LinuxConsole::OnBtnLoopingSearchClick(wxCommandEvent &event)
 	txtLog->SetFocus();
 	// notify the user that he hasn't implemented the event handler yet
 	wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onBtnLoopingSearchClick) not implemented yet"));
+=======
+	wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onBtnLoopingSearchClick) not implemented yet"));
+=======
+	wxLogDebug(wxT("Event handler (Rtt_LinuxConsole::onBtnLoopingSearchClick) not implemented yet"));
+}
+
+void Rtt_LinuxConsole::ClearLog()
+{
+	txtLog->SetFocus();
+	txtLog->SetValue("");
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
 }
 
 void Rtt_LinuxConsole::UpdateLog(wxString message)
 {
+<<<<<<< HEAD
 
 	txtLog->SetInsertionPointEnd();
 	txtLog->SetDefaultStyle(wxTextAttr(*wxWHITE));
 	txtLog->AppendText( message );
 
+=======
+<<<<<<< HEAD
+
+	txtLog->SetInsertionPointEnd();
+	txtLog->SetDefaultStyle(wxTextAttr(*wxWHITE));
+	txtLog->AppendText( message );
+
+=======
+	txtLog->SetInsertionPointEnd();
+	txtLog->SetDefaultStyle(wxTextAttr(*wxWHITE));
+	txtLog->AppendText( message );
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
 }
 
 void Rtt_LinuxConsole::UpdateLogWarning(wxString message)
 {
+<<<<<<< HEAD
 
 	txtLog->SetInsertionPointEnd();
 	txtLog->SetDefaultStyle(wxTextAttr(*wxYELLOW));
 	txtLog->AppendText( message  );
 
+=======
+<<<<<<< HEAD
+
+	txtLog->SetInsertionPointEnd();
+	txtLog->SetDefaultStyle(wxTextAttr(*wxYELLOW));
+	txtLog->AppendText( message  );
+
+=======
+	txtLog->SetInsertionPointEnd();
+	txtLog->SetDefaultStyle(wxTextAttr(*wxYELLOW));
+	txtLog->AppendText( message  );
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
 }
 
 void Rtt_LinuxConsole::UpdateLogError(wxString message)
 {
+<<<<<<< HEAD
 
 	txtLog->SetInsertionPointEnd();
 	txtLog->SetDefaultStyle(wxTextAttr(*wxRED));
 	txtLog->AppendText( message );
 
+=======
+<<<<<<< HEAD
+
+	txtLog->SetInsertionPointEnd();
+	txtLog->SetDefaultStyle(wxTextAttr(*wxRED));
+	txtLog->AppendText( message );
+
+=======
+	txtLog->SetInsertionPointEnd();
+	txtLog->SetDefaultStyle(wxTextAttr(*wxRED));
+	txtLog->AppendText( message );
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
 }

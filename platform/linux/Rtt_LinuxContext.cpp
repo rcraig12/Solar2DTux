@@ -36,7 +36,6 @@
 #include "Rtt_LinuxCloneProjectDialog.h"
 #include "Rtt_LinuxNewProjectDialog.h"
 
-
 //#define Rtt_DEBUG_TOUCH 1
 
 #define TIMER_ID wxID_HIGHEST + 11
@@ -52,15 +51,13 @@
 #define ID_MENU_OPEN_SAMPLE_CODE wxID_HIGHEST + 21
 #define ID_MENU_OPEN_DOCUMENTATION wxID_HIGHEST + 22
 #define ID_MENU_SUSPEND wxID_HIGHEST + 23
-//#include "wx/msgdlg.h"
 #include "wx/menu.h"
 #include "wx/dcclient.h"
 #include "wx/app.h"
 #include "wx/display.h"
 
-
-#ifndef wxHAS_IMAGES_IN_RESOURCES
-	#include "resource/simulator.xpm"
+#ifndef wxHAS_IMAGES_IN_RESOURCES && defined(Rtt_SIMULATOR)
+#include "resource/simulator.xpm"
 #endif
 
 using namespace Rtt;
@@ -69,16 +66,7 @@ using namespace std;
 wxDEFINE_EVENT(eventOpenProject, wxCommandEvent);
 wxDEFINE_EVENT(eventRelaunchProject, wxCommandEvent);
 wxDEFINE_EVENT(eventWelcomeProject, wxCommandEvent);
-wxDEFINE_EVENT(eventOpenPreferences, wxCommandEvent);//////////////////////////////////////////////////////////////////////////////
-//
-// This file is part of the Corona game engine.
-// For overview and more information on licensing please refer to README.md
-// Home page: https://github.com/coronalabs/corona
-// Contact: support@coronalabs.com
-//
-//////////////////////////////////////////////////////////////////////////////
-
-
+wxDEFINE_EVENT(eventOpenPreferences, wxCommandEvent);
 wxDEFINE_EVENT(eventCloneProject, wxCommandEvent);
 wxDEFINE_EVENT(eventNewProject, wxCommandEvent);
 wxDEFINE_EVENT(eventSuspendOrResume, wxCommandEvent);
@@ -925,9 +913,21 @@ namespace Rtt
 
 MyApp::MyApp()
 {
+<<<<<<< HEAD
 	    // start the console immediately
 #ifdef Rtt_SIMULATOR
     wxExecute("./Solar2DConsole");
+=======
+<<<<<<< HEAD
+	    // start the console immediately
+#ifdef Rtt_SIMULATOR
+    wxExecute("./Solar2DConsole");
+=======
+	// start the console immediately
+#ifdef Rtt_SIMULATOR
+	wxExecute("./Solar2DConsole");
+>>>>>>> ef73d8d4403a6389b5954cb6516aad24ba107efc
+>>>>>>> 94749fe2d8a72005408f3b967e515f4b843cb645
 #endif
 }
 
@@ -960,7 +960,6 @@ bool MyApp::OnInit()
 			}
 
 			wxInitAllImageHandlers();
-
 			return true;
 		}
 	}
@@ -1447,13 +1446,6 @@ void MyFrame::RemoveSuspendedPanel()
 
 void MyFrame::OnSuspendOrResume(wxCommandEvent &event)
 {
-	//fContext->GetRuntime()->WindowDidRotate(DeviceOrientation::kSidewaysRight, true);
-	//fContext->GetRuntime()->DispatchEvent(OrientationEvent());
-	//fContext->GetRuntime()->GetDisplay().SetContentOrientation(DeviceOrientation::kSidewaysRight);
-	//Rtt::LinuxSimulator *sim = new Rtt::LinuxSimulator;
-	//sim->Rotate(true);
-
-	//fContext->GetRuntime()->GetDisplay().WindowDidRotate(DeviceOrientation::kSidewaysRight, false);
 #ifdef Rtt_SIMULATOR
 	if (fContext->GetRuntime()->IsSuspended())
 	{
@@ -1512,6 +1504,11 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 	fContext = new CoronaAppContext(path.c_str());
 	_chdir(fContext->getAppPath());
 
+	// clear the simulator log
+#ifdef Rtt_SIMULATOR
+	LinuxConsoleLog("clear");
+#endif
+
 	RemoveSuspendedPanel();
 	watchFolder(fContext->getAppPath(), fContext->getAppName().c_str());
 
@@ -1533,11 +1530,18 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 	resetSize();
 	m_mycanvas->fContext = fContext;
 	fContext->setCanvas(m_mycanvas);
-
 	SetTitle(fContext->getTitle().c_str());
 	setMenu(path.c_str());
 	m_mycanvas->startTimer(1000.0f / (float)fContext->getFPS());
 	CentreOnScreen(wxBOTH);
+
+#ifdef Rtt_SIMULATOR
+	if (fContext->getAppName() != "homescreen")
+	{
+		Rtt_Log("Loading project from: %s\n", fContext->getAppPath());
+		Rtt_Log("Project sandbox folder: %s%s\n", "~/.Solar2D/Sandbox/", fContext->getTitle().c_str());
+	}
+#endif
 }
 
 // ----------------------------------------------------------------------------
